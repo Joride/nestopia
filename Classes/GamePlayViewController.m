@@ -30,6 +30,7 @@
 #import "PadSingleButton.h"
 #import "PadRoundTextButton.h"
 #import "RoundTextMaskView.h"
+#import "CGSize+Utilities.h"
 
 
 @interface GamePlayViewController () <UIActionSheetDelegate, NestopiaCoreInputDelegate>
@@ -47,6 +48,10 @@
 @property (nonatomic, strong) UIButton *menuButton;
 @property (nonatomic, strong) RoundTextMaskView *menuMaskView;
 
+// we need these properties only when there is a secondary screen (Airplay)
+@property (nonatomic, strong) UIWindow * gameWindow;
+@property (nonatomic, readonly) UIScreen * secondaryScreen;
+
 @end
 
 
@@ -59,11 +64,15 @@
     
     GameControllerManager *gameControllerManager;
 }
-
+@synthesize secondaryScreen = _secondaryScreen;
 #pragma mark Init
 
 - (id)initWithGame:(Game *)game loadState:(BOOL)loadState {
-    if ((self = [super init])) {
+    self = [super init];
+    
+    if (self)
+    {
+        [self registerForNotifications];
         _game = game;
         _shouldLoadState = loadState;
         
@@ -75,6 +84,81 @@
         gameControllerManager.delegate = self;
     }
     return self;
+}
+- (UIScreen *) secondaryScreen
+{
+    // find the first screen that is not the mainscreen.
+    // We hold on to it, so that calling self.secondaryScreen does not cause
+    if (nil == _secondaryScreen)
+    {
+        NSArray * screens = [UIScreen screens];
+        // no more then one screen means there is no
+        // secondary screen
+        if ([screens count] > 1)
+        {
+            for (UIScreen * aScreen in screens)
+            {
+                if (aScreen != [UIScreen mainScreen])
+                {
+                    _secondaryScreen = aScreen;
+                    _secondaryScreen.overscanCompensation = UIScreenOverscanCompensationInsetBounds;
+                    break;
+                }
+            }
+        }
+    }
+    return  _secondaryScreen;
+}
+- (ScreenView *) screenView
+{
+    if (nil == _screenView)
+    {
+        // [self frameForScreenViewwe don't call [self frameForScreenView]
+        // as we run the risk of a recursive call in -frameForScreenView
+        _screenView = [[ScreenView alloc]
+                       initWithFrame: CGRectZero];
+    }
+    return _screenView;
+}
+- (void) screenDidConnect: (NSNotification *) notification
+{
+    // there might
+    UIScreen * secondaryScreen = [self secondaryScreen];
+    if (nil != secondaryScreen)
+    {
+        self.gameWindow = [[UIWindow alloc]
+                           initWithFrame: secondaryScreen.bounds];
+        self.gameWindow.backgroundColor = [UIColor blackColor];
+        
+        [self.gameWindow makeKeyAndVisible];
+        self.gameWindow.screen = secondaryScreen;
+        self.screenView.frame = [self frameForScreenView];
+        [self.gameWindow addSubview: self.screenView];
+    }
+}
+- (void) screenDidDisconnect:  (NSNotification *) notification
+{
+    // move the screenview back to the view on the mainscreen
+    // below all the buttons and make the system update the frames
+    [self.view insertSubview: self.screenView atIndex: 0];
+    [self.view setNeedsLayout];
+    
+    // we don't need these anymore
+    _secondaryScreen = nil;
+    _gameWindow = nil;
+}
+- (void) registerForNotifications
+{
+    NSNotificationCenter * notificationCenter;
+    notificationCenter = [NSNotificationCenter defaultCenter];
+    [notificationCenter addObserver: self
+                           selector: @selector(screenDidConnect:)
+                               name: UIScreenDidConnectNotification
+                             object: nil];
+    [notificationCenter addObserver: self
+                           selector: @selector(screenDidDisconnect:)
+                               name: UIScreenDidDisconnectNotification
+                             object: nil];
 }
 
 - (void)setupEmulator {
@@ -129,6 +213,7 @@
 
 - (void)dealloc {
     [nestopiaCore powerOff];
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
 #pragma mark Life cycle
@@ -136,12 +221,20 @@
 - (void)loadView {
     [super loadView];
     
-    self.view.backgroundColor = [UIColor blackColor];
+    // setup the game-screenview for either the secondaryscreen or mainscreen
+    UIScreen * secondaryScreen = [self secondaryScreen];
+    if (nil != secondaryScreen)
+    {
+        [self screenDidConnect: nil];
+    }
+    else
+    {
+        [self screenDidDisconnect: nil];
+    }
     
-    self.screenView = [[ScreenView alloc] init];
+    self.view.backgroundColor = [UIColor blackColor];
     self.screenView.antialiasing = [[self.game.settings objectForKey:@"antiAliasing"] boolValue];
     nestopiaCore.videoDelegate = self.screenView;
-    [self.view addSubview:self.screenView];
     
     self.buttonsView = [[UIView alloc] init];
     self.buttonsView.alpha = 0.3;
@@ -320,9 +413,60 @@
     CGPoint screenOrigin = CGPointMake(floor((viewSize.width - screenSize.width) / 2),
                                        floor((viewSize.height - screenSize.height) / 2));
     
-    return CGRectMake(screenOrigin.x, screenOrigin.y, screenSize.width, screenSize.height);
+    CGRect frameForScreenView = CGRectMake(screenOrigin.x,
+                                           screenOrigin.y,
+                                           screenSize.width,
+                                           screenSize.height);
+    
+    // if there is a seconday screen (airplay, HDMI cable),
+    // adjust the size of the screenview for the secondary screen
+    if (nil != [self secondaryScreen])
+    {
+        CGSize size = [self screenViewSizeForScreen: [self secondaryScreen]];
+        
+        // we use a factor of one for the function CGSizeScaled(). This can be
+        // extended to allow the user to manually change the size of the NES
+        // view on the external display. This will be usefull for when the user
+        // wants to adjust for unaccounted over/underscan effects.
+        size = CGSizeScaled(size, 1.0);
+        frameForScreenView.size = size;
+        CGFloat XOrigin = (self.screenView.superview.bounds.size.width -
+                           self.screenView.frame.size.width) / 2.0f;
+        
+        CGFloat YOrigin = (self.screenView.superview.bounds.size.height -
+                           self.screenView.frame.size.height) / 2.0f;
+        CGPoint origin = CGPointMake(XOrigin, YOrigin);
+        frameForScreenView.origin = origin;
+    }
+    
+    return frameForScreenView;
 }
-
+- (CGSize) screenViewSizeForScreen: (UIScreen *) screen
+{
+    CGSize returnSize = nestopiaCore.nativeResolution;
+    if (nil != screen)
+    {
+        CGSize screenViewSize = nestopiaCore.nativeResolution;
+        
+        CGFloat scaleFactor = 1.00f;
+        // compute the size we need for the screen,
+        // don't compute the scale it the screen has no size yet
+        if (nil != [self secondaryScreen] &&
+            (!CGSizeEqualToSize(screenViewSize, CGSizeZero)))
+            
+        {
+            CGSize screenSize = [self secondaryScreen].bounds.size;
+            CGFloat horizontalScale = screenSize.width / screenViewSize.width;
+            CGFloat verticalScale = screenSize.height / screenViewSize.height;
+            
+            scaleFactor = (verticalScale <= horizontalScale) ? verticalScale :
+            horizontalScale;
+        }
+        returnSize = CGSizeMake(screenViewSize.width * scaleFactor,
+                                screenViewSize.height * scaleFactor);
+    }
+    return returnSize;
+}
 - (void)menuButtonClicked {
     [nestopiaCore stopEmulation];
     
