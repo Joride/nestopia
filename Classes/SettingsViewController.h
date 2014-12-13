@@ -36,7 +36,7 @@
 		
 	UITextField *gameGenieCodeControl[4];
     UITextField *controllerLayout;
-    int controllerLayoutIndex;
+    NSUInteger controllerLayoutIndex;
 	bool raised;
 }
 

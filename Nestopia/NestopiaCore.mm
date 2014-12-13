@@ -177,7 +177,7 @@ static void NST_CALLBACK DoFileIO(void* userData,Nes::Api::User::File operation,
 	Nes::Api::Machine machine( emulator );
 	Nes::Api::Cartridge::Database database( emulator );
 	
-	int videoMode = [[NSUserDefaults standardUserDefaults] integerForKey: @"video"];
+	NSInteger videoMode = [[NSUserDefaults standardUserDefaults] integerForKey: @"video"];
 
     if (!videoMode && !database.IsLoaded())
         videoMode = 1;

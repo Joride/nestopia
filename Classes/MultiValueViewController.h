@@ -5,13 +5,13 @@
 @interface MultiValueViewController : UITableViewController {
 	id identifier;
 	NSArray *options, *images;
-	int selectedItemIndex;
+	NSUInteger selectedItemIndex;
 	UITableViewCell *selectedCell;
 }
 
 @property(strong) id identifier;
 @property(unsafe_unretained,assign) id<MultiValueViewControllerDelegate> delegate;
-@property(assign) int selectedItemIndex;
+@property(assign) NSUInteger selectedItemIndex;
 @property(copy) NSArray *options, *images;
 
 @end
@@ -19,6 +19,6 @@
 @protocol MultiValueViewControllerDelegate <NSObject>
 
 @required
-- (void) didSelectItemFromList: (MultiValueViewController *)multiValueViewController selectedItemIndex:(int)selectedItemIndex identifier:(id)identifier;
+- (void) didSelectItemFromList: (MultiValueViewController *)multiValueViewController selectedItemIndex:(NSUInteger)selectedItemIndex identifier:(id)identifier;
 
 @end
