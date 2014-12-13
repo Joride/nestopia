@@ -65,17 +65,21 @@
 	
 	selectedCell = cell;
     if ([self.delegate respondsToSelector: @selector(didSelectItemFromList:selectedItemIndex:identifier:)]) {
-        NSLog(@"%s selected item: %d", __PRETTY_FUNCTION__, [indexPath indexAtPosition: 1]);
-		[self.delegate didSelectItemFromList: self selectedItemIndex: [indexPath indexAtPosition: 1] identifier: identifier];
+        NSLog(@"%s selected item: %ld",
+              __PRETTY_FUNCTION__,
+              (long)[indexPath indexAtPosition: 1]);
+		[self.delegate didSelectItemFromList: self
+                           selectedItemIndex: [indexPath indexAtPosition: 1]
+                                  identifier: identifier];
 	}
 }
 
-- (int)selectedItemIndex {
+- (NSUInteger)selectedItemIndex {
     
     return selectedItemIndex;
 }
 
-- (void)setSelectedItemIndex:(int)index {
+- (void)setSelectedItemIndex:(NSUInteger)index {
 	UITableViewCell *cell = [self.tableView cellForRowAtIndexPath: [[NSIndexPath indexPathWithIndex: 0] indexPathByAddingIndex: index]];
 	
 	selectedItemIndex = index;

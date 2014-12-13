@@ -22,10 +22,10 @@
 #import <QuartzCore/QuartzCore.h>
 
 @implementation ScreenView {
-    unsigned long hightable[256], lowtable[256];
+    uint32_t hightable[256], lowtable[256];
     
     int width, height;
-    unsigned long *frameBuffer8888;
+    uint32_t *frameBuffer8888;
     CGColorSpaceRef colorSpace;
     CGDataProviderRef provider[2];
 	int currentProvider;
@@ -68,18 +68,19 @@
 
 - (void)generateColorTables {
     for (int i = 0; i < 256; i++) {
-		unsigned long red = (unsigned long)((i & 31) * 255.0 / 31.0);
-		unsigned long lowgreen = (unsigned long)(((i >> 5) & 7) * 255.0 / 63.0);
+		uint32_t red = (uint32_t)((i & 31) * 255.0 / 31.0);
+		uint32_t lowgreen = (uint32_t)(((i >> 5) & 7) * 255.0 / 63.0);
 		lowtable[i] = red | (lowgreen << 8);
 		
-		unsigned long highgreen = (unsigned long)(((i & 7) << 3) * 255.0 / 63.0);
-		unsigned long blue = (unsigned long)((i >> 3) * 255.0 / 31.0);
+		uint32_t highgreen = (uint32_t)(((i & 7) << 3) * 255.0 / 63.0);
+		uint32_t blue = (uint32_t)((i >> 3) * 255.0 / 31.0);
 		hightable[i] = (blue << 16) | (highgreen << 8);
 	}
 }
 
 - (void)setupBuffers {
-    size_t size = width * height * 4;
+//    size_t size = width * height * 4;
+    size_t size = width * height * sizeof(uint32_t);
     frameBuffer8888 = malloc(size);
     
     colorSpace = CGColorSpaceCreateDeviceRGB();

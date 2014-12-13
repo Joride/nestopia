@@ -124,8 +124,9 @@
     [self loadSettings];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-	
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear: animated];
 	NSLog(@"%s saving settings", __func__);
 	
 	[self saveSettings];
@@ -175,8 +176,9 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	NSString *CellIdentifier = [NSString stringWithFormat: @"%d:%d", [indexPath indexAtPosition: 0],
-								[indexPath indexAtPosition:1]];
+	NSString *CellIdentifier = [NSString stringWithFormat: @"%ld:%ld",
+                                (long)[indexPath indexAtPosition: 0],
+								(long)[indexPath indexAtPosition:1]];
 	
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier: CellIdentifier];
     if (cell == nil) {
@@ -236,7 +238,8 @@
 						gameGenieCodeControl[[indexPath indexAtPosition: 1]-1].enabled = YES;
 					}
 
-					cell.textLabel.text = [NSString stringWithFormat: @"Code #%d", [indexPath indexAtPosition: 1]];
+					cell.textLabel.text = [NSString stringWithFormat: @"Code #%lu",
+                                           (unsigned long)[indexPath indexAtPosition: 1]];
 				}
                 break;
             case(2):
@@ -327,7 +330,7 @@
 
 /* MultiValueViewControllerDelegate methods */
 
-- (void) didSelectItemFromList: (MultiValueViewController *)multiValueViewController selectedItemIndex:(int)selectedItemIndex identifier:(id)identifier
+- (void) didSelectItemFromList: (MultiValueViewController *)multiValueViewController selectedItemIndex:(NSUInteger)selectedItemIndex identifier:(id)identifier
 {
     controllerLayoutIndex = selectedItemIndex;
     controllerLayout.text = [controllerLayoutDescriptions objectAtIndex: controllerLayoutIndex];
