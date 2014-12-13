@@ -113,7 +113,7 @@
 {
     if (nil == _screenView)
     {
-        // [self frameForScreenViewwe don't call [self frameForScreenView]
+        // we don't call [self frameForScreenView]
         // as we run the risk of a recursive call in -frameForScreenView
         _screenView = [[ScreenView alloc]
                        initWithFrame: CGRectZero];
@@ -122,7 +122,6 @@
 }
 - (void) screenDidConnect: (NSNotification *) notification
 {
-    // there might
     UIScreen * secondaryScreen = [self secondaryScreen];
     if (nil != secondaryScreen)
     {
