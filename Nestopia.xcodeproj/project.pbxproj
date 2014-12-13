@@ -344,6 +344,7 @@
 		80C3B64418397526000B68E0 /* TransparentMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64318397526000B68E0 /* TransparentMaskView.m */; };
 		80C3B64718397740000B68E0 /* PadRoundTextButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64618397740000B68E0 /* PadRoundTextButton.m */; };
 		80C3B64D18398CFB000B68E0 /* RoundTextMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */; };
+		C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C4848C291A39838600A20A7B /* CGSize+Utilities.m */; };
 		F5EE71540FEEC3A000FDA0A6 /* controller_ls.png in Resources */ = {isa = PBXBuildFile; fileRef = F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */; };
 /* End PBXBuildFile section */
 
@@ -1047,6 +1048,8 @@
 		80C3B64B18398CFB000B68E0 /* RoundTextMaskView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTextMaskView.h; sourceTree = "<group>"; };
 		80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundTextMaskView.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4848C281A39835500A20A7B /* CGSize+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CGSize+Utilities.h"; path = "Extensions/CGGeometry/CGSize+Utilities.h"; sourceTree = "<group>"; };
+		C4848C291A39838600A20A7B /* CGSize+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CGSize+Utilities.m"; path = "Extensions/CGGeometry/CGSize+Utilities.m"; sourceTree = "<group>"; };
 		F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = controller_ls.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1121,6 +1124,7 @@
 			isa = PBXGroup;
 			children = (
 				080E96DDFE201D6D7F000001 /* Classes */,
+				C4848C2C1A39847D00A20A7B /* Extensions */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -1922,6 +1926,23 @@
 			name = Tabs;
 			sourceTree = "<group>";
 		};
+		C4848C2B1A39846F00A20A7B /* CGGeometry */ = {
+			isa = PBXGroup;
+			children = (
+				C4848C281A39835500A20A7B /* CGSize+Utilities.h */,
+				C4848C291A39838600A20A7B /* CGSize+Utilities.m */,
+			);
+			name = CGGeometry;
+			sourceTree = "<group>";
+		};
+		C4848C2C1A39847D00A20A7B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				C4848C2B1A39846F00A20A7B /* CGGeometry */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
 		F573FFD90FEAF8B9001ED26B /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -2292,6 +2313,7 @@
 				700957DC17FC75590038888C /* NstMapper254.cpp in Sources */,
 				7009573A17FC75590038888C /* NstInpMahjong.cpp in Sources */,
 				7009570017FC75590038888C /* NstApiNsf.cpp in Sources */,
+				C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */,
 				7009574F17FC75590038888C /* NstMapper012.cpp in Sources */,
 				7009577517FC75590038888C /* NstMapper068.cpp in Sources */,
 				7009573D17FC75590038888C /* NstInpPachinko.cpp in Sources */,
@@ -2374,6 +2396,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -2412,6 +2435,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -2433,6 +2457,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
