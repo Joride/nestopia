@@ -50,7 +50,8 @@ typedef unsigned char byte;
 @protocol NestopiaCoreInputDelegate;
 
 
-typedef NS_OPTIONS(int, NestopiaPadInput) {
+typedef NS_OPTIONS(uint32_t, NestopiaPadInput)
+{
     NestopiaPadInputA       = 1 << 0,
     NestopiaPadInputB       = 1 << 1,
     NestopiaPadInputSelect  = 1 << 2,

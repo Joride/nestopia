@@ -32,6 +32,9 @@
 #import "RoundTextMaskView.h"
 #import "CGSize+Utilities.h"
 
+#import "NESController.h"
+#import "NESControllerInterpreter.h"
+
 
 @interface GamePlayViewController () <UIActionSheetDelegate, NestopiaCoreInputDelegate>
 
@@ -51,6 +54,9 @@
 // we need these properties only when there is a secondary screen (Airplay)
 @property (nonatomic, strong) UIWindow * gameWindow;
 @property (nonatomic, readonly) UIScreen * secondaryScreen;
+
+@property (nonatomic, strong) NESController * controller;
+@property (nonatomic, strong) NESControllerInterpreter * controllerInterpreter;
 
 @end
 
@@ -125,6 +131,7 @@
     UIScreen * secondaryScreen = [self secondaryScreen];
     if (nil != secondaryScreen)
     {
+        [self showController];
         self.gameWindow = [[UIWindow alloc]
                            initWithFrame: secondaryScreen.bounds];
         self.gameWindow.backgroundColor = [UIColor blackColor];
@@ -133,8 +140,42 @@
         self.gameWindow.screen = secondaryScreen;
         self.screenView.frame = [self frameForScreenView];
         [self.gameWindow addSubview: self.screenView];
+        [self.view setNeedsLayout];
     }
 }
+
+- (void) showController
+{
+    _controller = [[NESController alloc] initWithFrame: CGRectZero];
+    _controllerInterpreter = [[NESControllerInterpreter alloc]
+                              initWithController: _controller];
+    _controller.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.buttonsView removeFromSuperview];
+    _buttonsView = nil;
+    
+    [self.view addSubview: _controller];
+    NSMutableArray * constraints = [[NSMutableArray alloc] init];
+    [constraints addObject:
+     [NSLayoutConstraint constraintWithItem: _controller
+                                  attribute: NSLayoutAttributeBottom
+                                  relatedBy: NSLayoutRelationEqual
+                                     toItem: self.view
+                                  attribute: NSLayoutAttributeBottom
+                                 multiplier: 1.0f
+                                   constant: 0.0f]];
+    
+    [constraints addObject:
+     [NSLayoutConstraint constraintWithItem: _controller
+                                  attribute: NSLayoutAttributeCenterX
+                                  relatedBy: NSLayoutRelationEqual
+                                     toItem: self.view
+                                  attribute: NSLayoutAttributeCenterX
+                                 multiplier: 1.0f
+                                   constant: 0.0f]];
+    [self.view addConstraints: constraints];
+    
+}
+
 - (void) screenDidDisconnect:  (NSNotification *) notification
 {
     // move the screenview back to the view on the mainscreen
@@ -220,17 +261,6 @@
 - (void)loadView {
     [super loadView];
     
-    // setup the game-screenview for either the secondaryscreen or mainscreen
-    UIScreen * secondaryScreen = [self secondaryScreen];
-    if (nil != secondaryScreen)
-    {
-        [self screenDidConnect: nil];
-    }
-    else
-    {
-        [self screenDidDisconnect: nil];
-    }
-    
     self.view.backgroundColor = [UIColor blackColor];
     self.screenView.antialiasing = [[self.game.settings objectForKey:@"antiAliasing"] boolValue];
     nestopiaCore.videoDelegate = self.screenView;
@@ -288,6 +318,19 @@
     self.menuMaskView.font = specialButtonFont;
     self.menuMaskView.color = [UIColor redColor];
     [self.menuButton addSubview:self.menuMaskView];
+    
+    // setup the game-screenview for either the secondaryscreen or mainscreen
+    UIScreen * secondaryScreen = [self secondaryScreen];
+    if (nil != secondaryScreen)
+    {
+        [self screenDidConnect: nil];
+    }
+    else
+    {
+        [self screenDidDisconnect: nil];
+    }
+    
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -594,11 +637,19 @@
 
 - (NestopiaInput)nestopiaCoreCallbackInput {
     NestopiaPadInput padInput = 0;
-    padInput |= self.directionButton.input;
-    padInput |= self.selectButton.input;
-    padInput |= self.startButton.input;
-    padInput |= self.aButton.input;
-    padInput |= self.bButton.input;
+    
+    if (_controllerInterpreter != nil)
+    {
+        padInput =  _controllerInterpreter.input;
+    }
+    else
+    {
+        padInput |= self.directionButton.input;
+        padInput |= self.selectButton.input;
+        padInput |= self.startButton.input;
+        padInput |= self.aButton.input;
+        padInput |= self.bButton.input;
+    }
     
     padInput |= [gameControllerManager currentControllerInput];
     
