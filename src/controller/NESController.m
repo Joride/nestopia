@@ -193,8 +193,6 @@ NESMultiButtonDelegate>
     // width / length, but scaled down as neccessary.
     CGSize intrinsicContentSize = [UIDevice NESControllerSize];
     return intrinsicContentSize;
-    
-
 }
 -(void)layoutSubviews
 {

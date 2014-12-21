@@ -150,8 +150,6 @@
     _controllerInterpreter = [[NESControllerInterpreter alloc]
                               initWithController: _controller];
     _controller.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.buttonsView removeFromSuperview];
-    _buttonsView = nil;
     
     [self.view addSubview: _controller];
     NSMutableArray * constraints = [[NSMutableArray alloc] init];

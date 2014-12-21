@@ -20,15 +20,15 @@
      - width (pxs) is the number of pixels required for a real-sized controller
      - heigth (pxs) is the number of pixels required for a real-sized controller
      
-     |   ppi     mm/px   width	heigth  width   heigth
-     |                   (pts)   (pts)   (pxs)   (pxs)
-     ---------------------------------------------------------------------------
+                            |   ppi     cm/px       width	heigth  width   heigth
+                            |           w           (pts)   (pts)   (pxs)   (pxs)
+     --------------------------------------------------------------------------------------
      iPhone 4 through 6 &   |
-     iPad mini retina       |   326     ~0,0077	802,5   354     1605	708
-     iPhone 6 Plus          |   401     ~0,0063 987     435,5	1974    871
-     iPad 1 and 2           |   132     ~0,0192	325     143,5	650     287
-     iPad retina            |   264     ~0,0096	650     286,5	1300	573
-     iPad mini              |   163     ~0,0155	401,5	177     803     354
+     iPad mini retina       |   326     ~0,0077     802,5   354     1605	708
+     iPhone 6 Plus          |   401     ~0,0063     987     435,5   1974    871
+     iPad 1 and 2           |   132     ~0,0192     325     143,5	650     287
+     iPad retina            |   264     ~0,015625   800     353     1600    706 √
+     iPad mini              |   163     ~0,0155     400     177     803     354
      */
 
     NSString * machineName = [self machineName];
@@ -58,7 +58,7 @@
         {
             // iPad mini
             // 803 * 354 pts
-            NESControllerSize = CGSizeMake(803.0f, 286.5f);
+            NESControllerSize = CGSizeMake(800.0f, 353.00f);
         }
         else
         {
