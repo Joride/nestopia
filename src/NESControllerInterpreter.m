@@ -42,26 +42,25 @@
         
         _controller = controller;
         NSAssert(controller.delegate == nil, @"This controller already has a delegate, most likely you do not want it to be replaced.");
-        
         _controller.delegate  = self;
     }
     return self;
 }
 
--(NestopiaPadInput)input
+-(NestopiaPadInput)signal
 {
-    NestopiaPadInput input = 0;
+    NestopiaPadInput signal = 0;
     
-    input |= _inputA;
-    input |= _inputB;
-    input |= _inputStart;
-    input |= _inputSelect;
-    input |= _inputUp;
-    input |= _inputDown;
-    input |= _inputLeft;
-    input |= _inputRight;
+    signal |= _inputA;
+    signal |= _inputB;
+    signal |= _inputStart;
+    signal |= _inputSelect;
+    signal |= _inputUp;
+    signal |= _inputDown;
+    signal |= _inputLeft;
+    signal |= _inputRight;
     
-    return input;
+    return signal;
 }
 
 - (NSString *) controllerState
@@ -156,8 +155,6 @@
             NSAssert(NO, @"PROGRAMMING ERROR: the controller should never report an unexpected (= impossible) direction");
             break;
     }
-    NSLog(@"%@, %@", NSStringFromSelector(_cmd),
-          [controller stringForDirection: direction]);
 }
 - (void) controller: (NESController *) controller didReleaseDirectionOnDPad: (NESDirection) direction
 {
@@ -195,7 +192,5 @@
             NSAssert(NO, @"PROGRAMMING ERROR: the controller should never report an unexpected (= impossible) direction");
             break;
     }
-    NSLog(@"%@, %@", NSStringFromSelector(_cmd),
-          [controller stringForDirection: direction]);
 }
 @end

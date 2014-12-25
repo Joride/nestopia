@@ -7,13 +7,12 @@
 //
 
 @import Foundation;
-#import "NestopiaCore.h"
+#import "NESControllerOutput.h"
 
 @class NESController;
 
-@interface NESControllerInterpreter : NSObject
+@interface NESControllerInterpreter : NSObject <NESControllerOutput>
 -(instancetype)initWithController: (NESController *) controller;
-@property (nonatomic, readonly) NestopiaPadInput input;
 
 // debug
 - (NSString *) controllerState;

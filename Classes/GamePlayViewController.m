@@ -34,7 +34,8 @@
 
 #import "NESController.h"
 #import "NESControllerInterpreter.h"
-
+#import "NESControllerOutput.h"
+#import "CGGameControllerInterpreter.h"
 
 @interface GamePlayViewController () <UIActionSheetDelegate, NestopiaCoreInputDelegate>
 
@@ -56,9 +57,10 @@
 @property (nonatomic, readonly) UIScreen * secondaryScreen;
 
 @property (nonatomic, strong) NESController * controller;
-@property (nonatomic, strong) NESControllerInterpreter * controllerInterpreter;
+@property (nonatomic, strong) id<NESControllerOutput> controllerOutput;
 
 @end
+
 
 
 @implementation GamePlayViewController {
@@ -119,7 +121,7 @@
 {
     if (nil == _screenView)
     {
-        // we don't call [self frameForScreenView]
+        // we don't ` [self frameForScreenView]
         // as we run the risk of a recursive call in -frameForScreenView
         _screenView = [[ScreenView alloc]
                        initWithFrame: CGRectZero];
@@ -144,11 +146,27 @@
     }
 }
 
+- (void) hideController
+{
+    if (nil != _controller)
+    {
+        [_controller removeFromSuperview];
+        _controller = nil;
+        _controllerOutput = nil;
+    }
+}
 - (void) showController
 {
+    if (nil != _controllerOutput) return; // we have a real controller
+    
+    
+    if (nil != _controller)
+    {
+        [_controller removeFromSuperview];
+    }
     _controller = [[NESController alloc] initWithFrame: CGRectZero];
-    _controllerInterpreter = [[NESControllerInterpreter alloc]
-                              initWithController: _controller];
+    _controllerOutput = [[NESControllerInterpreter alloc]
+                         initWithController: _controller];
     _controller.translatesAutoresizingMaskIntoConstraints = NO;
     
     [self.view addSubview: _controller];
@@ -185,6 +203,26 @@
     _secondaryScreen = nil;
     _gameWindow = nil;
 }
+- (void) controllerDidConnect: (NSNotification *) notification
+{
+    NSArray * controllers = [GCController controllers];
+    if (controllers.count > 0)
+    {
+        [self hideController];
+        GCController * gameController = [controllers lastObject];
+        _controllerOutput = [[CGGameControllerInterpreter alloc]
+                             initWithController: gameController];
+    }
+}
+- (void) controllerDidDisconnect: (NSNotification *) notification
+{
+    if (nil != _controller)
+    {
+        _controllerOutput = [[NESControllerInterpreter alloc]
+                             initWithController: _controller];
+    }
+    
+}
 - (void) registerForNotifications
 {
     NSNotificationCenter * notificationCenter;
@@ -196,6 +234,15 @@
     [notificationCenter addObserver: self
                            selector: @selector(screenDidDisconnect:)
                                name: UIScreenDidDisconnectNotification
+                             object: nil];
+    
+    [notificationCenter addObserver: self
+                           selector: @selector(controllerDidConnect:)
+                               name: GCControllerDidConnectNotification
+                             object: nil];
+    [notificationCenter addObserver: self
+                           selector: @selector(controllerDidDisconnect:)
+                               name: GCControllerDidDisconnectNotification
                              object: nil];
 }
 
@@ -328,9 +375,12 @@
         [self screenDidDisconnect: nil];
     }
     
-
+    NSArray * controllers = [GCController controllers];
+    if (controllers.count > 0)
+    {
+        [self controllerDidConnect: nil];
+    }
 }
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -636,9 +686,9 @@
 - (NestopiaInput)nestopiaCoreCallbackInput {
     NestopiaPadInput padInput = 0;
     
-    if (_controllerInterpreter != nil)
+    if (_controllerOutput != nil)
     {
-        padInput =  _controllerInterpreter.input;
+        padInput =  _controllerOutput.signal;
     }
     else
     {

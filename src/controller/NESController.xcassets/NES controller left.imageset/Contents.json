@@ -5,23 +5,9 @@
       "scale" : "1x"
     },
     {
-      "resizing" : {
-        "mode" : "9-part",
-        "center" : {
-          "mode" : "fill",
-          "width" : 1,
-          "height" : 1
-        },
-        "capInsets" : {
-          "bottom" : 377,
-          "top" : 65,
-          "right" : 151,
-          "left" : 31
-        }
-      },
       "idiom" : "universal",
-      "filename" : "NES controller left.png",
-      "scale" : "2x"
+      "scale" : "2x",
+      "filename" : "NES controller left.png"
     },
     {
       "idiom" : "universal",

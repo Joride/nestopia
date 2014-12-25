@@ -345,6 +345,7 @@
 		80C3B64718397740000B68E0 /* PadRoundTextButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64618397740000B68E0 /* PadRoundTextButton.m */; };
 		80C3B64D18398CFB000B68E0 /* RoundTextMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */; };
 		C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C4848C291A39838600A20A7B /* CGSize+Utilities.m */; };
+		C4944F1B1A48C09500290450 /* CGGameControllerInterpreter.m in Sources */ = {isa = PBXBuildFile; fileRef = C4944F1A1A48C09500290450 /* CGGameControllerInterpreter.m */; };
 		C4EA4BA71A46CB3800F08480 /* NESDirectionalButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C4EA4B9B1A46CB3800F08480 /* NESDirectionalButton.m */; };
 		C4EA4BA81A46CB3800F08480 /* NESButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C4EA4B9E1A46CB3800F08480 /* NESButton.m */; };
 		C4EA4BA91A46CB3800F08480 /* NESMultiButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C4EA4BA01A46CB3800F08480 /* NESMultiButton.m */; };
@@ -1057,6 +1058,9 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C4848C281A39835500A20A7B /* CGSize+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CGSize+Utilities.h"; path = "Extensions/CGGeometry/CGSize+Utilities.h"; sourceTree = "<group>"; };
 		C4848C291A39838600A20A7B /* CGSize+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CGSize+Utilities.m"; path = "Extensions/CGGeometry/CGSize+Utilities.m"; sourceTree = "<group>"; };
+		C4944F181A48A27100290450 /* NESControllerOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NESControllerOutput.h; path = src/NESControllerOutput.h; sourceTree = SOURCE_ROOT; };
+		C4944F191A48C09500290450 /* CGGameControllerInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGGameControllerInterpreter.h; path = src/CGGameControllerInterpreter.h; sourceTree = SOURCE_ROOT; };
+		C4944F1A1A48C09500290450 /* CGGameControllerInterpreter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CGGameControllerInterpreter.m; path = src/CGGameControllerInterpreter.m; sourceTree = SOURCE_ROOT; };
 		C4EA4B9A1A46CB3800F08480 /* NESDirectionalButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NESDirectionalButton.h; sourceTree = "<group>"; };
 		C4EA4B9B1A46CB3800F08480 /* NESDirectionalButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NESDirectionalButton.m; sourceTree = "<group>"; };
 		C4EA4B9D1A46CB3800F08480 /* NESButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NESButton.h; sourceTree = "<group>"; };
@@ -1094,6 +1098,9 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C4944F191A48C09500290450 /* CGGameControllerInterpreter.h */,
+				C4944F1A1A48C09500290450 /* CGGameControllerInterpreter.m */,
+				C4944F181A48A27100290450 /* NESControllerOutput.h */,
 				C4EA4BAD1A46CB9900F08480 /* NESControllerInterpreter.h */,
 				C4EA4BAE1A46CB9900F08480 /* NESControllerInterpreter.m */,
 				C4EA4B981A46CB3800F08480 /* controller */,
@@ -2329,6 +2336,7 @@
 				7009575A17FC75590038888C /* NstMapper038.cpp in Sources */,
 				700956FA17FC75590038888C /* NstApiDipSwitches.cpp in Sources */,
 				7009575217FC75590038888C /* NstMapper015.cpp in Sources */,
+				C4944F1B1A48C09500290450 /* CGGameControllerInterpreter.m in Sources */,
 				700957EA17FC75590038888C /* NstImageDatabase.cpp in Sources */,
 				C4EA4BAA1A46CB3800F08480 /* NESController.m in Sources */,
 				7009577C17FC75590038888C /* NstMapper078.cpp in Sources */,

@@ -31,8 +31,6 @@
 @end
 
 
-
-
 @interface NESController : UIView
 // DEBUG ONLY
 - (NSString *) stringForDirection: (NESDirection) direction;
