@@ -27,69 +27,69 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			DoremikkoKeyboard::DoremikkoKeyboard(const Cpu& c)
-			: Device(c,Api::Input::DOREMIKKOKEYBOARD)
-			{
-				DoremikkoKeyboard::Reset();
-			}
-
-			void DoremikkoKeyboard::Reset()
-			{
-				reg = 0;
-				mode = 0;
-				part = 0;
-			}
-
-			void DoremikkoKeyboard::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'D','K'>::R(0,0,id) ).End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void DoremikkoKeyboard::Poke(const uint data)
-			{
-				if ((data & 0x2) > (reg & 0x2))
-				{
-					part = 0;
-					mode = 0;
-				}
-
-				if ((data & 0x1) > (reg & 0x1))
-				{
-					++part;
-					mode = 0;
-				}
-
-				reg = data;
-			}
-
-			uint DoremikkoKeyboard::Peek(uint port)
-			{
-				if (port)
-				{
-					port = mode;
-					mode ^= 1;
-
-					if (input)
-					{
-						Controllers::DoremikkoKeyboard::callback( input->doremikkoKeyboard, part, port );
-						return input->doremikkoKeyboard.keys & 0x1E;
-					}
-				}
-
-				return 0;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            DoremikkoKeyboard::DoremikkoKeyboard(const Cpu& c)
+            : Device(c,Api::Input::DOREMIKKOKEYBOARD)
+            {
+                DoremikkoKeyboard::Reset();
+            }
+            
+            void DoremikkoKeyboard::Reset()
+            {
+                reg = 0;
+                mode = 0;
+                part = 0;
+            }
+            
+            void DoremikkoKeyboard::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'D','K'>::R(0,0,id) ).End();
+            }
+            
+            
+            
+            
+            
+            void DoremikkoKeyboard::Poke(const uint data)
+            {
+                if ((data & 0x2) > (reg & 0x2))
+                {
+                    part = 0;
+                    mode = 0;
+                }
+                
+                if ((data & 0x1) > (reg & 0x1))
+                {
+                    ++part;
+                    mode = 0;
+                }
+                
+                reg = data;
+            }
+            
+            uint DoremikkoKeyboard::Peek(uint port)
+            {
+                if (port)
+                {
+                    port = mode;
+                    mode ^= 1;
+                    
+                    if (input)
+                    {
+                        Controllers::DoremikkoKeyboard::callback( input->doremikkoKeyboard, part, port );
+                        return input->doremikkoKeyboard.keys & 0x1E;
+                    }
+                }
+                
+                return 0;
+            }
+        }
+    }
 }

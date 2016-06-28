@@ -29,32 +29,32 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void T230::SubReset(const bool hard)
-			{
-				Vrc4::SubReset( hard );
-
-				Map( 0x8000U, 0x8FFFU, NOP_POKE         );
-				Map( 0xA000U, 0xAFFFU, &T230::Poke_A000 );
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_POKE_D(T230,A000)
-			{
-				data = data << 1 & 0x1F;
-				prg.SwapBank<SIZE_8K>( prgSwap << 13, data );
-				prg.SwapBank<SIZE_8K,0x2000>( data | 0x1 );
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void T230::SubReset(const bool hard)
+            {
+                Vrc4::SubReset( hard );
+                
+                Map( 0x8000U, 0x8FFFU, NOP_POKE );
+                Map( 0xA000U, 0xAFFFU, &T230::Poke_A000 );
+            }
+            
+            
+            
+            
+            
+            void T230::Poke_A000(void* p_,Address i_,Data j_) { static_cast<T230*>(p_)->Poke_M_A000(i_,j_); } inline void T230::Poke_M_A000(Address,Data data)
+            {
+                data = data << 1 & 0x1F;
+                prg.SwapBank<SIZE_8K>( prgSwap << 13, data );
+                prg.SwapBank<SIZE_8K,0x2000>( data | 0x1 );
+            }
+        }
+    }
 }

@@ -27,51 +27,51 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			PokkunMoguraa::PokkunMoguraa(const Cpu& c)
-			: Device(c,Api::Input::POKKUNMOGURAA)
-			{
-				PokkunMoguraa::Reset();
-			}
-
-			void PokkunMoguraa::Reset()
-			{
-				state = 0x1E;
-			}
-
-			void PokkunMoguraa::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'P','M'>::R(0,0,id) ).End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void PokkunMoguraa::Poke(const uint data)
-			{
-				if (input)
-				{
-					Controllers::PokkunMoguraa::callback( input->pokkunMoguraa, ~data & 0x7 );
-					state = ~input->pokkunMoguraa.buttons & 0x1E;
-				}
-				else
-				{
-					state = 0x1E;
-				}
-			}
-
-			uint PokkunMoguraa::Peek(const uint port)
-			{
-				return port ? state : 0;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            PokkunMoguraa::PokkunMoguraa(const Cpu& c)
+            : Device(c,Api::Input::POKKUNMOGURAA)
+            {
+                PokkunMoguraa::Reset();
+            }
+            
+            void PokkunMoguraa::Reset()
+            {
+                state = 0x1E;
+            }
+            
+            void PokkunMoguraa::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'P','M'>::R(0,0,id) ).End();
+            }
+            
+            
+            
+            
+            
+            void PokkunMoguraa::Poke(const uint data)
+            {
+                if (input)
+                {
+                    Controllers::PokkunMoguraa::callback( input->pokkunMoguraa, ~data & 0x7 );
+                    state = ~input->pokkunMoguraa.buttons & 0x1E;
+                }
+                else
+                {
+                    state = 0x1E;
+                }
+            }
+            
+            uint PokkunMoguraa::Peek(const uint port)
+            {
+                return port ? state : 0;
+            }
+        }
+    }
 }

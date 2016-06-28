@@ -27,59 +27,59 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			Mahjong::Mahjong(const Cpu& c)
-			: Device(c,Api::Input::MAHJONG)
-			{
-				Mahjong::Reset();
-			}
-
-			void Mahjong::Reset()
-			{
-				stream = 0;
-			}
-
-			void Mahjong::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'M','J'>::R(0,0,id) ).End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void Mahjong::Poke(uint data)
-			{
-				data &= PART;
-
-				if (data && input)
-				{
-					Controllers::Mahjong::callback( input->mahjong, data );
-					stream = input->mahjong.buttons << 1;
-				}
-				else
-				{
-					stream = 0;
-				}
-			}
-
-			uint Mahjong::Peek(uint port)
-			{
-				if (port)
-				{
-					port = stream & 0x2;
-					stream >>= 1;
-				}
-
-				return port;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            Mahjong::Mahjong(const Cpu& c)
+            : Device(c,Api::Input::MAHJONG)
+            {
+                Mahjong::Reset();
+            }
+            
+            void Mahjong::Reset()
+            {
+                stream = 0;
+            }
+            
+            void Mahjong::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'M','J'>::R(0,0,id) ).End();
+            }
+            
+            
+            
+            
+            
+            void Mahjong::Poke(uint data)
+            {
+                data &= PART;
+                
+                if (data && input)
+                {
+                    Controllers::Mahjong::callback( input->mahjong, data );
+                    stream = input->mahjong.buttons << 1;
+                }
+                else
+                {
+                    stream = 0;
+                }
+            }
+            
+            uint Mahjong::Peek(uint port)
+            {
+                if (port)
+                {
+                    port = stream & 0x2;
+                    stream >>= 1;
+                }
+                
+                return port;
+            }
+        }
+    }
 }

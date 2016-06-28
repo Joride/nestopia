@@ -29,44 +29,44 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Cartridge::VsSystem::RbiBaseball::Reset()
-		{
-			cpu.Map( 0x5E00 ).Set( &RbiBaseball::Peek_5E00 );
-			cpu.Map( 0x5E01 ).Set( &RbiBaseball::Peek_5E01 );
-
-			counter = 0;
-		}
-
-		void Cartridge::VsSystem::RbiBaseball::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','B','I'>::V ).Write8( counter & 0xFF ).End();
-		}
-
-		void Cartridge::VsSystem::RbiBaseball::SubLoad(State::Loader& state,const dword chunk)
-		{
-			if (chunk == AsciiId<'R','B','I'>::V)
-				counter = state.Read8();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_PEEK(Cartridge::VsSystem::RbiBaseball,5E00)
-		{
-			counter = 0;
-			return 0x00;
-		}
-
-		NES_PEEK(Cartridge::VsSystem::RbiBaseball,5E01)
-		{
-			return (counter++ == 0x9) ? 0x6F : 0xB4;
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Cartridge::VsSystem::RbiBaseball::Reset()
+        {
+            cpu.Map( 0x5E00 ).Set( &RbiBaseball::Peek_5E00 );
+            cpu.Map( 0x5E01 ).Set( &RbiBaseball::Peek_5E01 );
+            
+            counter = 0;
+        }
+        
+        void Cartridge::VsSystem::RbiBaseball::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','B','I'>::V ).Write8( counter & 0xFF ).End();
+        }
+        
+        void Cartridge::VsSystem::RbiBaseball::SubLoad(State::Loader& state,const dword chunk)
+        {
+            if (chunk == AsciiId<'R','B','I'>::V)
+                counter = state.Read8();
+        }
+        
+        
+        
+        
+        
+        Data Cartridge::VsSystem::RbiBaseball::Peek_5E00(void* p_,Address i_) { return static_cast<Cartridge::VsSystem::RbiBaseball*>(p_)->Peek_M_5E00(i_); } inline Data Cartridge::VsSystem::RbiBaseball::Peek_M_5E00(Address)
+        {
+            counter = 0;
+            return 0x00;
+        }
+        
+        Data Cartridge::VsSystem::RbiBaseball::Peek_5E01(void* p_,Address i_) { return static_cast<Cartridge::VsSystem::RbiBaseball*>(p_)->Peek_M_5E01(i_); } inline Data Cartridge::VsSystem::RbiBaseball::Peek_M_5E01(Address)
+        {
+            return (counter++ == 0x9) ? 0x6F : 0xB4;
+        }
+    }
 }

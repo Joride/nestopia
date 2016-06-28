@@ -26,12 +26,12 @@
 
 namespace Nes
 {
-	namespace Api
-	{
-		User::LogCaller      User::logCallback;
-		User::EventCaller    User::eventCallback;
-		User::InputCaller    User::inputCallback;
-		User::QuestionCaller User::questionCallback;
-		User::FileIoCaller   User::fileIoCallback;
-	}
+    namespace Api
+    {
+        User::LogCaller User::logCallback;
+        User::EventCaller User::eventCallback;
+        User::InputCaller User::inputCallback;
+        User::QuestionCaller User::questionCallback;
+        User::FileIoCaller User::fileIoCallback;
+    }
 }

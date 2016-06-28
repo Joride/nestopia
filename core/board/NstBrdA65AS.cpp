@@ -27,39 +27,39 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void A65AS::SubReset(const bool hard)
-			{
-				Map( 0x8000U, 0xFFFFU, &A65AS::Poke_Prg );
-
-				if (hard)
-					NES_DO_POKE(Prg,0x8000,0x00);
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_POKE_D(A65AS,Prg)
-			{
-				if (data & 0x40)
-					prg.SwapBank<SIZE_32K,0x0000>( data >> 1 & 0xF );
-				else
-					prg.SwapBanks<SIZE_16K,0x0000>( (data >> 1 & 0x18) | (data & 0x7), (data >> 1 & 0x18) | 0x7 );
-
-				ppu.SetMirroring
-				(
-					(data & 0x80) ? (data & 0x20) ? Ppu::NMT_ONE : Ppu::NMT_ZERO :
-									(data & 0x08) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL
-				);
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void A65AS::SubReset(const bool hard)
+            {
+                Map( 0x8000U, 0xFFFFU, &A65AS::Poke_Prg );
+                
+                if (hard)
+                    Poke_Prg(this,0x8000,0x00);
+            }
+            
+            
+            
+            
+            
+            void A65AS::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<A65AS*>(p_)->Poke_M_Prg(i_,j_); } inline void A65AS::Poke_M_Prg(Address,Data data)
+            {
+                if (data & 0x40)
+                    prg.SwapBank<SIZE_32K,0x0000>( data >> 1 & 0xF );
+                else
+                    prg.SwapBanks<SIZE_16K,0x0000>( (data >> 1 & 0x18) | (data & 0x7), (data >> 1 & 0x18) | 0x7 );
+                
+                ppu.SetMirroring
+                (
+                 (data & 0x80) ? (data & 0x20) ? Ppu::NMT_ONE : Ppu::NMT_ZERO :
+                 (data & 0x08) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL
+                 );
+            }
+        }
+    }
 }

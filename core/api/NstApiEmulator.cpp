@@ -28,54 +28,54 @@
 
 namespace Nes
 {
-	namespace Api
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Emulator::Emulator()
-		: machine(*new Core::Machine)
-		{
-		}
-
-		Emulator::~Emulator() throw()
-		{
-			delete &machine;
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		Result Emulator::Execute
-		(
-			Core::Video::Output* video,
-			Core::Sound::Output* sound,
-			Core::Input::Controllers* input
-		)   throw()
-		{
-			try
-			{
-				return machine.tracker.Execute( machine, video, sound, input );
-			}
-			catch (Result result)
-			{
-				return machine.PowerOff( result );
-			}
-			catch (std::bad_alloc&)
-			{
-				return machine.PowerOff( RESULT_ERR_OUT_OF_MEMORY );
-			}
-			catch (...)
-			{
-				return machine.PowerOff( RESULT_ERR_GENERIC );
-			}
-		}
-
-		ulong Emulator::Frame() const throw()
-		{
-			return machine.tracker.Frame();
-		}
-	}
+    namespace Api
+    {
+        
+        
+        
+        
+        Emulator::Emulator()
+        : machine(*new Core::Machine)
+        {
+        }
+        
+        Emulator::~Emulator() throw()
+        {
+            delete &machine;
+        }
+        
+        
+        
+        
+        
+        Result Emulator::Execute
+        (
+         Core::Video::Output* video,
+         Core::Sound::Output* sound,
+         Core::Input::Controllers* input
+         ) throw()
+        {
+            try
+            {
+                return machine.tracker.Execute( machine, video, sound, input );
+            }
+            catch (Result result)
+            {
+                return machine.PowerOff( result );
+            }
+            catch (std::bad_alloc&)
+            {
+                return machine.PowerOff( RESULT_ERR_OUT_OF_MEMORY );
+            }
+            catch (...)
+            {
+                return machine.PowerOff( RESULT_ERR_GENERIC );
+            }
+        }
+        
+        ulong Emulator::Frame() const throw()
+        {
+            return machine.tracker.Frame();
+        }
+    }
 }

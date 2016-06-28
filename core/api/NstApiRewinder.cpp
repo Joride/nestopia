@@ -29,75 +29,75 @@
 
 namespace Nes
 {
-	namespace Api
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Rewinder::StateCaller Rewinder::stateCallback;
-
-		Result Rewinder::Enable(bool enable) throw()
-		{
-			try
-			{
-				return emulator.tracker.EnableRewinder( enable ? &emulator : NULL );
-			}
-			catch (Result result)
-			{
-				return result;
-			}
-			catch (const std::bad_alloc&)
-			{
-				return RESULT_ERR_OUT_OF_MEMORY;
-			}
-			catch (...)
-			{
-				return RESULT_ERR_GENERIC;
-			}
-		}
-
-		bool Rewinder::IsEnabled() const throw()
-		{
-			return emulator.tracker.IsRewinderEnabled();
-		}
-
-		bool Rewinder::IsSoundEnabled() const throw()
-		{
-			return emulator.tracker.IsRewinderSoundEnabled();
-		}
-
-		void Rewinder::EnableSound(bool enable) throw()
-		{
-			emulator.tracker.EnableRewinderSound( enable );
-		}
-
-		Rewinder::Direction Rewinder::GetDirection() const throw()
-		{
-			return emulator.tracker.IsRewinding() ? BACKWARD : FORWARD;
-		}
-
-		Result Rewinder::SetDirection(Direction dir) throw()
-		{
-			if (emulator.Is(Machine::GAME,Machine::ON))
-			{
-				if (dir == BACKWARD)
-					return emulator.tracker.StartRewinding();
-				else
-					return emulator.tracker.StopRewinding();
-			}
-
-			return RESULT_ERR_NOT_READY;
-		}
-
-		void Rewinder::Reset() throw()
-		{
-			if (emulator.Is(Machine::GAME,Machine::ON))
-				emulator.tracker.ResetRewinder();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Api
+    {
+        
+        
+        
+        
+        Rewinder::StateCaller Rewinder::stateCallback;
+        
+        Result Rewinder::Enable(bool enable) throw()
+        {
+            try
+            {
+                return emulator.tracker.EnableRewinder( enable ? &emulator : __null );
+            }
+            catch (Result result)
+            {
+                return result;
+            }
+            catch (const std::bad_alloc&)
+            {
+                return RESULT_ERR_OUT_OF_MEMORY;
+            }
+            catch (...)
+            {
+                return RESULT_ERR_GENERIC;
+            }
+        }
+        
+        bool Rewinder::IsEnabled() const throw()
+        {
+            return emulator.tracker.IsRewinderEnabled();
+        }
+        
+        bool Rewinder::IsSoundEnabled() const throw()
+        {
+            return emulator.tracker.IsRewinderSoundEnabled();
+        }
+        
+        void Rewinder::EnableSound(bool enable) throw()
+        {
+            emulator.tracker.EnableRewinderSound( enable );
+        }
+        
+        Rewinder::Direction Rewinder::GetDirection() const throw()
+        {
+            return emulator.tracker.IsRewinding() ? BACKWARD : FORWARD;
+        }
+        
+        Result Rewinder::SetDirection(Direction dir) throw()
+        {
+            if (emulator.Is(Machine::GAME,Machine::ON))
+            {
+                if (dir == BACKWARD)
+                    return emulator.tracker.StartRewinding();
+                else
+                    return emulator.tracker.StopRewinding();
+            }
+            
+            return RESULT_ERR_NOT_READY;
+        }
+        
+        void Rewinder::Reset() throw()
+        {
+            if (emulator.Is(Machine::GAME,Machine::ON))
+                emulator.tracker.ResetRewinder();
+        }
+        
+        
+        
+        
+    }
 }

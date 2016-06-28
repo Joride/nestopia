@@ -27,86 +27,86 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			N118::N118(Context& c,Type t)
-			:
-			Mapper (c,(CROM_MAX_256K|WRAM_DEFAULT) | (t == TYPE_NORMAL ? NMT_DEFAULT : NMT_ZERO)),
-			type   (t)
-			{}
-
-			void N118::SubReset(const bool hard)
-			{
-				if (hard)
-					reg = 0;
-
-				for (dword i=0x8000; i <= 0xFFFF; i += 0x2)
-				{
-					Map( i + 0x0, &N118::Poke_8000 );
-					Map( i + 0x1, &N118::Poke_8001 );
-				}
-			}
-
-			void N118::BaseLoad(State::Loader& state,const dword baseChunk)
-			{
-				NST_VERIFY( baseChunk == (AsciiId<'M','M','8'>::V) );
-
-				if (baseChunk == AsciiId<'N','M','8'>::V)
-				{
-					while (const dword chunk = state.Begin())
-					{
-						if (chunk == AsciiId<'R','E','G'>::V)
-							reg = state.Read8();
-
-						state.End();
-					}
-				}
-			}
-
-			void N118::BaseSave(State::Saver& state) const
-			{
-				state.Begin( AsciiId<'N','M','8'>::V ).Begin( AsciiId<'R','E','G'>::V ).Write8( reg ).End().End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_POKE_D(N118,8000)
-			{
-				reg = data;
-
-				if (type == TYPE_MIRROR_CTRL_0)
-					ppu.SetMirroring( (data & 0x40) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
-			}
-
-			NES_POKE_D(N118,8001)
-			{
-				const uint index = reg & 0x7;
-
-				if (index < 0x6)
-				{
-					if (type == TYPE_MIRROR_CTRL_1)
-						ppu.SetMirroring( (data & 0x20) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
-					else
-						ppu.Update();
-
-					if (index > 0x1)
-						chr.SwapBank<SIZE_1K>( (index << 10) + 0x800, data | 0x40 );
-					else
-						chr.SwapBank<SIZE_2K>( index << 11, data >> 1 );
-				}
-				else
-				{
-					prg.SwapBank<SIZE_8K>( (index - 0x6) << 13, data );
-				}
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            N118::N118(Context& c,Type t)
+            :
+            Mapper (c,(CROM_MAX_256K|WRAM_DEFAULT) | (t == TYPE_NORMAL ? NMT_DEFAULT : NMT_ZERO)),
+            type (t)
+            {}
+            
+            void N118::SubReset(const bool hard)
+            {
+                if (hard)
+                    reg = 0;
+                
+                for (dword i=0x8000; i <= 0xFFFF; i += 0x2)
+                {
+                    Map( i + 0x0, &N118::Poke_8000 );
+                    Map( i + 0x1, &N118::Poke_8001 );
+                }
+            }
+            
+            void N118::BaseLoad(State::Loader& state,const dword baseChunk)
+            {
+                ((void)0);
+                
+                if (baseChunk == AsciiId<'N','M','8'>::V)
+                {
+                    while (const dword chunk = state.Begin())
+                    {
+                        if (chunk == AsciiId<'R','E','G'>::V)
+                            reg = state.Read8();
+                        
+                        state.End();
+                    }
+                }
+            }
+            
+            void N118::BaseSave(State::Saver& state) const
+            {
+                state.Begin( AsciiId<'N','M','8'>::V ).Begin( AsciiId<'R','E','G'>::V ).Write8( reg ).End().End();
+            }
+            
+            
+            
+            
+            
+            void N118::Poke_8000(void* p_,Address i_,Data j_) { static_cast<N118*>(p_)->Poke_M_8000(i_,j_); } inline void N118::Poke_M_8000(Address,Data data)
+            {
+                reg = data;
+                
+                if (type == TYPE_MIRROR_CTRL_0)
+                    ppu.SetMirroring( (data & 0x40) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
+            }
+            
+            void N118::Poke_8001(void* p_,Address i_,Data j_) { static_cast<N118*>(p_)->Poke_M_8001(i_,j_); } inline void N118::Poke_M_8001(Address,Data data)
+            {
+                const uint index = reg & 0x7;
+                
+                if (index < 0x6)
+                {
+                    if (type == TYPE_MIRROR_CTRL_1)
+                        ppu.SetMirroring( (data & 0x20) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
+                    else
+                        ppu.Update();
+                    
+                    if (index > 0x1)
+                        chr.SwapBank<SIZE_1K>( (index << 10) + 0x800, data | 0x40 );
+                    else
+                        chr.SwapBank<SIZE_2K>( index << 11, data >> 1 );
+                }
+                else
+                {
+                    prg.SwapBank<SIZE_8K>( (index - 0x6) << 13, data );
+                }
+            }
+        }
+    }
 }

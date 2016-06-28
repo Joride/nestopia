@@ -27,33 +27,33 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void Bmc190in1::SubReset(const bool hard)
-			{
-				Map( 0x8000U, 0xFFFFU, &Bmc190in1::Poke_Prg );
-
-				if (hard)
-					NES_DO_POKE(Prg,0x8000,0x00);
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_POKE_D(Bmc190in1,Prg)
-			{
-				ppu.SetMirroring( (data & 0x1) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
-				data >>= 2;
-				prg.SwapBanks<SIZE_16K,0x0000>( data, data );
-				chr.SwapBank<SIZE_8K,0x0000>( data );
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void Bmc190in1::SubReset(const bool hard)
+            {
+                Map( 0x8000U, 0xFFFFU, &Bmc190in1::Poke_Prg );
+                
+                if (hard)
+                    Poke_Prg(this,0x8000,0x00);
+            }
+            
+            
+            
+            
+            
+            void Bmc190in1::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Bmc190in1*>(p_)->Poke_M_Prg(i_,j_); } inline void Bmc190in1::Poke_M_Prg(Address,Data data)
+            {
+                ppu.SetMirroring( (data & 0x1) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
+                data >>= 2;
+                prg.SwapBanks<SIZE_16K,0x0000>( data, data );
+                chr.SwapBank<SIZE_8K,0x0000>( data );
+            }
+        }
+    }
 }

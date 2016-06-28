@@ -28,47 +28,47 @@
 
 namespace Nes
 {
-	namespace Api
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Movie::EventCaller Movie::eventCallback;
-
-		Result Movie::Play(std::istream& stream) throw()
-		{
-			Api::TapeRecorder(emulator).Stop();
-			return emulator.tracker.PlayMovie( emulator, &stream );
-		}
-
-		Result Movie::Record(std::iostream& stream,How how) throw()
-		{
-			return emulator.tracker.RecordMovie( emulator, &stream, how == APPEND );
-		}
-
-		void Movie::Stop() throw()
-		{
-			emulator.tracker.StopMovie();
-		}
-
-		bool Movie::IsPlaying() const throw()
-		{
-			return emulator.tracker.IsMoviePlaying();
-		}
-
-		bool Movie::IsRecording() const throw()
-		{
-			return emulator.tracker.IsMovieRecording();
-		}
-
-		bool Movie::IsStopped() const throw()
-		{
-			return !IsPlaying() && !IsRecording();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Api
+    {
+        
+        
+        
+        
+        Movie::EventCaller Movie::eventCallback;
+        
+        Result Movie::Play(std::istream& stream) throw()
+        {
+            Api::TapeRecorder(emulator).Stop();
+            return emulator.tracker.PlayMovie( emulator, &stream );
+        }
+        
+        Result Movie::Record(std::iostream& stream,How how) throw()
+        {
+            return emulator.tracker.RecordMovie( emulator, &stream, how == APPEND );
+        }
+        
+        void Movie::Stop() throw()
+        {
+            emulator.tracker.StopMovie();
+        }
+        
+        bool Movie::IsPlaying() const throw()
+        {
+            return emulator.tracker.IsMoviePlaying();
+        }
+        
+        bool Movie::IsRecording() const throw()
+        {
+            return emulator.tracker.IsMovieRecording();
+        }
+        
+        bool Movie::IsStopped() const throw()
+        {
+            return !IsPlaying() && !IsRecording();
+        }
+        
+        
+        
+        
+    }
 }

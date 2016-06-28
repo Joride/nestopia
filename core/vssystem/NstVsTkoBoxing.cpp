@@ -29,52 +29,52 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Cartridge::VsSystem::TkoBoxing::Reset()
-		{
-			cpu.Map( 0x5E00 ).Set( &TkoBoxing::Peek_5E00 );
-			cpu.Map( 0x5E01 ).Set( &TkoBoxing::Peek_5E01 );
-
-			counter = 0;
-		}
-
-		void Cartridge::VsSystem::TkoBoxing::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'T','K','O'>::V ).Write8( counter & 0x1F ).End();
-		}
-
-		void Cartridge::VsSystem::TkoBoxing::SubLoad(State::Loader& state,const dword chunk)
-		{
-			if (chunk == AsciiId<'T','K','O'>::V)
-				counter = state.Read8() & 0x1F;
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_PEEK(Cartridge::VsSystem::TkoBoxing,5E00)
-		{
-			counter = 0;
-			return 0;
-		}
-
-		NES_PEEK(Cartridge::VsSystem::TkoBoxing,5E01)
-		{
-			static const byte securityData[32] =
-			{
-				0xFF, 0xBF, 0xB7, 0x97, 0x97, 0x17, 0x57, 0x4F,
-				0x6F, 0x6B, 0xEB, 0xA9, 0xB1, 0x90, 0x94, 0x14,
-				0x56, 0x4E, 0x6F, 0x6B, 0xEB, 0xA9, 0xB1, 0x90,
-				0xD4, 0x5C, 0x3E, 0x26, 0x87, 0x83, 0x13, 0x00
-			};
-
-			return securityData[counter++ & 0x1F];
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Cartridge::VsSystem::TkoBoxing::Reset()
+        {
+            cpu.Map( 0x5E00 ).Set( &TkoBoxing::Peek_5E00 );
+            cpu.Map( 0x5E01 ).Set( &TkoBoxing::Peek_5E01 );
+            
+            counter = 0;
+        }
+        
+        void Cartridge::VsSystem::TkoBoxing::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'T','K','O'>::V ).Write8( counter & 0x1F ).End();
+        }
+        
+        void Cartridge::VsSystem::TkoBoxing::SubLoad(State::Loader& state,const dword chunk)
+        {
+            if (chunk == AsciiId<'T','K','O'>::V)
+                counter = state.Read8() & 0x1F;
+        }
+        
+        
+        
+        
+        
+        Data Cartridge::VsSystem::TkoBoxing::Peek_5E00(void* p_,Address i_) { return static_cast<Cartridge::VsSystem::TkoBoxing*>(p_)->Peek_M_5E00(i_); } inline Data Cartridge::VsSystem::TkoBoxing::Peek_M_5E00(Address)
+        {
+            counter = 0;
+            return 0;
+        }
+        
+        Data Cartridge::VsSystem::TkoBoxing::Peek_5E01(void* p_,Address i_) { return static_cast<Cartridge::VsSystem::TkoBoxing*>(p_)->Peek_M_5E01(i_); } inline Data Cartridge::VsSystem::TkoBoxing::Peek_M_5E01(Address)
+        {
+            static const byte securityData[32] =
+            {
+                0xFF, 0xBF, 0xB7, 0x97, 0x97, 0x17, 0x57, 0x4F,
+                0x6F, 0x6B, 0xEB, 0xA9, 0xB1, 0x90, 0x94, 0x14,
+                0x56, 0x4E, 0x6F, 0x6B, 0xEB, 0xA9, 0xB1, 0x90,
+                0xD4, 0x5C, 0x3E, 0x26, 0x87, 0x83, 0x13, 0x00
+            };
+            
+            return securityData[counter++ & 0x1F];
+        }
+    }
 }

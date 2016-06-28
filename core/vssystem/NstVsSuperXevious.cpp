@@ -28,29 +28,29 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Cartridge::VsSystem::SuperXevious::Reset()
-		{
-			cpu.Map( 0x54FF ).Set( &SuperXevious::Peek_54FF );
-			cpu.Map( 0x5567 ).Set( &SuperXevious::Peek_5567 );
-			cpu.Map( 0x5678 ).Set( &SuperXevious::Peek_5678 );
-			cpu.Map( 0x578F ).Set( &SuperXevious::Peek_578F );
-
-			protection = 0;
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_PEEK(Cartridge::VsSystem::SuperXevious,54FF) { return 0x05;                              }
-		NES_PEEK(Cartridge::VsSystem::SuperXevious,5567) { return (protection ^= 0x1) ? 0x37 : 0x3E; }
-		NES_PEEK(Cartridge::VsSystem::SuperXevious,5678) { return protection ? 0x00 : 0x01;          }
-		NES_PEEK(Cartridge::VsSystem::SuperXevious,578F) { return protection ? 0xD1 : 0x89;          }
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Cartridge::VsSystem::SuperXevious::Reset()
+        {
+            cpu.Map( 0x54FF ).Set( &SuperXevious::Peek_54FF );
+            cpu.Map( 0x5567 ).Set( &SuperXevious::Peek_5567 );
+            cpu.Map( 0x5678 ).Set( &SuperXevious::Peek_5678 );
+            cpu.Map( 0x578F ).Set( &SuperXevious::Peek_578F );
+            
+            protection = 0;
+        }
+        
+        
+        
+        
+        
+        Data Cartridge::VsSystem::SuperXevious::Peek_54FF(void* p_,Address i_) { return static_cast<Cartridge::VsSystem::SuperXevious*>(p_)->Peek_M_54FF(i_); } inline Data Cartridge::VsSystem::SuperXevious::Peek_M_54FF(Address) { return 0x05; }
+        Data Cartridge::VsSystem::SuperXevious::Peek_5567(void* p_,Address i_) { return static_cast<Cartridge::VsSystem::SuperXevious*>(p_)->Peek_M_5567(i_); } inline Data Cartridge::VsSystem::SuperXevious::Peek_M_5567(Address) { return (protection ^= 0x1) ? 0x37 : 0x3E; }
+        Data Cartridge::VsSystem::SuperXevious::Peek_5678(void* p_,Address i_) { return static_cast<Cartridge::VsSystem::SuperXevious*>(p_)->Peek_M_5678(i_); } inline Data Cartridge::VsSystem::SuperXevious::Peek_M_5678(Address) { return protection ? 0x00 : 0x01; }
+        Data Cartridge::VsSystem::SuperXevious::Peek_578F(void* p_,Address i_) { return static_cast<Cartridge::VsSystem::SuperXevious*>(p_)->Peek_M_578F(i_); } inline Data Cartridge::VsSystem::SuperXevious::Peek_M_578F(Address) { return protection ? 0xD1 : 0x89; }
+    }
 }

@@ -25,53 +25,54 @@
 #include "NstInpDevice.hpp"
 #include "NstInpExcitingBoxing.hpp"
 
+
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			ExcitingBoxing::ExcitingBoxing(const Cpu& c)
-			: Device(c,Api::Input::EXCITINGBOXING)
-			{
-				ExcitingBoxing::Reset();
-			}
-
-			void ExcitingBoxing::Reset()
-			{
-				state = 0x1E;
-			}
-
-			void ExcitingBoxing::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'E','B'>::R(0,0,id) ).End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void ExcitingBoxing::Poke(const uint data)
-			{
-				if (input)
-				{
-					Controllers::ExcitingBoxing::callback( input->excitingBoxing, data & 0x2 );
-					state = ~input->excitingBoxing.buttons & 0x1E;
-				}
-				else
-				{
-					state = 0x1E;
-				}
-			}
-
-			uint ExcitingBoxing::Peek(const uint port)
-			{
-				return port ? state : 0;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            ExcitingBoxing::ExcitingBoxing(const Cpu& c)
+            : Device(c,Api::Input::EXCITINGBOXING)
+            {
+                ExcitingBoxing::Reset();
+            }
+            
+            void ExcitingBoxing::Reset()
+            {
+                state = 0x1E;
+            }
+            
+            void ExcitingBoxing::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'E','B'>::R(0,0,id) ).End();
+            }
+            
+            
+            
+            
+            
+            void ExcitingBoxing::Poke(const uint data)
+            {
+                if (input)
+                {
+                    Controllers::ExcitingBoxing::callback( input->excitingBoxing, data & 0x2 );
+                    state = ~input->excitingBoxing.buttons & 0x1E;
+                }
+                else
+                {
+                    state = 0x1E;
+                }
+            }
+            
+            uint ExcitingBoxing::Peek(const uint port)
+            {
+                return port ? state : 0;
+            }
+        }
+    }
 }

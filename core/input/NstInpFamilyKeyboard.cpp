@@ -27,81 +27,81 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			FamilyKeyboard::FamilyKeyboard(const Cpu& c)
-			: Device(c,Api::Input::FAMILYKEYBOARD)
-			{
-				FamilyKeyboard::Reset();
-			}
-
-			void FamilyKeyboard::Reset()
-			{
-				scan = 0;
-				mode = 0;
-			}
-
-			void FamilyKeyboard::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'K','B'>::R(0,0,id) ).Write8( mode | (scan << 1) ).End();
-			}
-
-			void FamilyKeyboard::LoadState(State::Loader& loader,const dword id)
-			{
-				if (id == AsciiId<'K','B'>::V)
-				{
-                     const uint data = loader.Read8();
-
-                     mode = data & 0x1;
-                     scan = data >> 1 & 0xF;
-
-                     if (scan > 9)
-                         scan = 0;
-				}
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void FamilyKeyboard::Poke(const uint data)
-			{
-				if (data & COMMAND_KEY)
-				{
-					const uint out = data & COMMAND_SCAN;
-
-					if (mode && !out && ++scan > 9)
-						scan = 0;
-
-					mode = out >> 1;
-
-					if (data & COMMAND_RESET)
-						scan = 0;
-				}
-			}
-
-			uint FamilyKeyboard::Peek(uint port)
-			{
-				if (port == 0)
-				{
-					return 0x00;
-				}
-				else if (input && scan < 9)
-				{
-					Controllers::FamilyKeyboard::callback( input->familyKeyboard, scan, mode );
-					return ~uint(input->familyKeyboard.parts[scan]) & 0x1E;
-				}
-				else
-				{
-					return 0x1E;
-				}
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            FamilyKeyboard::FamilyKeyboard(const Cpu& c)
+            : Device(c,Api::Input::FAMILYKEYBOARD)
+            {
+                FamilyKeyboard::Reset();
+            }
+            
+            void FamilyKeyboard::Reset()
+            {
+                scan = 0;
+                mode = 0;
+            }
+            
+            void FamilyKeyboard::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'K','B'>::R(0,0,id) ).Write8( mode | (scan << 1) ).End();
+            }
+            
+            void FamilyKeyboard::LoadState(State::Loader& loader,const dword id)
+            {
+                if (id == AsciiId<'K','B'>::V)
+                {
+                    const uint data = loader.Read8();
+                    
+                    mode = data & 0x1;
+                    scan = data >> 1 & 0xF;
+                    
+                    if (scan > 9)
+                        scan = 0;
+                }
+            }
+            
+            
+            
+            
+            
+            void FamilyKeyboard::Poke(const uint data)
+            {
+                if (data & COMMAND_KEY)
+                {
+                    const uint out = data & COMMAND_SCAN;
+                    
+                    if (mode && !out && ++scan > 9)
+                        scan = 0;
+                    
+                    mode = out >> 1;
+                    
+                    if (data & COMMAND_RESET)
+                        scan = 0;
+                }
+            }
+            
+            uint FamilyKeyboard::Peek(uint port)
+            {
+                if (port == 0)
+                {
+                    return 0x00;
+                }
+                else if (input && scan < 9)
+                {
+                    Controllers::FamilyKeyboard::callback( input->familyKeyboard, scan, mode );
+                    return ~uint(input->familyKeyboard.parts[scan]) & 0x1E;
+                }
+                else
+                {
+                    return 0x1E;
+                }
+            }
+        }
+    }
 }

@@ -27,91 +27,91 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			OekaKidsTablet::OekaKidsTablet(const Cpu& c)
-			: Device(c,Api::Input::OEKAKIDSTABLET)
-			{
-				OekaKidsTablet::Reset();
-			}
-
-			void OekaKidsTablet::Reset()
-			{
-				latch  = 0;
-				state  = 0;
-				stream = 0;
-				bits   = 0;
-			}
-
-			void OekaKidsTablet::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'O','T'>::R(0,0,id) ).End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void OekaKidsTablet::Poke(uint data)
-			{
-				if (data & 0x1)
-				{
-					if (~latch & data & 0x2)
-						stream <<= 1;
-
-					state = (data & 0x2) ? (~stream >> 15 & 0x8) : 0x4;
-					latch = data;
-				}
-				else
-				{
-					state = 0;
-
-					if (input)
-					{
-						Controllers::OekaKidsTablet& tablet = input->oekaKidsTablet;
-						input = NULL;
-
-						if (Controllers::OekaKidsTablet::callback( tablet ))
-						{
-							if (tablet.x <= 255 && tablet.y <= 239)
-							{
-								dword data = tablet.y * 256U / 240;
-
-								if (data > 12)
-									data = (data - 12) << 2;
-								else
-									data = 0;
-
-								data |= (tablet.x * 240U / 256 + 8UL) << 10;
-
-								if (tablet.button)
-								{
-									data |= 0x3;
-								}
-								else if (tablet.y >= 48)
-								{
-									data |= 0x2;
-								}
-
-								bits = data;
-							}
-						}
-					}
-
-					stream = bits;
-				}
-			}
-
-			uint OekaKidsTablet::Peek(uint port)
-			{
-				return port ? state : 0;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            OekaKidsTablet::OekaKidsTablet(const Cpu& c)
+            : Device(c,Api::Input::OEKAKIDSTABLET)
+            {
+                OekaKidsTablet::Reset();
+            }
+            
+            void OekaKidsTablet::Reset()
+            {
+                latch = 0;
+                state = 0;
+                stream = 0;
+                bits = 0;
+            }
+            
+            void OekaKidsTablet::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'O','T'>::R(0,0,id) ).End();
+            }
+            
+            
+            
+            
+            
+            void OekaKidsTablet::Poke(uint data)
+            {
+                if (data & 0x1)
+                {
+                    if (~latch & data & 0x2)
+                        stream <<= 1;
+                    
+                    state = (data & 0x2) ? (~stream >> 15 & 0x8) : 0x4;
+                    latch = data;
+                }
+                else
+                {
+                    state = 0;
+                    
+                    if (input)
+                    {
+                        Controllers::OekaKidsTablet& tablet = input->oekaKidsTablet;
+                        input = __null;
+                        
+                        if (Controllers::OekaKidsTablet::callback( tablet ))
+                        {
+                            if (tablet.x <= 255 && tablet.y <= 239)
+                            {
+                                dword data = tablet.y * 256U / 240;
+                                
+                                if (data > 12)
+                                    data = (data - 12) << 2;
+                                else
+                                    data = 0;
+                                
+                                data |= (tablet.x * 240U / 256 + 8UL) << 10;
+                                
+                                if (tablet.button)
+                                {
+                                    data |= 0x3;
+                                }
+                                else if (tablet.y >= 48)
+                                {
+                                    data |= 0x2;
+                                }
+                                
+                                bits = data;
+                            }
+                        }
+                    }
+                    
+                    stream = bits;
+                }
+            }
+            
+            uint OekaKidsTablet::Peek(uint port)
+            {
+                return port ? state : 0;
+            }
+        }
+    }
 }

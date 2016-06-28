@@ -27,22 +27,22 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void DreamTech01::SubReset(bool)
-			{
-				Map( 0x5020U, PRG_SWAP_16K_0 );
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void DreamTech01::SubReset(bool)
+            {
+                Map( 0x5020U, PRG_SWAP_16K_0 );
+            }
+            
+            
+            
+            
+        }
+    }
 }

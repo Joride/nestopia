@@ -27,81 +27,81 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			SuborKeyboard::SuborKeyboard(const Cpu& c)
-			: Device(c,Api::Input::SUBORKEYBOARD)
-			{
-				SuborKeyboard::Reset();
-			}
-
-			void SuborKeyboard::Reset()
-			{
-				scan = 0;
-				mode = 0;
-			}
-
-			void SuborKeyboard::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'S','K'>::R(0,0,id) ).Write8( mode | (scan << 1) ).End();
-			}
-
-			void SuborKeyboard::LoadState(State::Loader& loader,const dword id)
-			{
-				if (id == AsciiId<'S','K'>::V)
-				{
-                     const uint data = loader.Read8();
-
-                     mode = data & 0x1;
-                     scan = data >> 1 & 0xF;
-
-                     if (scan > 12)
-                         scan = 0;
-				}
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void SuborKeyboard::Poke(const uint data)
-			{
-				if (data & COMMAND_KEY)
-				{
-					const uint out = data & COMMAND_SCAN;
-
-					if (mode && !out && ++scan > 12)
-						scan = 0;
-
-					mode = out >> 1;
-
-					if (data & COMMAND_RESET)
-						scan = 0;
-				}
-			}
-
-			uint SuborKeyboard::Peek(uint port)
-			{
-				if (port == 0)
-				{
-					return 0x00;
-				}
-				else if (input && scan < 10)
-				{
-					Controllers::SuborKeyboard::callback( input->suborKeyboard, scan, mode );
-					return ~uint(input->suborKeyboard.parts[scan]) & 0x1E;
-				}
-				else
-				{
-					return 0x1E;
-				}
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            SuborKeyboard::SuborKeyboard(const Cpu& c)
+            : Device(c,Api::Input::SUBORKEYBOARD)
+            {
+                SuborKeyboard::Reset();
+            }
+            
+            void SuborKeyboard::Reset()
+            {
+                scan = 0;
+                mode = 0;
+            }
+            
+            void SuborKeyboard::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'S','K'>::R(0,0,id) ).Write8( mode | (scan << 1) ).End();
+            }
+            
+            void SuborKeyboard::LoadState(State::Loader& loader,const dword id)
+            {
+                if (id == AsciiId<'S','K'>::V)
+                {
+                    const uint data = loader.Read8();
+                    
+                    mode = data & 0x1;
+                    scan = data >> 1 & 0xF;
+                    
+                    if (scan > 12)
+                        scan = 0;
+                }
+            }
+            
+            
+            
+            
+            
+            void SuborKeyboard::Poke(const uint data)
+            {
+                if (data & COMMAND_KEY)
+                {
+                    const uint out = data & COMMAND_SCAN;
+                    
+                    if (mode && !out && ++scan > 12)
+                        scan = 0;
+                    
+                    mode = out >> 1;
+                    
+                    if (data & COMMAND_RESET)
+                        scan = 0;
+                }
+            }
+            
+            uint SuborKeyboard::Peek(uint port)
+            {
+                if (port == 0)
+                {
+                    return 0x00;
+                }
+                else if (input && scan < 10)
+                {
+                    Controllers::SuborKeyboard::callback( input->suborKeyboard, scan, mode );
+                    return ~uint(input->suborKeyboard.parts[scan]) & 0x1E;
+                }
+                else
+                {
+                    return 0x1E;
+                }
+            }
+        }
+    }
 }

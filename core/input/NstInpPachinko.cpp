@@ -27,94 +27,94 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			Pachinko::Pachinko(const Cpu& c)
-			: Device(c,Api::Input::PACHINKO)
-			{
-				Pachinko::Reset();
-			}
-
-			void Pachinko::Reset()
-			{
-				strobe = 0;
-				stream = 0;
-				state = 0xFF0000;
-			}
-
-			void Pachinko::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'P','A'>::R(0,0,id) ).Write8( strobe ).Write32( stream ).End();
-			}
-
-			void Pachinko::LoadState(State::Loader& loader,const dword id)
-			{
-				if (id == AsciiId<'P','A'>::V)
-				{
-					strobe = loader.Read8() & 0x1;
-					stream = loader.Read32();
-				}
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			uint Pachinko::Peek(uint port)
-			{
-				if (port == 0)
-				{
-					port = stream;
-					stream >>= 1;
-					return port & 0x2;
-				}
-				else
-				{
-					return 0;
-				}
-			}
-
-			void Pachinko::Poke(uint data)
-			{
-				const uint prev = strobe;
-				strobe = data & 0x1;
-
-				if (prev > strobe)
-				{
-					if (input)
-					{
-						Controllers::Pachinko& pachinko = input->pachinko;
-						input = NULL;
-
-						if (Controllers::Pachinko::callback( pachinko ))
-						{
-							uint throttle = Clamp<-64,+63>(pachinko.throttle) + 192;
-
-							throttle =
-							(
-								(throttle >> 7 & 0x01) |
-								(throttle >> 5 & 0x02) |
-								(throttle >> 3 & 0x04) |
-								(throttle >> 1 & 0x08) |
-								(throttle << 1 & 0x10) |
-								(throttle << 3 & 0x20) |
-								(throttle << 5 & 0x40) |
-								(throttle << 7 & 0x80)
-							);
-
-							state = ((pachinko.buttons & 0xFF) | (throttle << 8) | 0xFF0000UL) << 1;
-						}
-					}
-
-					stream = state;
-				}
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            Pachinko::Pachinko(const Cpu& c)
+            : Device(c,Api::Input::PACHINKO)
+            {
+                Pachinko::Reset();
+            }
+            
+            void Pachinko::Reset()
+            {
+                strobe = 0;
+                stream = 0;
+                state = 0xFF0000;
+            }
+            
+            void Pachinko::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'P','A'>::R(0,0,id) ).Write8( strobe ).Write32( stream ).End();
+            }
+            
+            void Pachinko::LoadState(State::Loader& loader,const dword id)
+            {
+                if (id == AsciiId<'P','A'>::V)
+                {
+                    strobe = loader.Read8() & 0x1;
+                    stream = loader.Read32();
+                }
+            }
+            
+            
+            
+            
+            
+            uint Pachinko::Peek(uint port)
+            {
+                if (port == 0)
+                {
+                    port = stream;
+                    stream >>= 1;
+                    return port & 0x2;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            
+            void Pachinko::Poke(uint data)
+            {
+                const uint prev = strobe;
+                strobe = data & 0x1;
+                
+                if (prev > strobe)
+                {
+                    if (input)
+                    {
+                        Controllers::Pachinko& pachinko = input->pachinko;
+                        input = __null;
+                        
+                        if (Controllers::Pachinko::callback( pachinko ))
+                        {
+                            uint throttle = Clamp<-64,+63>(pachinko.throttle) + 192;
+                            
+                            throttle =
+                            (
+                             (throttle >> 7 & 0x01) |
+                             (throttle >> 5 & 0x02) |
+                             (throttle >> 3 & 0x04) |
+                             (throttle >> 1 & 0x08) |
+                             (throttle << 1 & 0x10) |
+                             (throttle << 3 & 0x20) |
+                             (throttle << 5 & 0x40) |
+                             (throttle << 7 & 0x80)
+                             );
+                            
+                            state = ((pachinko.buttons & 0xFF) | (throttle << 8) | 0xFF0000UL) << 1;
+                        }
+                    }
+                    
+                    stream = state;
+                }
+            }
+        }
+    }
 }

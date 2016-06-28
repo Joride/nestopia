@@ -28,55 +28,55 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void Unl6035052::SubReset(const bool hard)
-			{
-				security = 0x0;
-
-				Mmc3::SubReset( hard );
-
-				Map( 0x4020U, 0x7FFFU, &Unl6035052::Peek_4020, &Unl6035052::Poke_4020 );
-			}
-
-			void Unl6035052::SubLoad(State::Loader& state)
-			{
-				while (const dword chunk = state.Begin())
-				{
-					if (chunk == AsciiId<'R','E','G'>::V)
-						security = state.Read8() & 0x3;
-
-					state.End();
-				}
-			}
-
-			void Unl6035052::SubSave(State::Saver& state) const
-			{
-				state.Begin( AsciiId<'R','E','G'>::V ).Write8( security ).End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_PEEK(Unl6035052,4020)
-			{
-				return security;
-			}
-
-			NES_POKE_D(Unl6035052,4020)
-			{
-				security = data & 0x3;
-
-				if (security == 0x1)
-					security = 0x2;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void Unl6035052::SubReset(const bool hard)
+            {
+                security = 0x0;
+                
+                Mmc3::SubReset( hard );
+                
+                Map( 0x4020U, 0x7FFFU, &Unl6035052::Peek_4020, &Unl6035052::Poke_4020 );
+            }
+            
+            void Unl6035052::SubLoad(State::Loader& state)
+            {
+                while (const dword chunk = state.Begin())
+                {
+                    if (chunk == AsciiId<'R','E','G'>::V)
+                        security = state.Read8() & 0x3;
+                    
+                    state.End();
+                }
+            }
+            
+            void Unl6035052::SubSave(State::Saver& state) const
+            {
+                state.Begin( AsciiId<'R','E','G'>::V ).Write8( security ).End();
+            }
+            
+            
+            
+            
+            
+            Data Unl6035052::Peek_4020(void* p_,Address i_) { return static_cast<Unl6035052*>(p_)->Peek_M_4020(i_); } inline Data Unl6035052::Peek_M_4020(Address)
+            {
+                return security;
+            }
+            
+            void Unl6035052::Poke_4020(void* p_,Address i_,Data j_) { static_cast<Unl6035052*>(p_)->Poke_M_4020(i_,j_); } inline void Unl6035052::Poke_M_4020(Address,Data data)
+            {
+                security = data & 0x3;
+                
+                if (security == 0x1)
+                    security = 0x2;
+            }
+        }
+    }
 }

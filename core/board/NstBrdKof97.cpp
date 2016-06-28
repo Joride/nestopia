@@ -28,84 +28,84 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void Kof97::SubReset(const bool hard)
-			{
-				Mmc3::SubReset( hard );
-
-				for (uint i=0x0000; i < 0x2000; i += 0x2)
-				{
-					Map( 0x8000 + i, &Kof97::Poke_8000 );
-					Map( 0x8001 + i, &Kof97::Poke_8001 );
-					Map( 0xC000 + i, &Kof97::Poke_C000 );
-					Map( 0xC001 + i, &Kof97::Poke_C001 );
-				}
-
-				Map( 0x9000U, &Kof97::Poke_8001 );
-				Map( 0xA000U, &Kof97::Poke_8000 );
-				Map( 0xD000U, &Kof97::Poke_C001 );
-
-				for (uint i=0x0000; i < 0x1000; i += 0x2)
-				{
-					Map( 0xE000 + i, &Kof97::Poke_E000 );
-					Map( 0xE001 + i, &Kof97::Poke_E001 );
-				}
-
-				Map( 0xF000U, &Kof97::Poke_E001 );
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			uint Kof97::Unscramble(uint data)
-			{
-				return
-				(
-					(data >> 1 & 0x01) |
-					(data >> 4 & 0x02) |
-					(data << 2 & 0x04) |
-					(data >> 0 & 0xD8) |
-					(data << 3 & 0x20)
-				);
-			}
-
-			NES_POKE_D(Kof97,8000)
-			{
-				Mmc3::NES_DO_POKE(8000,0x8000,Unscramble(data));
-			}
-
-			NES_POKE_D(Kof97,8001)
-			{
-				Mmc3::NES_DO_POKE(8001,0x8001,Unscramble(data));
-			}
-
-			NES_POKE_D(Kof97,C000)
-			{
-				Mmc3::NES_DO_POKE(C000,0xC000,Unscramble(data));
-			}
-
-			NES_POKE_D(Kof97,C001)
-			{
-				Mmc3::NES_DO_POKE(C001,0xC001,Unscramble(data));
-			}
-
-			NES_POKE_D(Kof97,E000)
-			{
-				Mmc3::NES_DO_POKE(E000,0xE000,Unscramble(data));
-			}
-
-			NES_POKE_D(Kof97,E001)
-			{
-				Mmc3::NES_DO_POKE(E001,0xE001,Unscramble(data));
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void Kof97::SubReset(const bool hard)
+            {
+                Mmc3::SubReset( hard );
+                
+                for (uint i=0x0000; i < 0x2000; i += 0x2)
+                {
+                    Map( 0x8000 + i, &Kof97::Poke_8000 );
+                    Map( 0x8001 + i, &Kof97::Poke_8001 );
+                    Map( 0xC000 + i, &Kof97::Poke_C000 );
+                    Map( 0xC001 + i, &Kof97::Poke_C001 );
+                }
+                
+                Map( 0x9000U, &Kof97::Poke_8001 );
+                Map( 0xA000U, &Kof97::Poke_8000 );
+                Map( 0xD000U, &Kof97::Poke_C001 );
+                
+                for (uint i=0x0000; i < 0x1000; i += 0x2)
+                {
+                    Map( 0xE000 + i, &Kof97::Poke_E000 );
+                    Map( 0xE001 + i, &Kof97::Poke_E001 );
+                }
+                
+                Map( 0xF000U, &Kof97::Poke_E001 );
+            }
+            
+            
+            
+            
+            
+            uint Kof97::Unscramble(uint data)
+            {
+                return
+                (
+                 (data >> 1 & 0x01) |
+                 (data >> 4 & 0x02) |
+                 (data << 2 & 0x04) |
+                 (data >> 0 & 0xD8) |
+                 (data << 3 & 0x20)
+                 );
+            }
+            
+            void Kof97::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Kof97*>(p_)->Poke_M_8000(i_,j_); } inline void Kof97::Poke_M_8000(Address,Data data)
+            {
+                Mmc3::Poke_8000(this,0x8000,Unscramble(data));
+            }
+            
+            void Kof97::Poke_8001(void* p_,Address i_,Data j_) { static_cast<Kof97*>(p_)->Poke_M_8001(i_,j_); } inline void Kof97::Poke_M_8001(Address,Data data)
+            {
+                Mmc3::Poke_8001(this,0x8001,Unscramble(data));
+            }
+            
+            void Kof97::Poke_C000(void* p_,Address i_,Data j_) { static_cast<Kof97*>(p_)->Poke_M_C000(i_,j_); } inline void Kof97::Poke_M_C000(Address,Data data)
+            {
+                Mmc3::Poke_C000(this,0xC000,Unscramble(data));
+            }
+            
+            void Kof97::Poke_C001(void* p_,Address i_,Data j_) { static_cast<Kof97*>(p_)->Poke_M_C001(i_,j_); } inline void Kof97::Poke_M_C001(Address,Data data)
+            {
+                Mmc3::Poke_C001(this,0xC001,Unscramble(data));
+            }
+            
+            void Kof97::Poke_E000(void* p_,Address i_,Data j_) { static_cast<Kof97*>(p_)->Poke_M_E000(i_,j_); } inline void Kof97::Poke_M_E000(Address,Data data)
+            {
+                Mmc3::Poke_E000(this,0xE000,Unscramble(data));
+            }
+            
+            void Kof97::Poke_E001(void* p_,Address i_,Data j_) { static_cast<Kof97*>(p_)->Poke_M_E001(i_,j_); } inline void Kof97::Poke_M_E001(Address,Data data)
+            {
+                Mmc3::Poke_E001(this,0xE001,Unscramble(data));
+            }
+        }
+    }
 }

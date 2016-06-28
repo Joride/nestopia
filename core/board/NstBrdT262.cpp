@@ -27,57 +27,57 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void T262::SubReset(bool)
-			{
-				Map( 0x8000U, 0xFFFFU, &T262::Poke_Prg );
-
-				mode = false;
-				NES_DO_POKE(Prg,0x8001,0x00);
-				mode = false;
-			}
-
-			void T262::SubSave(State::Saver& state) const
-			{
-				state.Begin( AsciiId<'R','E','G'>::V ).Write8( mode ).End();
-			}
-
-			void T262::SubLoad(State::Loader& state)
-			{
-				while (const dword chunk = state.Begin())
-				{
-					if (chunk == AsciiId<'R','E','G'>::V)
-						mode = state.Read8() & 0x1;
-
-					state.End();
-				}
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_POKE_AD(T262,Prg)
-			{
-				if (mode || address == 0x8000)
-				{
-					prg.SwapBank<SIZE_16K,0x0000>( (prg.GetBank<SIZE_16K,0x0000>() & 0x38) | (data & 0x07) );
-				}
-				else
-				{
-					mode = true;
-					data = (address >> 3 & 0x20) | (address >> 2 & 0x18);
-					prg.SwapBanks<SIZE_16K,0x0000>( data | (prg.GetBank<SIZE_16K,0x0000>() & 0x07), data | 0x07 );
-					ppu.SetMirroring( (address & 0x2) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
-				}
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void T262::SubReset(bool)
+            {
+                Map( 0x8000U, 0xFFFFU, &T262::Poke_Prg );
+                
+                mode = false;
+                Poke_Prg(this,0x8001,0x00);
+                mode = false;
+            }
+            
+            void T262::SubSave(State::Saver& state) const
+            {
+                state.Begin( AsciiId<'R','E','G'>::V ).Write8( mode ).End();
+            }
+            
+            void T262::SubLoad(State::Loader& state)
+            {
+                while (const dword chunk = state.Begin())
+                {
+                    if (chunk == AsciiId<'R','E','G'>::V)
+                        mode = state.Read8() & 0x1;
+                    
+                    state.End();
+                }
+            }
+            
+            
+            
+            
+            
+            void T262::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<T262*>(p_)->Poke_M_Prg(i_,j_); } inline void T262::Poke_M_Prg(Address address,Data data)
+            {
+                if (mode || address == 0x8000)
+                {
+                    prg.SwapBank<SIZE_16K,0x0000>( (prg.GetBank<SIZE_16K,0x0000>() & 0x38) | (data & 0x07) );
+                }
+                else
+                {
+                    mode = true;
+                    data = (address >> 3 & 0x20) | (address >> 2 & 0x18);
+                    prg.SwapBanks<SIZE_16K,0x0000>( data | (prg.GetBank<SIZE_16K,0x0000>() & 0x07), data | 0x07 );
+                    ppu.SetMirroring( (address & 0x2) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
+                }
+            }
+        }
+    }
 }

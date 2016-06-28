@@ -27,28 +27,28 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void Cc21::SubReset(bool)
-			{
-				Map( 0x8000U, 0xFFFFU, &Cc21::Poke_Prg );
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_POKE_A(Cc21,Prg)
-			{
-				ppu.SetMirroring( (address & 0x2) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
-				chr.SwapBank<SIZE_8K,0x0000>( address );
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void Cc21::SubReset(bool)
+            {
+                Map( 0x8000U, 0xFFFFU, &Cc21::Poke_Prg );
+            }
+            
+            
+            
+            
+            
+            void Cc21::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Cc21*>(p_)->Poke_M_Prg(i_,j_); } inline void Cc21::Poke_M_Prg(Address address,Data)
+            {
+                ppu.SetMirroring( (address & 0x2) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
+                chr.SwapBank<SIZE_8K,0x0000>( address );
+            }
+        }
+    }
 }

@@ -27,67 +27,67 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			PartyTap::PartyTap(const Cpu& c)
-			: Device(c,Api::Input::PARTYTAP)
-			{
-				PartyTap::Reset();
-			}
-
-			void PartyTap::Reset()
-			{
-				strobe = 0;
-				state = 0;
-				mode = 0xE0;
-				stream = 0;
-			}
-
-			void PartyTap::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'P','T'>::R(0,0,id) ).End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void PartyTap::Poke(const uint data)
-			{
-				mode = 0xE0 - ((data & 0x4) << 4);
-
-				const uint prev = strobe;
-				strobe = data & 0x1;
-
-				if (prev > strobe)
-				{
-					if (input)
-					{
-						Controllers::PartyTap::callback( input->partyTap );
-						state = input->partyTap.units;
-						input = NULL;
-					}
-
-					stream = state;
-				}
-			}
-
-			uint PartyTap::Peek(uint port)
-			{
-				if (port)
-				{
-					port = stream & 0x1C;
-					stream = stream >> 3 | mode;
-				}
-
-				return port;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            PartyTap::PartyTap(const Cpu& c)
+            : Device(c,Api::Input::PARTYTAP)
+            {
+                PartyTap::Reset();
+            }
+            
+            void PartyTap::Reset()
+            {
+                strobe = 0;
+                state = 0;
+                mode = 0xE0;
+                stream = 0;
+            }
+            
+            void PartyTap::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'P','T'>::R(0,0,id) ).End();
+            }
+            
+            
+            
+            
+            
+            void PartyTap::Poke(const uint data)
+            {
+                mode = 0xE0 - ((data & 0x4) << 4);
+                
+                const uint prev = strobe;
+                strobe = data & 0x1;
+                
+                if (prev > strobe)
+                {
+                    if (input)
+                    {
+                        Controllers::PartyTap::callback( input->partyTap );
+                        state = input->partyTap.units;
+                        input = __null;
+                    }
+                    
+                    stream = state;
+                }
+            }
+            
+            uint PartyTap::Peek(uint port)
+            {
+                if (port)
+                {
+                    port = stream & 0x1C;
+                    stream = stream >> 3 | mode;
+                }
+                
+                return port;
+            }
+        }
+    }
 }

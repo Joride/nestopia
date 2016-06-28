@@ -27,58 +27,58 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			HyperShot::HyperShot(const Cpu& c)
-			: Device(c,Api::Input::HYPERSHOT)
-			{
-				HyperShot::Reset();
-			}
-
-			void HyperShot::Reset()
-			{
-				strobe = 0;
-				state = 0;
-			}
-
-			void HyperShot::SaveState(State::Saver& saver,const byte id) const
-			{
-				saver.Begin( AsciiId<'H','S'>::R(0,0,id) ).Write8( strobe ).End();
-			}
-
-			void HyperShot::LoadState(State::Loader& loader,const dword id)
-			{
-				if (id == AsciiId<'H','S'>::V)
-					strobe = loader.Read8() & 0x1;
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void HyperShot::Poke(const uint data)
-			{
-				const uint prev = strobe;
-				strobe = data & 0x1;
-
-				if (prev > strobe && input)
-				{
-					Controllers::HyperShot::callback( input->hyperShot );
-					state = input->hyperShot.buttons & 0x1E;
-					input = NULL;
-				}
-			}
-
-			uint HyperShot::Peek(const uint port)
-			{
-				return port ? state : 0;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            HyperShot::HyperShot(const Cpu& c)
+            : Device(c,Api::Input::HYPERSHOT)
+            {
+                HyperShot::Reset();
+            }
+            
+            void HyperShot::Reset()
+            {
+                strobe = 0;
+                state = 0;
+            }
+            
+            void HyperShot::SaveState(State::Saver& saver,const byte id) const
+            {
+                saver.Begin( AsciiId<'H','S'>::R(0,0,id) ).Write8( strobe ).End();
+            }
+            
+            void HyperShot::LoadState(State::Loader& loader,const dword id)
+            {
+                if (id == AsciiId<'H','S'>::V)
+                    strobe = loader.Read8() & 0x1;
+            }
+            
+            
+            
+            
+            
+            void HyperShot::Poke(const uint data)
+            {
+                const uint prev = strobe;
+                strobe = data & 0x1;
+                
+                if (prev > strobe && input)
+                {
+                    Controllers::HyperShot::callback( input->hyperShot );
+                    state = input->hyperShot.buttons & 0x1E;
+                    input = __null;
+                }
+            }
+            
+            uint HyperShot::Peek(const uint port)
+            {
+                return port ? state : 0;
+            }
+        }
+    }
 }

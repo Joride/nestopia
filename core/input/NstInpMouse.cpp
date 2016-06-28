@@ -27,112 +27,112 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Input
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			Mouse::Mouse(const Cpu& c)
-			: Device(c,Api::Input::MOUSE)
-			{
-				Mouse::Reset();
-			}
-
-			void Mouse::Reset()
-			{
-				strobe = 0;
-				stream = 0;
-				state = 0;
-			}
-
-			void Mouse::SaveState(State::Saver& saver,const byte id) const
-			{
-				const byte data[2] =
-				{
-					strobe, stream ^ 0xFF
-				};
-
-				saver.Begin( AsciiId<'M','S'>::R(0,0,id) ).Write( data ).End();
-			}
-
-			void Mouse::LoadState(State::Loader& loader,const dword id)
-			{
-				if (id == AsciiId<'M','S'>::V)
-				{
-					State::Loader::Data<2> data( loader );
-
-					strobe = data[0] & 0x1;
-					stream = data[1] ^ 0xFF;
-				}
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			uint Mouse::Peek(uint)
-			{
-				const uint data = stream;
-				stream >>= 1;
-				return ~data & 0x1;
-			}
-
-			void Mouse::Poke(uint data)
-			{
-				const uint prev = strobe;
-				strobe = data & 0x1;
-
-				if (prev > strobe)
-				{
-					if (input)
-					{
-						Controllers::Mouse& mouse = input->mouse;
-						input = NULL;
-
-						if (Controllers::Mouse::callback( mouse ))
-						{
-							data = 0x00;
-
-							if (mouse.button)
-								data = 0x01;
-
-							int ox = x;
-							int oy = y;
-
-							x = NST_MIN(mouse.x,255);
-							y = NST_MIN(mouse.y,239);
-
-							ox -= x;
-							oy -= y;
-
-							if (ox > 0)
-							{
-								data |= 0x0C;
-							}
-							else if (ox < 0)
-							{
-								data |= 0x04;
-							}
-
-							if (oy > 0)
-							{
-								data |= 0x30;
-							}
-							else if (oy < 0)
-							{
-								data |= 0x10;
-							}
-
-							state = data ^ 0xFF;
-						}
-					}
-
-					stream = state;
-				}
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Input
+        {
+            
+            
+            
+            
+            Mouse::Mouse(const Cpu& c)
+            : Device(c,Api::Input::MOUSE)
+            {
+                Mouse::Reset();
+            }
+            
+            void Mouse::Reset()
+            {
+                strobe = 0;
+                stream = 0;
+                state = 0;
+            }
+            
+            void Mouse::SaveState(State::Saver& saver,const byte id) const
+            {
+                const byte data[2] =
+                {
+                    strobe, stream ^ 0xFF
+                };
+                
+                saver.Begin( AsciiId<'M','S'>::R(0,0,id) ).Write( data ).End();
+            }
+            
+            void Mouse::LoadState(State::Loader& loader,const dword id)
+            {
+                if (id == AsciiId<'M','S'>::V)
+                {
+                    State::Loader::Data<2> data( loader );
+                    
+                    strobe = data[0] & 0x1;
+                    stream = data[1] ^ 0xFF;
+                }
+            }
+            
+            
+            
+            
+            
+            uint Mouse::Peek(uint)
+            {
+                const uint data = stream;
+                stream >>= 1;
+                return ~data & 0x1;
+            }
+            
+            void Mouse::Poke(uint data)
+            {
+                const uint prev = strobe;
+                strobe = data & 0x1;
+                
+                if (prev > strobe)
+                {
+                    if (input)
+                    {
+                        Controllers::Mouse& mouse = input->mouse;
+                        input = __null;
+                        
+                        if (Controllers::Mouse::callback( mouse ))
+                        {
+                            data = 0x00;
+                            
+                            if (mouse.button)
+                                data = 0x01;
+                            
+                            int ox = x;
+                            int oy = y;
+                            
+                            x = ((mouse.x) < (255) ? (mouse.x) : (255));
+                            y = ((mouse.y) < (239) ? (mouse.y) : (239));
+                            
+                            ox -= x;
+                            oy -= y;
+                            
+                            if (ox > 0)
+                            {
+                                data |= 0x0C;
+                            }
+                            else if (ox < 0)
+                            {
+                                data |= 0x04;
+                            }
+                            
+                            if (oy > 0)
+                            {
+                                data |= 0x30;
+                            }
+                            else if (oy < 0)
+                            {
+                                data |= 0x10;
+                            }
+                            
+                            state = data ^ 0xFF;
+                        }
+                    }
+                    
+                    stream = state;
+                }
+            }
+        }
+    }
 }

@@ -27,38 +27,38 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			ColorDreams::ColorDreams(Context& c,Type t)
-			:
-			Mapper (c,PROM_MAX_128K|CROM_MAX_128K|WRAM_DEFAULT),
-			type   (t)
-			{}
-
-			void ColorDreams::SubReset(const bool hard)
-			{
-				Map( 0x8000U + (type == TYPE_AGCI50282), 0xFFFFU, &ColorDreams::Poke_Prg );
-
-				if (hard)
-					NES_DO_POKE(Prg,0x8001,0x00);
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_POKE_D(ColorDreams,Prg)
-			{
-				ppu.Update();
-				prg.SwapBank<SIZE_32K,0x0000>( data );
-				chr.SwapBank<SIZE_8K,0x0000>( data >> 4 );
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            ColorDreams::ColorDreams(Context& c,Type t)
+            :
+            Mapper (c,PROM_MAX_128K|CROM_MAX_128K|WRAM_DEFAULT),
+            type (t)
+            {}
+            
+            void ColorDreams::SubReset(const bool hard)
+            {
+                Map( 0x8000U + (type == TYPE_AGCI50282), 0xFFFFU, &ColorDreams::Poke_Prg );
+                
+                if (hard)
+                    Poke_Prg(this,0x8001,0x00);
+            }
+            
+            
+            
+            
+            
+            void ColorDreams::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<ColorDreams*>(p_)->Poke_M_Prg(i_,j_); } inline void ColorDreams::Poke_M_Prg(Address,Data data)
+            {
+                ppu.Update();
+                prg.SwapBank<SIZE_32K,0x0000>( data );
+                chr.SwapBank<SIZE_8K,0x0000>( data >> 4 );
+            }
+        }
+    }
 }

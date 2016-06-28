@@ -29,109 +29,109 @@
 
 namespace Nes
 {
-	namespace Api
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Core::DipSwitches* DipSwitches::Query() const
-		{
-			if (emulator.image)
-			{
-				if (Core::Image::ExternalDevice device = emulator.image->QueryExternalDevice( Core::Image::EXT_DIP_SWITCHES ))
-					return static_cast<Core::DipSwitches*>(device);
-			}
-
-			return NULL;
-		}
-
-		bool DipSwitches::CanModify() const throw()
-		{
-			return !emulator.tracker.IsLocked() && Query();
-		}
-
-		uint DipSwitches::NumDips() const throw()
-		{
-			if (Core::DipSwitches* const dipSwitches = Query())
-				return dipSwitches->NumDips();
-
-			return 0;
-		}
-
-		uint DipSwitches::NumValues(uint dip) const throw()
-		{
-			if (Core::DipSwitches* const dipSwitches = Query())
-			{
-				if (dipSwitches->NumDips() > dip)
-					return dipSwitches->NumValues( dip );
-			}
-
-			return 0;
-		}
-
-		const char* DipSwitches::GetDipName(uint dip) const throw()
-		{
-			if (Core::DipSwitches* const dipSwitches = Query())
-			{
-				if (dipSwitches->NumDips() > dip)
-					return dipSwitches->GetDipName( dip );
-			}
-
-			return NULL;
-		}
-
-		const char* DipSwitches::GetValueName(uint dip,uint value) const throw()
-		{
-			if (Core::DipSwitches* const dipSwitches = Query())
-			{
-				if (dipSwitches->NumDips() > dip && dipSwitches->NumValues( dip ) > value)
-					return dipSwitches->GetValueName( dip, value );
-			}
-
-			return NULL;
-		}
-
-		int DipSwitches::GetValue(uint dip) const throw()
-		{
-			if (Core::DipSwitches* const dipSwitches = Query())
-			{
-				if (dipSwitches->NumDips() > dip)
-					return dipSwitches->GetValue( dip );
-			}
-
-			return INVALID;
-		}
-
-		Result DipSwitches::SetValue(uint dip,uint value) throw()
-		{
-			if (!emulator.tracker.IsLocked())
-			{
-				if (Core::DipSwitches* const dipSwitches = Query())
-				{
-					if (dip >= dipSwitches->NumDips() || value >= dipSwitches->NumValues( dip ))
-					{
-						return RESULT_ERR_INVALID_PARAM;
-					}
-					else if (value != dipSwitches->GetValue( dip ))
-					{
-						emulator.tracker.Resync();
-						dipSwitches->SetValue( dip, value );
-
-						return RESULT_OK;
-					}
-					else
-					{
-						return RESULT_NOP;
-					}
-				}
-			}
-
-			return RESULT_ERR_NOT_READY;
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Api
+    {
+        
+        
+        
+        
+        Core::DipSwitches* DipSwitches::Query() const
+        {
+            if (emulator.image)
+            {
+                if (Core::Image::ExternalDevice device = emulator.image->QueryExternalDevice( Core::Image::EXT_DIP_SWITCHES ))
+                    return static_cast<Core::DipSwitches*>(device);
+            }
+            
+            return __null;
+        }
+        
+        bool DipSwitches::CanModify() const throw()
+        {
+            return !emulator.tracker.IsLocked() && Query();
+        }
+        
+        uint DipSwitches::NumDips() const throw()
+        {
+            if (Core::DipSwitches* const dipSwitches = Query())
+                return dipSwitches->NumDips();
+            
+            return 0;
+        }
+        
+        uint DipSwitches::NumValues(uint dip) const throw()
+        {
+            if (Core::DipSwitches* const dipSwitches = Query())
+            {
+                if (dipSwitches->NumDips() > dip)
+                    return dipSwitches->NumValues( dip );
+            }
+            
+            return 0;
+        }
+        
+        const char* DipSwitches::GetDipName(uint dip) const throw()
+        {
+            if (Core::DipSwitches* const dipSwitches = Query())
+            {
+                if (dipSwitches->NumDips() > dip)
+                    return dipSwitches->GetDipName( dip );
+            }
+            
+            return __null;
+        }
+        
+        const char* DipSwitches::GetValueName(uint dip,uint value) const throw()
+        {
+            if (Core::DipSwitches* const dipSwitches = Query())
+            {
+                if (dipSwitches->NumDips() > dip && dipSwitches->NumValues( dip ) > value)
+                    return dipSwitches->GetValueName( dip, value );
+            }
+            
+            return __null;
+        }
+        
+        int DipSwitches::GetValue(uint dip) const throw()
+        {
+            if (Core::DipSwitches* const dipSwitches = Query())
+            {
+                if (dipSwitches->NumDips() > dip)
+                    return dipSwitches->GetValue( dip );
+            }
+            
+            return INVALID;
+        }
+        
+        Result DipSwitches::SetValue(uint dip,uint value) throw()
+        {
+            if (!emulator.tracker.IsLocked())
+            {
+                if (Core::DipSwitches* const dipSwitches = Query())
+                {
+                    if (dip >= dipSwitches->NumDips() || value >= dipSwitches->NumValues( dip ))
+                    {
+                        return RESULT_ERR_INVALID_PARAM;
+                    }
+                    else if (value != dipSwitches->GetValue( dip ))
+                    {
+                        emulator.tracker.Resync();
+                        dipSwitches->SetValue( dip, value );
+                        
+                        return RESULT_OK;
+                    }
+                    else
+                    {
+                        return RESULT_NOP;
+                    }
+                }
+            }
+            
+            return RESULT_ERR_NOT_READY;
+        }
+        
+        
+        
+        
+    }
 }

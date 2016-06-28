@@ -27,29 +27,29 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			void Gs2004::SubReset(const bool hard)
-			{
-				Map( WRK_PEEK );
-				Map( 0x8000U, 0xFFFFU, PRG_SWAP_32K );
-
-				if (hard)
-				{
-					wrk.SwapBank<SIZE_8K,0x0000>( ~0U );
-					prg.SwapBank<SIZE_32K,0x0000>( ~0U );
-				}
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            void Gs2004::SubReset(const bool hard)
+            {
+                Map( WRK_PEEK );
+                Map( 0x8000U, 0xFFFFU, PRG_SWAP_32K );
+                
+                if (hard)
+                {
+                    wrk.SwapBank<SIZE_8K,0x0000>( ~0U );
+                    prg.SwapBank<SIZE_32K,0x0000>( ~0U );
+                }
+            }
+            
+            
+            
+            
+        }
+    }
 }

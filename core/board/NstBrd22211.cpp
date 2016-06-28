@@ -27,71 +27,71 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			Unl22211::Unl22211(Context& c,Type t)
-			:
-			Mapper (c,PROM_MAX_64K|CROM_MAX_32K|WRAM_DEFAULT),
-			type   (t)
-			{}
-
-			void Unl22211::SubReset(const bool hard)
-			{
-				Map( 0x4100U,          &Unl22211::Peek_4100 );
-				Map( 0x4100U, 0x4103U, &Unl22211::Poke_4100 );
-				Map( 0x8000U, 0xFFFFU, &Unl22211::Poke_8000 );
-
-				if (hard)
-				{
-					for (uint i=0; i < 4; ++i)
-						regs[i] = 0;
-
-					NES_DO_POKE(8000,0x8000,0x00);
-				}
-			}
-
-			void Unl22211::SubLoad(State::Loader& state)
-			{
-				while (const dword chunk = state.Begin())
-				{
-					if (chunk == AsciiId<'R','E','G'>::V)
-						state.Read( regs );
-
-					state.End();
-				}
-			}
-
-			void Unl22211::SubSave(State::Saver& state) const
-			{
-				state.Begin( AsciiId<'R','E','G'>::V ).Write( regs ).End();
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_PEEK(Unl22211,4100)
-			{
-				return (uint(regs[1]) ^ regs[2]) | (type == TYPE_SECURITY_2 ? 0x41 : 0x40);
-			}
-
-			NES_POKE_AD(Unl22211,4100)
-			{
-				regs[address & 0x3] = data;
-			}
-
-			NES_POKE_D(Unl22211,8000)
-			{
-				ppu.Update();
-				prg.SwapBank<SIZE_32K,0x0000>( regs[2] >> 2 );
-				chr.SwapBank<SIZE_8K,0x0000>( (type == TYPE_SECURITY_1) ? ((data^regs[2]) >> 3 & 0x2) | ((data^regs[2]) >> 5 & 0x1) : regs[2] );
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            Unl22211::Unl22211(Context& c,Type t)
+            :
+            Mapper (c,PROM_MAX_64K|CROM_MAX_32K|WRAM_DEFAULT),
+            type (t)
+            {}
+            
+            void Unl22211::SubReset(const bool hard)
+            {
+                Map( 0x4100U, &Unl22211::Peek_4100 );
+                Map( 0x4100U, 0x4103U, &Unl22211::Poke_4100 );
+                Map( 0x8000U, 0xFFFFU, &Unl22211::Poke_8000 );
+                
+                if (hard)
+                {
+                    for (uint i=0; i < 4; ++i)
+                        regs[i] = 0;
+                    
+                    Poke_8000(this,0x8000,0x00);
+                }
+            }
+            
+            void Unl22211::SubLoad(State::Loader& state)
+            {
+                while (const dword chunk = state.Begin())
+                {
+                    if (chunk == AsciiId<'R','E','G'>::V)
+                        state.Read( regs );
+                    
+                    state.End();
+                }
+            }
+            
+            void Unl22211::SubSave(State::Saver& state) const
+            {
+                state.Begin( AsciiId<'R','E','G'>::V ).Write( regs ).End();
+            }
+            
+            
+            
+            
+            
+            Data Unl22211::Peek_4100(void* p_,Address i_) { return static_cast<Unl22211*>(p_)->Peek_M_4100(i_); } inline Data Unl22211::Peek_M_4100(Address)
+            {
+                return (uint(regs[1]) ^ regs[2]) | (type == TYPE_SECURITY_2 ? 0x41 : 0x40);
+            }
+            
+            void Unl22211::Poke_4100(void* p_,Address i_,Data j_) { static_cast<Unl22211*>(p_)->Poke_M_4100(i_,j_); } inline void Unl22211::Poke_M_4100(Address address,Data data)
+            {
+                regs[address & 0x3] = data;
+            }
+            
+            void Unl22211::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Unl22211*>(p_)->Poke_M_8000(i_,j_); } inline void Unl22211::Poke_M_8000(Address,Data data)
+            {
+                ppu.Update();
+                prg.SwapBank<SIZE_32K,0x0000>( regs[2] >> 2 );
+                chr.SwapBank<SIZE_8K,0x0000>( (type == TYPE_SECURITY_1) ? ((data^regs[2]) >> 3 & 0x2) | ((data^regs[2]) >> 5 & 0x1) : regs[2] );
+            }
+        }
+    }
 }

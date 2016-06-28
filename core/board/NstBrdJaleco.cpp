@@ -28,126 +28,126 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Boards
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			Sound::Player* Jaleco::DetectSound(Type type,uint attribute,Apu& apu)
-			{
-				switch (type)
-				{
-					case TYPE_0:
-
-						if (attribute == ATR_TYPE_0_SAMPLES_MPT)
-						{
-							return Sound::Player::Create
-							(
-								apu,
-								Sound::Loader::MOERO_PRO_TENNIS,
-								Sound::Loader::MOERO_PRO_TENNIS_SAMPLES
-							);
-						}
-						break;
-
-					case TYPE_1:
-
-						if (attribute == ATR_TYPE_1_SAMPLES_MPY88K)
-						{
-							return Sound::Player::Create
-							(
-								apu,
-								Sound::Loader::MOERO_PRO_YAKYUU_88,
-								Sound::Loader::MOERO_PRO_YAKYUU_88_SAMPLES
-							);
-						}
-						break;
-
-					case TYPE_2:
-
-						if (attribute == ATR_TYPE_2_SAMPLES_MPY)
-						{
-							return Sound::Player::Create
-							(
-								apu,
-								Sound::Loader::MOERO_PRO_YAKYUU,
-								Sound::Loader::MOERO_PRO_YAKYUU_SAMPLES
-							);
-						}
-						break;
-				}
-
-				return NULL;
-			}
-
-			Jaleco::Jaleco(Context& c,Type t)
-			:
-			Mapper    (c,WRAM_DEFAULT),
-			sound     (DetectSound(t,c.attribute,c.apu)),
-			prgOffset (t == TYPE_1 ? 0x4000 : 0x0000),
-			type      (t)
-			{
-			}
-
-			Jaleco::~Jaleco()
-			{
-				Sound::Player::Destroy( sound );
-			}
-
-			void Jaleco::SubReset(const bool hard)
-			{
-				if (type == TYPE_2)
-				{
-					Map( 0x6000U, &Jaleco::Poke_6000 );
-
-					if (sound)
-						Map( 0x7000U, &Jaleco::Poke_7000 );
-
-					if (hard)
-						NES_DO_POKE(6000,0x6000,0x00);
-				}
-				else
-				{
-					Map( 0x8000U, 0xFFFFU, &Jaleco::Poke_8000 );
-				}
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			NES_POKE_D(Jaleco,6000)
-			{
-				ppu.Update();
-				prg.SwapBank<SIZE_32K,0x0000>( data >> 4 & 0x3 );
-				chr.SwapBank<SIZE_8K,0x0000>( (data >> 4 & 0x4) | (data & 0x3) );
-			}
-
-			NES_POKE_D(Jaleco,7000)
-			{
-				NST_ASSERT( sound );
-
-				if ((data & 0x30) == 0x20)
-					sound->Play( data & 0xF );
-			}
-
-			NES_POKE_AD(Jaleco,8000)
-			{
-				if (data & 0x40)
-				{
-					ppu.Update();
-					chr.SwapBank<SIZE_8K,0x0000>( data & 0xF );
-				}
-
-				if (data & 0x80)
-					prg.SwapBank<SIZE_16K>( prgOffset, data & 0xF );
-
-				if (sound && (data & 0x30) == 0x20)
-					sound->Play( address & 0x1F );
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Boards
+        {
+            
+            
+            
+            
+            Sound::Player* Jaleco::DetectSound(Type type,uint attribute,Apu& apu)
+            {
+                switch (type)
+                {
+                    case TYPE_0:
+                        
+                        if (attribute == ATR_TYPE_0_SAMPLES_MPT)
+                        {
+                            return Sound::Player::Create
+                            (
+                             apu,
+                             Sound::Loader::MOERO_PRO_TENNIS,
+                             Sound::Loader::MOERO_PRO_TENNIS_SAMPLES
+                             );
+                        }
+                        break;
+                        
+                    case TYPE_1:
+                        
+                        if (attribute == ATR_TYPE_1_SAMPLES_MPY88K)
+                        {
+                            return Sound::Player::Create
+                            (
+                             apu,
+                             Sound::Loader::MOERO_PRO_YAKYUU_88,
+                             Sound::Loader::MOERO_PRO_YAKYUU_88_SAMPLES
+                             );
+                        }
+                        break;
+                        
+                    case TYPE_2:
+                        
+                        if (attribute == ATR_TYPE_2_SAMPLES_MPY)
+                        {
+                            return Sound::Player::Create
+                            (
+                             apu,
+                             Sound::Loader::MOERO_PRO_YAKYUU,
+                             Sound::Loader::MOERO_PRO_YAKYUU_SAMPLES
+                             );
+                        }
+                        break;
+                }
+                
+                return __null;
+            }
+            
+            Jaleco::Jaleco(Context& c,Type t)
+            :
+            Mapper (c,WRAM_DEFAULT),
+            sound (DetectSound(t,c.attribute,c.apu)),
+            prgOffset (t == TYPE_1 ? 0x4000 : 0x0000),
+            type (t)
+            {
+            }
+            
+            Jaleco::~Jaleco()
+            {
+                Sound::Player::Destroy( sound );
+            }
+            
+            void Jaleco::SubReset(const bool hard)
+            {
+                if (type == TYPE_2)
+                {
+                    Map( 0x6000U, &Jaleco::Poke_6000 );
+                    
+                    if (sound)
+                        Map( 0x7000U, &Jaleco::Poke_7000 );
+                    
+                    if (hard)
+                        Poke_6000(this,0x6000,0x00);
+                }
+                else
+                {
+                    Map( 0x8000U, 0xFFFFU, &Jaleco::Poke_8000 );
+                }
+            }
+            
+            
+            
+            
+            
+            void Jaleco::Poke_6000(void* p_,Address i_,Data j_) { static_cast<Jaleco*>(p_)->Poke_M_6000(i_,j_); } inline void Jaleco::Poke_M_6000(Address,Data data)
+            {
+                ppu.Update();
+                prg.SwapBank<SIZE_32K,0x0000>( data >> 4 & 0x3 );
+                chr.SwapBank<SIZE_8K,0x0000>( (data >> 4 & 0x4) | (data & 0x3) );
+            }
+            
+            void Jaleco::Poke_7000(void* p_,Address i_,Data j_) { static_cast<Jaleco*>(p_)->Poke_M_7000(i_,j_); } inline void Jaleco::Poke_M_7000(Address,Data data)
+            {
+                (__builtin_expect(!(!!(sound)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/board/NstBrdJaleco.cpp", 131, "!!(sound)") : (void)0);
+                
+                if ((data & 0x30) == 0x20)
+                    sound->Play( data & 0xF );
+            }
+            
+            void Jaleco::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Jaleco*>(p_)->Poke_M_8000(i_,j_); } inline void Jaleco::Poke_M_8000(Address address,Data data)
+            {
+                if (data & 0x40)
+                {
+                    ppu.Update();
+                    chr.SwapBank<SIZE_8K,0x0000>( data & 0xF );
+                }
+                
+                if (data & 0x80)
+                    prg.SwapBank<SIZE_16K>( prgOffset, data & 0xF );
+                
+                if (sound && (data & 0x30) == 0x20)
+                    sound->Play( address & 0x1F );
+            }
+        }
+    }
 }
