@@ -25,88 +25,89 @@
 #include "NstCpu.hpp"
 #include "NstSoundPcm.hpp"
 
+
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Sound
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			Pcm::Pcm(Apu& a)
-			: Channel(a)
-			{
-				Connect( UpdateSettings() );
-			}
-
-			Result Pcm::CanDo(const void* data,dword length,uint bits,dword rate)
-			{
-				if (data == NULL || length == 0 || bits == 0 || rate == 0)
-					return RESULT_ERR_INVALID_PARAM;
-
-				if ((bits != 8 && bits != 16) || (rate < 8000 || rate > 96000))
-					return RESULT_ERR_UNSUPPORTED;
-
-				return RESULT_OK;
-			}
-
-			void Pcm::Reset()
-			{
-				Stop();
-			}
-
-			bool Pcm::UpdateSettings()
-			{
-				Stop();
-
-				rate = GetSampleRate();
-
-				return true;
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-
-			void Pcm::Play(const iword* w,dword l,dword r)
-			{
-				NST_ASSERT( NES_SUCCEEDED(CanDo(w,l,16,r)) );
-
-				pos = 0;
-
-				wave.data = w;
-				wave.length = l;
-				wave.rate = r;
-			}
-
-			void Pcm::Stop()
-			{
-				pos = 0;
-
-				wave.data = NULL;
-				wave.length = 0;
-				wave.rate = 0;
-			}
-
-			Pcm::Sample Pcm::GetSample()
-			{
-				if (wave.data)
-				{
-					const dword i = pos / rate;
-
-					if (i < wave.length)
-					{
-						pos += wave.rate;
-						return wave.data[i];
-					}
-
-					wave.data = NULL;
-				}
-
-				return 0;
-			}
-		}
-	}
+    namespace Core
+    {
+        namespace Sound
+        {
+            
+            
+            
+            
+            Pcm::Pcm(Apu& a)
+            : Channel(a)
+            {
+                Connect( UpdateSettings() );
+            }
+            
+            Result Pcm::CanDo(const void* data,dword length,uint bits,dword rate)
+            {
+                if (data == __null || length == 0 || bits == 0 || rate == 0)
+                    return RESULT_ERR_INVALID_PARAM;
+                
+                if ((bits != 8 && bits != 16) || (rate < 8000 || rate > 96000))
+                    return RESULT_ERR_UNSUPPORTED;
+                
+                return RESULT_OK;
+            }
+            
+            void Pcm::Reset()
+            {
+                Stop();
+            }
+            
+            bool Pcm::UpdateSettings()
+            {
+                Stop();
+                
+                rate = GetSampleRate();
+                
+                return true;
+            }
+            
+            
+            
+            
+            
+            void Pcm::Play(const iword* w,dword l,dword r)
+            {
+                (__builtin_expect(!(!!(((CanDo(w,l,16,r)) >= Nes::RESULT_OK))), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstSoundPcm.cpp", 75, "!!(((CanDo(w,l,16,r)) >= Nes::RESULT_OK))") : (void)0);
+                
+                pos = 0;
+                
+                wave.data = w;
+                wave.length = l;
+                wave.rate = r;
+            }
+            
+            void Pcm::Stop()
+            {
+                pos = 0;
+                
+                wave.data = __null;
+                wave.length = 0;
+                wave.rate = 0;
+            }
+            
+            Pcm::Sample Pcm::GetSample()
+            {
+                if (wave.data)
+                {
+                    const dword i = pos / rate;
+                    
+                    if (i < wave.length)
+                    {
+                        pos += wave.rate;
+                        return wave.data[i];
+                    }
+                    
+                    wave.data = __null;
+                }
+                
+                return 0;
+            }
+        }
+    }
 }

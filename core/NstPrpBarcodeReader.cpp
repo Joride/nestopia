@@ -28,60 +28,60 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Peripherals
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			BarcodeReader::BarcodeReader()
-			{
-				Reset();
-			}
-
-			void BarcodeReader::Reset()
-			{
-				stream = data;
-				std::memset( data, END, MAX_DATA_LENGTH );
-			}
-
-			void BarcodeReader::SaveState(State::Saver& state) const
-			{
-				if (IsTransferring())
-				{
-					state.Begin( AsciiId<'P','T','R'>::V ).Write8( stream - data ).End();
-					state.Begin( AsciiId<'D','A','T'>::V ).Compress( data ).End();
-				}
-			}
-
-			void BarcodeReader::LoadState(State::Loader& state,const dword chunk)
-			{
-				switch (chunk)
-				{
-					case AsciiId<'P','T','R'>::V:
-
-						stream = data + (state.Read8() & (MAX_DATA_LENGTH-1));
-						break;
-
-					case AsciiId<'D','A','T'>::V:
-
-						state.Uncompress( data );
-						data[MAX_DATA_LENGTH-1] = END;
-						break;
-				}
-			}
-
-			bool BarcodeReader::Transfer(cstring const string,const uint length)
-			{
-				Reset();
-				return (string && length && SubTransfer( string, length, data ));
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-		}
-	}
+    namespace Core
+    {
+        namespace Peripherals
+        {
+            
+            
+            
+            
+            BarcodeReader::BarcodeReader()
+            {
+                Reset();
+            }
+            
+            void BarcodeReader::Reset()
+            {
+                stream = data;
+                std::memset( data, END, MAX_DATA_LENGTH );
+            }
+            
+            void BarcodeReader::SaveState(State::Saver& state) const
+            {
+                if (IsTransferring())
+                {
+                    state.Begin( AsciiId<'P','T','R'>::V ).Write8( stream - data ).End();
+                    state.Begin( AsciiId<'D','A','T'>::V ).Compress( data ).End();
+                }
+            }
+            
+            void BarcodeReader::LoadState(State::Loader& state,const dword chunk)
+            {
+                switch (chunk)
+                {
+                    case AsciiId<'P','T','R'>::V:
+                        
+                        stream = data + (state.Read8() & (MAX_DATA_LENGTH-1));
+                        break;
+                        
+                    case AsciiId<'D','A','T'>::V:
+                        
+                        state.Uncompress( data );
+                        data[MAX_DATA_LENGTH-1] = END;
+                        break;
+                }
+            }
+            
+            bool BarcodeReader::Transfer(cstring const string,const uint length)
+            {
+                Reset();
+                return (string && length && SubTransfer( string, length, data ));
+            }
+            
+            
+            
+            
+        }
+    }
 }

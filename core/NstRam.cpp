@@ -29,121 +29,121 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Ram::Ram()
-		:
-		mem      ( NULL  ),
-		mask     ( 0     ),
-		size     ( 0     ),
-		writable ( false ),
-		readable ( false ),
-		internal ( false ),
-		padding  ( false )
-		{}
-
-		Ram::~Ram()
-		{
-			if (internal)
-				std::free( mem );
-		}
-
-		void Ram::Destroy()
-		{
-			mask = 0;
-			size = 0;
-
-			if (byte* const tmp = mem)
-			{
-				mem = NULL;
-
-				if (internal)
-				{
-					internal = false;
-					std::free( tmp );
-				}
-			}
-		}
-
-		void Ram::Set(dword s,byte* m)
-		{
-			NST_ASSERT( s != 1 );
-
-			if (s)
-			{
-				mask = s - 1;
-				mask |= mask >> 1;
-				mask |= mask >> 2;
-				mask |= mask >> 4;
-				mask |= mask >> 8;
-				mask |= mask >> 16;
-
-				size = s;
-
-				if (m)
-				{
-					NST_VERIFY( s == mask+1 );
-
-					if (internal)
-					{
-						internal = false;
-						std::free( mem );
-					}
-				}
-				else
-				{
-					m = static_cast<byte*>(std::realloc( internal ? mem : NULL, mask+1 ));
-
-					if (m)
-					{
-						internal = true;
-					}
-					else
-					{
-						Destroy();
-						throw RESULT_ERR_OUT_OF_MEMORY;
-					}
-				}
-
-				mem = m;
-			}
-			else
-			{
-				Destroy();
-			}
-		}
-
-		void Ram::Set(bool r,bool w,dword s,byte* m)
-		{
-			Set( s, m );
-			readable = r;
-			writable = w;
-		}
-
-		void Ram::Fill(uint value)
-		{
-			NST_ASSERT( bool(mem) == bool(size) && value <= 0xFF );
-			std::memset( mem, value, size );
-		}
-
-		void Ram::Mirror(dword block)
-		{
-			if (dword next = size)
-			{
-				if (block > next)
-					block = next;
-
-				for (const dword begin=next-block, end=mask+1; next < end; next += block)
-					std::memcpy( mem + next, mem + begin, NST_MIN(end-next,block) );
-			}
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Ram::Ram()
+        :
+        mem ( __null ),
+        mask ( 0 ),
+        size ( 0 ),
+        writable ( false ),
+        readable ( false ),
+        internal ( false ),
+        padding ( false )
+        {}
+        
+        Ram::~Ram()
+        {
+            if (internal)
+                std::free( mem );
+        }
+        
+        void Ram::Destroy()
+        {
+            mask = 0;
+            size = 0;
+            
+            if (byte* const tmp = mem)
+            {
+                mem = __null;
+                
+                if (internal)
+                {
+                    internal = false;
+                    std::free( tmp );
+                }
+            }
+        }
+        
+        void Ram::Set(dword s,byte* m)
+        {
+            (__builtin_expect(!(!!(s != 1)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstRam.cpp", 74, "!!(s != 1)") : (void)0);
+            
+            if (s)
+            {
+                mask = s - 1;
+                mask |= mask >> 1;
+                mask |= mask >> 2;
+                mask |= mask >> 4;
+                mask |= mask >> 8;
+                mask |= mask >> 16;
+                
+                size = s;
+                
+                if (m)
+                {
+                    ((void)0);
+                    
+                    if (internal)
+                    {
+                        internal = false;
+                        std::free( mem );
+                    }
+                }
+                else
+                {
+                    m = static_cast<byte*>(std::realloc( internal ? mem : __null, mask+1 ));
+                    
+                    if (m)
+                    {
+                        internal = true;
+                    }
+                    else
+                    {
+                        Destroy();
+                        throw RESULT_ERR_OUT_OF_MEMORY;
+                    }
+                }
+                
+                mem = m;
+            }
+            else
+            {
+                Destroy();
+            }
+        }
+        
+        void Ram::Set(bool r,bool w,dword s,byte* m)
+        {
+            Set( s, m );
+            readable = r;
+            writable = w;
+        }
+        
+        void Ram::Fill(uint value)
+        {
+            (__builtin_expect(!(!!(bool(mem) == bool(size) && value <= 0xFF)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstRam.cpp", 129, "!!(bool(mem) == bool(size) && value <= 0xFF)") : (void)0);
+            std::memset( mem, value, size );
+        }
+        
+        void Ram::Mirror(dword block)
+        {
+            if (dword next = size)
+            {
+                if (block > next)
+                    block = next;
+                
+                for (const dword begin=next-block, end=mask+1; next < end; next += block)
+                    std::memcpy( mem + next, mem + begin, ((end-next) < (block) ? (end-next) : (block)) );
+            }
+        }
+        
+        
+        
+        
+    }
 }

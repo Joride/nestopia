@@ -1549,7 +1549,7 @@ namespace Nes
             cycles.count += cycles.clock[1];
             sp = x;
         }
-
+        
         __attribute__((noinline)) void Cpu::Anc(const uint data)
         {
             a &= data;

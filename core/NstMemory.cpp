@@ -25,109 +25,110 @@
 #include "NstState.hpp"
 #include "NstMemory.hpp"
 
+
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Memory<0,0,0>::SaveState
-		(
-			State::Saver& state,
-			const dword baseChunk,
-			const Ram* const NST_RESTRICT sources,
-			const uint numSources,
-			const uint sourceMask,
-			const byte* const NST_RESTRICT pages,
-			const uint numPages
-		)   const
-		{
-			NST_ASSERT( numSources >= 1 && numSources <= MAX_SOURCES && numPages );
-
-			state.Begin( baseChunk );
-
-			{
-				byte data[MAX_SOURCES];
-
-				for (uint i=0; i < numSources; ++i)
-					data[i] = (sources[i].Readable() ? 0x1U : 0x0U) | (sources[i].Writable() ? 0x2U : 0x0U);
-
-				state.Begin( AsciiId<'A','C','C'>::V ).Write( data, numSources ).End();
-			}
-
-			for (uint i=0; i < numSources; ++i)
-			{
-				if (sourceMask & (1U << i))
-					state.Begin( AsciiId<'R','M','0'>::R(0,0,i) ).Compress( sources[i].Mem(), sources[i].Size() ).End();
-			}
-
-			state.Begin( AsciiId<'B','N','K'>::V ).Write( pages, numPages * 3 ).End();
-
-			state.End();
-		}
-
-		bool Memory<0,0,0>::LoadState
-		(
-			State::Loader& state,
-			Ram* const NST_RESTRICT sources,
-			const uint numSources,
-			const uint sourceMask,
-			byte* const NST_RESTRICT pages,
-			const uint numPages
-		)   const
-		{
-			NST_ASSERT( numSources >= 1 && numSources <= MAX_SOURCES && numPages );
-
-			bool paged = false;
-
-			while (const dword chunk = state.Begin())
-			{
-				switch (chunk)
-				{
-					case AsciiId<'A','C','C'>::V:
-					{
-						byte data[MAX_SOURCES];
-						state.Read( data, numSources );
-
-						for (uint i=0; i < numSources; ++i)
-						{
-							sources[i].ReadEnable( data[i] & 0x1U );
-							sources[i].WriteEnable( data[i] & 0x2U );
-						}
-						break;
-					}
-
-					case AsciiId<'B','N','K'>::V:
-
-						paged = true;
-						state.Read( pages, numPages * 3 );
-						break;
-
-					default:
-
-						for (uint i=0; i < numSources; ++i)
-						{
-							if (chunk == AsciiId<'R','M','0'>::R(0,0,i))
-							{
-								if (sourceMask & (1U << i))
-									state.Uncompress( sources[i].Mem(), sources[i].Size() );
-
-								break;
-							}
-						}
-						break;
-				}
-
-				state.End();
-			}
-
-			return paged;
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Memory<0,0,0>::SaveState
+        (
+         State::Saver& state,
+         const dword baseChunk,
+         const Ram* const __restrict__ sources,
+         const uint numSources,
+         const uint sourceMask,
+         const byte* const __restrict__ pages,
+         const uint numPages
+         ) const
+        {
+            (__builtin_expect(!(!!(numSources >= 1 && numSources <= MAX_SOURCES && numPages)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstMemory.cpp", 47, "!!(numSources >= 1 && numSources <= MAX_SOURCES && numPages)") : (void)0);
+            
+            state.Begin( baseChunk );
+            
+            {
+                byte data[MAX_SOURCES];
+                
+                for (uint i=0; i < numSources; ++i)
+                    data[i] = (sources[i].Readable() ? 0x1U : 0x0U) | (sources[i].Writable() ? 0x2U : 0x0U);
+                
+                state.Begin( AsciiId<'A','C','C'>::V ).Write( data, numSources ).End();
+            }
+            
+            for (uint i=0; i < numSources; ++i)
+            {
+                if (sourceMask & (1U << i))
+                    state.Begin( AsciiId<'R','M','0'>::R(0,0,i) ).Compress( sources[i].Mem(), sources[i].Size() ).End();
+            }
+            
+            state.Begin( AsciiId<'B','N','K'>::V ).Write( pages, numPages * 3 ).End();
+            
+            state.End();
+        }
+        
+        bool Memory<0,0,0>::LoadState
+        (
+         State::Loader& state,
+         Ram* const __restrict__ sources,
+         const uint numSources,
+         const uint sourceMask,
+         byte* const __restrict__ pages,
+         const uint numPages
+         ) const
+        {
+            (__builtin_expect(!(!!(numSources >= 1 && numSources <= MAX_SOURCES && numPages)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstMemory.cpp", 81, "!!(numSources >= 1 && numSources <= MAX_SOURCES && numPages)") : (void)0);
+            
+            bool paged = false;
+            
+            while (const dword chunk = state.Begin())
+            {
+                switch (chunk)
+                {
+                    case AsciiId<'A','C','C'>::V:
+                    {
+                        byte data[MAX_SOURCES];
+                        state.Read( data, numSources );
+                        
+                        for (uint i=0; i < numSources; ++i)
+                        {
+                            sources[i].ReadEnable( data[i] & 0x1U );
+                            sources[i].WriteEnable( data[i] & 0x2U );
+                        }
+                        break;
+                    }
+                        
+                    case AsciiId<'B','N','K'>::V:
+                        
+                        paged = true;
+                        state.Read( pages, numPages * 3 );
+                        break;
+                        
+                    default:
+                        
+                        for (uint i=0; i < numSources; ++i)
+                        {
+                            if (chunk == AsciiId<'R','M','0'>::R(0,0,i))
+                            {
+                                if (sourceMask & (1U << i))
+                                    state.Uncompress( sources[i].Mem(), sources[i].Size() );
+                                
+                                break;
+                            }
+                        }
+                        break;
+                }
+                
+                state.End();
+            }
+            
+            return paged;
+        }
+        
+        
+        
+        
+    }
 }

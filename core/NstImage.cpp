@@ -29,68 +29,68 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Image::Image(Type t)
-		: type(t) {}
-
-		Image* Image::Load(Context& context)
-		{
-			switch (Stream::In(context.stream).Peek32())
-			{
-				case INES_ID:
-				case UNIF_ID:
-
-					if (context.type == CARTRIDGE || context.type == UNKNOWN)
-						return new Cartridge (context);
-
-					break;
-
-				case FDS_ID:
-				case FDS_RAW_ID:
-
-					if (context.type == DISK || context.type == UNKNOWN)
-						return new Fds (context);
-
-					break;
-
-				case NSF_ID:
-
-					if (context.type == SOUND || context.type == UNKNOWN)
-						return new Nsf (context);
-
-					break;
-			}
-
-			throw RESULT_ERR_INVALID_FILE;
-		}
-
-		void Image::Unload(Image* image)
-		{
-			delete image;
-		}
-
-		uint Image::GetDesiredController(uint port) const
-		{
-			switch (port)
-			{
-				case Api::Input::PORT_1: return Api::Input::PAD1;
-				case Api::Input::PORT_2: return Api::Input::PAD2;
-				default: return Api::Input::UNCONNECTED;
-			}
-		}
-
-		uint Image::GetDesiredAdapter() const
-		{
-			return Api::Input::ADAPTER_NES;
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Image::Image(Type t)
+        : type(t) {}
+        
+        Image* Image::Load(Context& context)
+        {
+            switch (Stream::In(context.stream).Peek32())
+            {
+                case INES_ID:
+                case UNIF_ID:
+                    
+                    if (context.type == CARTRIDGE || context.type == UNKNOWN)
+                        return new Cartridge (context);
+                    
+                    break;
+                    
+                case FDS_ID:
+                case FDS_RAW_ID:
+                    
+                    if (context.type == DISK || context.type == UNKNOWN)
+                        return new Fds (context);
+                    
+                    break;
+                    
+                case NSF_ID:
+                    
+                    if (context.type == SOUND || context.type == UNKNOWN)
+                        return new Nsf (context);
+                    
+                    break;
+            }
+            
+            throw RESULT_ERR_INVALID_FILE;
+        }
+        
+        void Image::Unload(Image* image)
+        {
+            delete image;
+        }
+        
+        uint Image::GetDesiredController(uint port) const
+        {
+            switch (port)
+            {
+                case Api::Input::PORT_1: return Api::Input::PAD1;
+                case Api::Input::PORT_2: return Api::Input::PAD2;
+                default: return Api::Input::UNCONNECTED;
+            }
+        }
+        
+        uint Image::GetDesiredAdapter() const
+        {
+            return Api::Input::ADAPTER_NES;
+        }
+        
+        
+        
+        
+    }
 }

@@ -26,30 +26,31 @@
 #include "NstCore.hpp"
 #include "NstVideoScreen.hpp"
 
+
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Video
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			Screen::Screen()
-			{
-				std::fill( palette, palette + sizeof(array(palette)), dword(0) );
-				Clear();
-			}
-
-			void Screen::Clear()
-			{
-				std::fill( pixels, pixels + sizeof(array(pixels)), Pixel(0) );
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-		}
-	}
+    namespace Core
+    {
+        namespace Video
+        {
+            
+            
+            
+            
+            Screen::Screen()
+            {
+                std::fill( palette, palette + sizeof(array(palette)), dword(0) );
+                Clear();
+            }
+            
+            void Screen::Clear()
+            {
+                std::fill( pixels, pixels + sizeof(array(pixels)), Pixel(0) );
+            }
+            
+            
+            
+            
+        }
+    }
 }

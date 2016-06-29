@@ -43,58 +43,21 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Zlib
-		{
-		#ifndef NST_NO_ZLIB
-
-			ulong NST_CALL Compress(const byte* src,ulong srcSize,byte* dst,ulong dstSize,Compression compression)
-			{
-				if (srcSize && dstSize)
-				{
-					NST_ASSERT( src && dst );
-
-					int result;
-
-					if (compression == BEST_COMPRESSION)
-						result = compress2( dst, &dstSize, src, srcSize, Z_BEST_COMPRESSION );
-					else
-						result = compress( dst, &dstSize, src, srcSize );
-
-					if (result == Z_OK)
-						return dstSize;
-				}
-
-				return 0;
-			}
-
-			ulong NST_CALL Uncompress(const byte* src,ulong srcSize,byte* dst,ulong dstSize)
-			{
-				if (srcSize && dstSize)
-				{
-					NST_ASSERT( src && dst );
-
-					if (uncompress( dst, &dstSize, src, srcSize ) == Z_OK)
-						return dstSize;
-				}
-
-				return 0;
-			}
-
-		#else
-
-			ulong NST_CALL Compress(const byte*,ulong,byte*,ulong,Compression)
-			{
-				return 0;
-			}
-
-			ulong NST_CALL Uncompress(const byte*,ulong,byte*,ulong)
-			{
-				return 0;
-			}
-
-		#endif
-		}
-	}
+    namespace Core
+    {
+        namespace Zlib
+        {
+            ulong Compress(const byte*,ulong,byte*,ulong,Compression)
+            {
+                return 0;
+            }
+            
+            ulong Uncompress(const byte*,ulong,byte*,ulong)
+            {
+                return 0;
+            }
+            
+            
+        }
+    }
 }

@@ -28,148 +28,148 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Sound
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			class Player::SampleLoader : public Loader
-			{
-				Slot* const slots;
-				const uint numSlots;
-
-				Result Load(uint slot,const void* input,ulong length,bool stereo,uint bits,ulong rate) throw()
-				{
-					Result result;
-					iword* data;
-
-					if (slot >= numSlots || slots[slot].data)
-					{
-						return RESULT_ERR_INVALID_PARAM;
-					}
-					else if (NES_FAILED(result=CanDo( input, length, bits, rate )))
-					{
-						return result;
-					}
-					else if (NULL == (data = new (std::nothrow) iword [length]))
-					{
-						return RESULT_ERR_OUT_OF_MEMORY;
-					}
-
-					slots[slot].data = data;
-					slots[slot].length = length;
-					slots[slot].rate = rate;
-
-					if (bits == 8)
-					{
-						const byte* NST_RESTRICT src = static_cast<const byte*>(input);
-						const byte* const end = src + length;
-
-						if (stereo)
-						{
-							for (; src != end; src += 2)
-							{
-								const idword sample = (idword(uint(src[0]) << 8) - 32768) + (idword(uint(src[1]) << 8) - 32768);
-								*data++ = Clamp<Apu::Channel::OUTPUT_MIN,Apu::Channel::OUTPUT_MAX>(sample);
-							}
-						}
-						else
-						{
-							for (; src != end; src += 1)
-							{
-								const idword sample = idword(uint(*src) << 8) - 32768;
-								*data++ = Clamp<Apu::Channel::OUTPUT_MIN,Apu::Channel::OUTPUT_MAX>(sample);
-							}
-						}
-					}
-					else
-					{
-						NST_ASSERT( bits == 16 );
-
-						const iword* NST_RESTRICT src = static_cast<const iword*>(input);
-						const iword* const end = src + length;
-
-						if (stereo)
-						{
-							for (; src != end; src += 2)
-							{
-								const idword sample = src[0] + src[1];
-								*data++ = Clamp<Apu::Channel::OUTPUT_MIN,Apu::Channel::OUTPUT_MAX>(sample);
-							}
-						}
-						else
-						{
-							for (; src != end; src += 1)
-							{
-								const idword sample = *src;
-								*data++ = Clamp<Apu::Channel::OUTPUT_MIN,Apu::Channel::OUTPUT_MAX>(sample);
-							}
-						}
-					}
-
-					return RESULT_OK;
-				}
-
-			public:
-
-				SampleLoader(Slot* s,uint n)
-				: slots(s), numSlots(n) {}
-			};
-
-			Player::Slot::Slot()
-			: data(NULL) {}
-
-			Player::Slot::~Slot()
-			{
-				delete [] data;
-			}
-
-			Player::Player(Apu& a,uint n)
-			: Pcm(a), slots(new Slot [n]), numSlots(n)
-			{
-				NST_ASSERT( n );
-			}
-
-			Player::~Player()
-			{
-				delete [] slots;
-			}
-
-			Player* Player::Create(Apu& apu,Loader::Type type,uint samples)
-			{
-				if (samples)
-				{
-					if (Player* const player = new (std::nothrow) Player(apu,samples))
-					{
-						{
-							SampleLoader loader( player->slots, samples );
-							Loader::loadCallback( type, loader );
-						}
-
-						while (samples--)
-						{
-							if (player->slots[samples].data)
-								return player;
-						}
-
-						delete player;
-					}
-				}
-
-				return NULL;
-			}
-
-			void Player::Destroy(Player* player)
-			{
-				delete player;
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-		}
-	}
+    namespace Core
+    {
+        namespace Sound
+        {
+            
+            
+            
+            
+            class Player::SampleLoader : public Loader
+            {
+                Slot* const slots;
+                const uint numSlots;
+                
+                Result Load(uint slot,const void* input,ulong length,bool stereo,uint bits,ulong rate) throw()
+                {
+                    Result result;
+                    iword* data;
+                    
+                    if (slot >= numSlots || slots[slot].data)
+                    {
+                        return RESULT_ERR_INVALID_PARAM;
+                    }
+                    else if (((result=CanDo( input, length, bits, rate )) < Nes::RESULT_OK))
+                    {
+                        return result;
+                    }
+                    else if (__null == (data = new (std::nothrow) iword [length]))
+                    {
+                        return RESULT_ERR_OUT_OF_MEMORY;
+                    }
+                    
+                    slots[slot].data = data;
+                    slots[slot].length = length;
+                    slots[slot].rate = rate;
+                    
+                    if (bits == 8)
+                    {
+                        const byte* __restrict__ src = static_cast<const byte*>(input);
+                        const byte* const end = src + length;
+                        
+                        if (stereo)
+                        {
+                            for (; src != end; src += 2)
+                            {
+                                const idword sample = (idword(uint(src[0]) << 8) - 32768) + (idword(uint(src[1]) << 8) - 32768);
+                                *data++ = Clamp<Apu::Channel::OUTPUT_MIN,Apu::Channel::OUTPUT_MAX>(sample);
+                            }
+                        }
+                        else
+                        {
+                            for (; src != end; src += 1)
+                            {
+                                const idword sample = idword(uint(*src) << 8) - 32768;
+                                *data++ = Clamp<Apu::Channel::OUTPUT_MIN,Apu::Channel::OUTPUT_MAX>(sample);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        (__builtin_expect(!(!!(bits == 16)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstSoundPlayer.cpp", 90, "!!(bits == 16)") : (void)0);
+                        
+                        const iword* __restrict__ src = static_cast<const iword*>(input);
+                        const iword* const end = src + length;
+                        
+                        if (stereo)
+                        {
+                            for (; src != end; src += 2)
+                            {
+                                const idword sample = src[0] + src[1];
+                                *data++ = Clamp<Apu::Channel::OUTPUT_MIN,Apu::Channel::OUTPUT_MAX>(sample);
+                            }
+                        }
+                        else
+                        {
+                            for (; src != end; src += 1)
+                            {
+                                const idword sample = *src;
+                                *data++ = Clamp<Apu::Channel::OUTPUT_MIN,Apu::Channel::OUTPUT_MAX>(sample);
+                            }
+                        }
+                    }
+                    
+                    return RESULT_OK;
+                }
+                
+            public:
+                
+                SampleLoader(Slot* s,uint n)
+                : slots(s), numSlots(n) {}
+            };
+            
+            Player::Slot::Slot()
+            : data(__null) {}
+            
+            Player::Slot::~Slot()
+            {
+                delete [] data;
+            }
+            
+            Player::Player(Apu& a,uint n)
+            : Pcm(a), slots(new Slot [n]), numSlots(n)
+            {
+                (__builtin_expect(!(!!(n)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstSoundPlayer.cpp", 133, "!!(n)") : (void)0);
+            }
+            
+            Player::~Player()
+            {
+                delete [] slots;
+            }
+            
+            Player* Player::Create(Apu& apu,Loader::Type type,uint samples)
+            {
+                if (samples)
+                {
+                    if (Player* const player = new (std::nothrow) Player(apu,samples))
+                    {
+                        {
+                            SampleLoader loader( player->slots, samples );
+                            Loader::loadCallback( type, loader );
+                        }
+                        
+                        while (samples--)
+                        {
+                            if (player->slots[samples].data)
+                                return player;
+                        }
+                        
+                        delete player;
+                    }
+                }
+                
+                return __null;
+            }
+            
+            void Player::Destroy(Player* player)
+            {
+                delete player;
+            }
+            
+            
+            
+            
+        }
+    }
 }

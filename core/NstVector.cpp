@@ -29,41 +29,41 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		void* Vector<void>::Malloc(dword size)
-		{
-			NST_ASSERT( size );
-
-			if (void* mem = std::malloc( size ))
-				return mem;
-			else
-				throw std::bad_alloc();
-		}
-
-		void* Vector<void>::Realloc(void* mem,dword size)
-		{
-			NST_ASSERT( size );
-
-			if (NULL != (mem = std::realloc( mem, size )))
-				return mem;
-			else
-				throw std::bad_alloc();
-		}
-
-		void Vector<void>::Free(void* mem)
-		{
-			std::free( mem );
-		}
-
-		void Vector<void>::Copy(void* dst,const void* src,dword size)
-		{
-			std::memcpy( dst, src, size );
-		}
-
-		void Vector<void>::Move(void* dst,const void* src,dword size)
-		{
-			std::memmove( dst, src, size );
-		}
-	}
+    namespace Core
+    {
+        void* Vector<void>::Malloc(dword size)
+        {
+            (__builtin_expect(!(!!(size)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstVector.cpp", 36, "!!(size)") : (void)0);
+            
+            if (void* mem = std::malloc( size ))
+                return mem;
+            else
+                throw std::bad_alloc();
+        }
+        
+        void* Vector<void>::Realloc(void* mem,dword size)
+        {
+            (__builtin_expect(!(!!(size)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstVector.cpp", 46, "!!(size)") : (void)0);
+            
+            if (__null != (mem = std::realloc( mem, size )))
+                return mem;
+            else
+                throw std::bad_alloc();
+        }
+        
+        void Vector<void>::Free(void* mem)
+        {
+            std::free( mem );
+        }
+        
+        void Vector<void>::Copy(void* dst,const void* src,dword size)
+        {
+            std::memcpy( dst, src, size );
+        }
+        
+        void Vector<void>::Move(void* dst,const void* src,dword size)
+        {
+            std::memmove( dst, src, size );
+        }
+    }
 }

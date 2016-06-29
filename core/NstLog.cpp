@@ -30,115 +30,115 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		struct Log::Object
-		{
-			std::string string;
-		};
-
-		Log::Log()
-		: object( Api::User::logCallback.IsSet() ? new (std::nothrow) Object : NULL )
-		{
-		}
-
-		Log::~Log()
-		{
-			if (object)
-			{
-				Api::User::logCallback( object->string.c_str(), object->string.size() );
-				delete object;
-			}
-		}
-
-		bool Log::Available()
-		{
-			return Api::User::logCallback.IsSet();
-		}
-
-		void Log::Append(cstring c,ulong n)
-		{
-			object->string.append( c, n );
-		}
-
-		Log& Log::operator << (long value)
-		{
-			if (object)
-			{
-				char buffer[24];
-
-				const int length = std::sprintf( buffer, "%li", value );
-				NST_VERIFY( length > 0 );
-
-				if (length > 0)
-					Append( buffer, length );
-			}
-
-			return *this;
-		}
-
-		Log& Log::operator << (ulong value)
-		{
-			if (object)
-			{
-				char buffer[24];
-
-				const int length = std::sprintf( buffer, "%lu", value );
-				NST_VERIFY( length > 0 );
-
-				if (length > 0)
-					Append( buffer, length );
-			}
-
-			return *this;
-		}
-
-		Log& Log::operator << (cstring c)
-		{
-			if (object)
-				object->string.append( c );
-
-			return *this;
-		}
-
-		Log& Log::operator << (char c)
-		{
-			if (object)
-				object->string.append( 1, c );
-
-			return *this;
-		}
-
-		Log& Log::operator << (const Hex& hex)
-		{
-			if (object)
-			{
-				char buffer[16];
-
-				buffer[0] = '0';
-				buffer[1] = 'x';
-
-				const int length = std::sprintf( buffer + 2, hex.format, hex.value );
-				NST_VERIFY( length > 0 );
-
-				if (length > 0)
-					Append( buffer, 2 + length );
-			}
-
-			return *this;
-		}
-
-		void Log::Flush(cstring string,dword length)
-		{
-			Api::User::logCallback( string, length );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        struct Log::Object
+        {
+            std::string string;
+        };
+        
+        Log::Log()
+        : object( Api::User::logCallback.IsSet() ? new (std::nothrow) Object : __null )
+        {
+        }
+        
+        Log::~Log()
+        {
+            if (object)
+            {
+                Api::User::logCallback( object->string.c_str(), object->string.size() );
+                delete object;
+            }
+        }
+        
+        bool Log::Available()
+        {
+            return Api::User::logCallback.IsSet();
+        }
+        
+        void Log::Append(cstring c,ulong n)
+        {
+            object->string.append( c, n );
+        }
+        
+        Log& Log::operator << (long value)
+        {
+            if (object)
+            {
+                char buffer[24];
+                
+                const int length = std::sprintf( buffer, "%li", value );
+                ((void)0);
+                
+                if (length > 0)
+                    Append( buffer, length );
+            }
+            
+            return *this;
+        }
+        
+        Log& Log::operator << (ulong value)
+        {
+            if (object)
+            {
+                char buffer[24];
+                
+                const int length = std::sprintf( buffer, "%lu", value );
+                ((void)0);
+                
+                if (length > 0)
+                    Append( buffer, length );
+            }
+            
+            return *this;
+        }
+        
+        Log& Log::operator << (cstring c)
+        {
+            if (object)
+                object->string.append( c );
+            
+            return *this;
+        }
+        
+        Log& Log::operator << (char c)
+        {
+            if (object)
+                object->string.append( 1, c );
+            
+            return *this;
+        }
+        
+        Log& Log::operator << (const Hex& hex)
+        {
+            if (object)
+            {
+                char buffer[16];
+                
+                buffer[0] = '0';
+                buffer[1] = 'x';
+                
+                const int length = std::sprintf( buffer + 2, hex.format, hex.value );
+                ((void)0);
+                
+                if (length > 0)
+                    Append( buffer, 2 + length );
+            }
+            
+            return *this;
+        }
+        
+        void Log::Flush(cstring string,dword length)
+        {
+            Api::User::logCallback( string, length );
+        }
+        
+        
+        
+        
+    }
 }

@@ -28,39 +28,39 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		namespace Sound
-		{
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("s", on)
-			#endif
-
-			Buffer::Buffer(uint bits)
-			: output(new iword [SIZE])
-			{
-				Reset( bits, true );
-			}
-
-			Buffer::~Buffer()
-			{
-				delete [] output;
-			}
-
-			void Buffer::Reset(uint bits,bool clear)
-			{
-				pos = start = 0;
-				history.pos = 0;
-
-				std::fill( history.buffer, history.buffer+History::SIZE, iword(bits == 16 ? 0 : 0x80) );
-
-				if (clear)
-					std::fill( output, output+SIZE, iword(0) );
-			}
-
-			#ifdef NST_MSVC_OPTIMIZE
-			#pragma optimize("", on)
-			#endif
-		}
-	}
+    namespace Core
+    {
+        namespace Sound
+        {
+            
+            
+            
+            
+            Buffer::Buffer(uint bits)
+            : output(new iword [SIZE])
+            {
+                Reset( bits, true );
+            }
+            
+            Buffer::~Buffer()
+            {
+                delete [] output;
+            }
+            
+            void Buffer::Reset(uint bits,bool clear)
+            {
+                pos = start = 0;
+                history.pos = 0;
+                
+                std::fill( history.buffer, history.buffer+History::SIZE, iword(bits == 16 ? 0 : 0x80) );
+                
+                if (clear)
+                    std::fill( output, output+SIZE, iword(0) );
+            }
+            
+            
+            
+            
+        }
+    }
 }
