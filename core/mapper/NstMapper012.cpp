@@ -28,77 +28,77 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper12::SubReset(const bool hard)
-		{
-			if (hard)
-			{
-				exRegs[0] = 0;
-				exRegs[1] = 0;
-			}
-
-			Mmc3::SubReset( hard );
-
-			Map( 0x4100U, 0x5FFFU, &Mapper12::Peek_4100, &Mapper12::Poke_4100 );
-			Map( 0x6000U, 0x7FFFU, &Mapper12::Peek_4100 );
-		}
-
-		void Mapper12::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-				{
-					const uint data = state.Read8();
-					exRegs[0] = (data & 0x01) << 8;
-					exRegs[1] = (data & 0x10) << 4;
-				}
-
-				state.End();
-			}
-		}
-
-		void Mapper12::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','E','G'>::V ).Write8( (exRegs[0] >> 8 & 0x01) | (exRegs[1] >> 4 & 0x10) ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper12,4100)
-		{
-			exRegs[0] = (data & 0x01) << 8;
-			exRegs[1] = (data & 0x10) << 4;
-
-			Mapper12::UpdateChr();
-		}
-
-		NES_PEEK(Mapper12,4100)
-		{
-			return 0x01;
-		}
-
-		void Mapper12::UpdateChr() const
-		{
-			ppu.Update();
-
-			const uint swap = (regs.ctrl0 & Regs::CTRL0_XOR_CHR) << 5;
-
-			const uint base[2] =
-			{
-				exRegs[regs.ctrl0 >> 7 ^ 0],
-				exRegs[regs.ctrl0 >> 7 ^ 1]
-			};
-
-			chr.SwapBanks<SIZE_2K>( 0x0000 ^ swap, base[0] + banks.chr[0], base[0] + banks.chr[1] );
-			chr.SwapBanks<SIZE_1K>( 0x1000 ^ swap, base[1] + banks.chr[2], base[1] + banks.chr[3], base[1] + banks.chr[4], base[1] + banks.chr[5] );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper12::SubReset(const bool hard)
+        {
+            if (hard)
+            {
+                exRegs[0] = 0;
+                exRegs[1] = 0;
+            }
+            
+            Mmc3::SubReset( hard );
+            
+            Map( 0x4100U, 0x5FFFU, &Mapper12::Peek_4100, &Mapper12::Poke_4100 );
+            Map( 0x6000U, 0x7FFFU, &Mapper12::Peek_4100 );
+        }
+        
+        void Mapper12::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                {
+                    const uint data = state.Read8();
+                    exRegs[0] = (data & 0x01) << 8;
+                    exRegs[1] = (data & 0x10) << 4;
+                }
+                
+                state.End();
+            }
+        }
+        
+        void Mapper12::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','E','G'>::V ).Write8( (exRegs[0] >> 8 & 0x01) | (exRegs[1] >> 4 & 0x10) ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper12::Poke_4100(void* p_,Address i_,Data j_) { static_cast<Mapper12*>(p_)->Poke_M_4100(i_,j_); } inline void Mapper12::Poke_M_4100(Address,Data data)
+        {
+            exRegs[0] = (data & 0x01) << 8;
+            exRegs[1] = (data & 0x10) << 4;
+            
+            Mapper12::UpdateChr();
+        }
+        
+        Data Mapper12::Peek_4100(void* p_,Address i_) { return static_cast<Mapper12*>(p_)->Peek_M_4100(i_); } inline Data Mapper12::Peek_M_4100(Address)
+        {
+            return 0x01;
+        }
+        
+        void Mapper12::UpdateChr() const
+        {
+            ppu.Update();
+            
+            const uint swap = (regs.ctrl0 & Regs::CTRL0_XOR_CHR) << 5;
+            
+            const uint base[2] =
+            {
+                exRegs[regs.ctrl0 >> 7 ^ 0],
+                exRegs[regs.ctrl0 >> 7 ^ 1]
+            };
+            
+            chr.SwapBanks<SIZE_2K>( 0x0000 ^ swap, base[0] + banks.chr[0], base[0] + banks.chr[1] );
+            chr.SwapBanks<SIZE_1K>( 0x1000 ^ swap, base[1] + banks.chr[2], base[1] + banks.chr[3], base[1] + banks.chr[4], base[1] + banks.chr[5] );
+        }
+    }
 }

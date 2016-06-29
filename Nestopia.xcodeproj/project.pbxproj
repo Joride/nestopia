@@ -93,7 +93,6 @@
 		7009574417FC75590038888C /* NstInpRob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009551A17FC75570038888C /* NstInpRob.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7009574517FC75590038888C /* NstInpSuborKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009551C17FC75570038888C /* NstInpSuborKeyboard.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7009574617FC75590038888C /* NstInpTopRider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009551E17FC75570038888C /* NstInpTopRider.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
-		7009574717FC75590038888C /* NstMapper000.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009552117FC75570038888C /* NstMapper000.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7009574817FC75590038888C /* NstMapper001.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009552317FC75570038888C /* NstMapper001.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7009574917FC75590038888C /* NstMapper002.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009552517FC75570038888C /* NstMapper002.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7009574A17FC75590038888C /* NstMapper003.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009552717FC75570038888C /* NstMapper003.cpp */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -344,6 +343,7 @@
 		80C3B64418397526000B68E0 /* TransparentMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64318397526000B68E0 /* TransparentMaskView.m */; };
 		80C3B64718397740000B68E0 /* PadRoundTextButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64618397740000B68E0 /* PadRoundTextButton.m */; };
 		80C3B64D18398CFB000B68E0 /* RoundTextMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */; };
+		A286FB811D245A1300B28CF4 /* NstMapper000.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009552117FC75570038888C /* NstMapper000.cpp */; };
 		C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C4848C291A39838600A20A7B /* CGSize+Utilities.m */; };
 		F5EE71540FEEC3A000FDA0A6 /* controller_ls.png in Resources */ = {isa = PBXBuildFile; fileRef = F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */; };
 /* End PBXBuildFile section */
@@ -2198,7 +2198,6 @@
 				7009571117FC75590038888C /* NstBrdCtc65.cpp in Sources */,
 				702087880EDC5A9900E83959 /* ScreenView.m in Sources */,
 				7009578117FC75590038888C /* NstMapper091.cpp in Sources */,
-				7009574717FC75590038888C /* NstMapper000.cpp in Sources */,
 				66C1BD5718652F4B00E5A833 /* GameControllerManager.m in Sources */,
 				700957CD17FC75590038888C /* NstMapper232.cpp in Sources */,
 				70FEB7FB180DDB9F008B6C61 /* MultiValueViewController.m in Sources */,
@@ -2316,6 +2315,7 @@
 				C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */,
 				7009574F17FC75590038888C /* NstMapper012.cpp in Sources */,
 				7009577517FC75590038888C /* NstMapper068.cpp in Sources */,
+				A286FB811D245A1300B28CF4 /* NstMapper000.cpp in Sources */,
 				7009573D17FC75590038888C /* NstInpPachinko.cpp in Sources */,
 				700957A617FC75590038888C /* NstMapper170.cpp in Sources */,
 				7009576317FC75590038888C /* NstMapper047.cpp in Sources */,

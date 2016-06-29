@@ -28,59 +28,59 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper1::Board Mapper1::GetBoard(const Context& c)
-		{
-			if (c.attribute & ATR_BOARD)
-			{
-				switch (c.attribute & ATR_BOARD)
-				{
-					case ATR_SAROM:    return BRD_SAROM;
-					case ATR_SBROM:    return BRD_SBROM;
-					case ATR_SCROM:    return BRD_SCROM;
-					case ATR_SC1ROM:   return BRD_SC1ROM;
-					case ATR_SEROM:    return BRD_SEROM;
-					case ATR_SFROM:    return BRD_SFROM;
-					case ATR_SF1ROM:   return BRD_SF1ROM;
-					case ATR_SFEOROM:  return BRD_SFEOROM;
-					case ATR_SFEXPROM: return BRD_SFEXPROM;
-					case ATR_SGROM:    return BRD_SGROM;
-					case ATR_SHROM:    return BRD_SHROM;
-					case ATR_SH1ROM:   return BRD_SH1ROM;
-					case ATR_SJROM:    return BRD_SJROM;
-					case ATR_SKROM:    return BRD_SKROM;
-					case ATR_SLROM:    return BRD_SLROM;
-					case ATR_SL1ROM:   return BRD_SL1ROM;
-					case ATR_SL3ROM:   return BRD_SL3ROM;
-					case ATR_SLRROM:   return BRD_SLRROM;
-					case ATR_SNROM:    return BRD_SNROM;
-					case ATR_SOROM:    return BRD_SOROM;
-					case ATR_SUROM:    return BRD_SUROM;
-					case ATR_SXROM:    return BRD_SXROM;
-				}
-			}
-
-			if (c.wrk.Size() >= SIZE_32K)
-				return BRD_SXROM;
-
-			if (c.wrk.Size() >= SIZE_16K)
-				return BRD_SOROM;
-
-			return BRD_GENERIC;
-		}
-
-		Mapper1::Mapper1(Context& c)
-		: Mmc1(c,GetBoard(c),(c.attribute & ATR_MMC1A) ? REV_A : REV_B)
-		{
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper1::Board Mapper1::GetBoard(const Context& c)
+        {
+            if (c.attribute & ATR_BOARD)
+            {
+                switch (c.attribute & ATR_BOARD)
+                {
+                    case ATR_SAROM: return BRD_SAROM;
+                    case ATR_SBROM: return BRD_SBROM;
+                    case ATR_SCROM: return BRD_SCROM;
+                    case ATR_SC1ROM: return BRD_SC1ROM;
+                    case ATR_SEROM: return BRD_SEROM;
+                    case ATR_SFROM: return BRD_SFROM;
+                    case ATR_SF1ROM: return BRD_SF1ROM;
+                    case ATR_SFEOROM: return BRD_SFEOROM;
+                    case ATR_SFEXPROM: return BRD_SFEXPROM;
+                    case ATR_SGROM: return BRD_SGROM;
+                    case ATR_SHROM: return BRD_SHROM;
+                    case ATR_SH1ROM: return BRD_SH1ROM;
+                    case ATR_SJROM: return BRD_SJROM;
+                    case ATR_SKROM: return BRD_SKROM;
+                    case ATR_SLROM: return BRD_SLROM;
+                    case ATR_SL1ROM: return BRD_SL1ROM;
+                    case ATR_SL3ROM: return BRD_SL3ROM;
+                    case ATR_SLRROM: return BRD_SLRROM;
+                    case ATR_SNROM: return BRD_SNROM;
+                    case ATR_SOROM: return BRD_SOROM;
+                    case ATR_SUROM: return BRD_SUROM;
+                    case ATR_SXROM: return BRD_SXROM;
+                }
+            }
+            
+            if (c.wrk.Size() >= SIZE_32K)
+                return BRD_SXROM;
+            
+            if (c.wrk.Size() >= SIZE_16K)
+                return BRD_SOROM;
+            
+            return BRD_GENERIC;
+        }
+        
+        Mapper1::Mapper1(Context& c)
+        : Mmc1(c,GetBoard(c),(c.attribute & ATR_MMC1A) ? REV_A : REV_B)
+        {
+        }
+        
+        
+        
+        
+    }
 }

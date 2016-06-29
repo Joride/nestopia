@@ -28,41 +28,41 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper3::Mapper3(Context& c)
-		:
-		Mapper (c,PROM_MAX_32K | (c.attribute == ATR_X79B ? WRAM_8K : WRAM_DEFAULT)),
-		sound  (c.attribute == ATR_SAMPLES_AS ? Sound::Player::Create(c.apu,Sound::Loader::AEROBICS_STUDIO,Sound::Loader::AEROBICS_STUDIO_SAMPLES) : NULL)
-		{}
-
-		Mapper3::~Mapper3()
-		{
-			Sound::Player::Destroy( sound );
-		}
-
-		void Mapper3::SubReset(bool)
-		{
-			if (sound)
-				Map( 0x6000U, &Mapper3::Poke_6000 );
-
-			Map( 0x8000U, 0xFFFFU, CHR_SWAP_8K );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper3,6000)
-		{
-			NST_ASSERT( sound );
-
-			if ((data & 0x40) == 0x00)
-				sound->Play( data & 0x0F );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper3::Mapper3(Context& c)
+        :
+        Mapper (c,PROM_MAX_32K | (c.attribute == ATR_X79B ? WRAM_8K : WRAM_DEFAULT)),
+        sound (c.attribute == ATR_SAMPLES_AS ? Sound::Player::Create(c.apu,Sound::Loader::AEROBICS_STUDIO,Sound::Loader::AEROBICS_STUDIO_SAMPLES) : __null)
+        {}
+        
+        Mapper3::~Mapper3()
+        {
+            Sound::Player::Destroy( sound );
+        }
+        
+        void Mapper3::SubReset(bool)
+        {
+            if (sound)
+                Map( 0x6000U, &Mapper3::Poke_6000 );
+            
+            Map( 0x8000U, 0xFFFFU, CHR_SWAP_8K );
+        }
+        
+        
+        
+        
+        
+        void Mapper3::Poke_6000(void* p_,Address i_,Data j_) { static_cast<Mapper3*>(p_)->Poke_M_6000(i_,j_); } inline void Mapper3::Poke_M_6000(Address,Data data)
+        {
+            (__builtin_expect(!(!!(sound)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper003.cpp", 62, "!!(sound)") : (void)0);
+            
+            if ((data & 0x40) == 0x00)
+                sound->Play( data & 0x0F );
+        }
+    }
 }
