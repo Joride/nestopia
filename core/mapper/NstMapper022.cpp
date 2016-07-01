@@ -27,32 +27,32 @@
 
 namespace Nes
 {
-    namespace Core
-    {
-        
-        
-        
-        
-        void Mapper22::SubReset(bool)
-        {
-            Map( 0x8000U, 0x8FFFU, PRG_SWAP_8K_0 );
-            Map( 0x9000U, 0x9FFFU, NMT_SWAP_VH01 );
-            Map( 0xA000U, 0xAFFFU, PRG_SWAP_8K_1 );
-            Map( 0xB000U, 0xEFFFU, &Mapper22::Poke_Prg );
-        }
-        
-        
-        
-        
-        
-        void Mapper22::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper22*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper22::Poke_M_Prg(Address address,Data data)
-        {
-            ppu.Update();
-            
-            const uint part = address << 1 & 0x4;
-            address = ((address - 0xB000) >> 1 & 0x1800) | (address << 10 & 0x0400);
-            
-            chr.SwapBank<SIZE_1K>( address, ((chr.GetBank<SIZE_1K>(address) & (0xF0U >> part)) | ((data >> 1 & 0x0F) << part)) );
-        }
-    }
+	namespace Core
+	{
+		#ifdef NST_MSVC_OPTIMIZE
+		#pragma optimize("s", on)
+		#endif
+
+		void Mapper22::SubReset(bool)
+		{
+			Map( 0x8000U, 0x8FFFU, PRG_SWAP_8K_0       );
+			Map( 0x9000U, 0x9FFFU, NMT_SWAP_VH01       );
+			Map( 0xA000U, 0xAFFFU, PRG_SWAP_8K_1       );
+			Map( 0xB000U, 0xEFFFU, &Mapper22::Poke_Prg );
+		}
+
+		#ifdef NST_MSVC_OPTIMIZE
+		#pragma optimize("", on)
+		#endif
+
+		NES_POKE_AD(Mapper22,Prg)
+		{
+			ppu.Update();
+
+			const uint part = address << 1 & 0x4;
+			address = ((address - 0xB000) >> 1 & 0x1800) | (address << 10 & 0x0400);
+
+			chr.SwapBank<SIZE_1K>( address, ((chr.GetBank<SIZE_1K>(address) & (0xF0U >> part)) | ((data >> 1 & 0x0F) << part)) );
+		}
+	}
 }

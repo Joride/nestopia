@@ -27,35 +27,35 @@
 
 namespace Nes
 {
-    namespace Core
-    {
-        
-        
-        
-        
-        void Mapper34::SubReset(const bool hard)
-        {
-            if (chr.Source().Writable())
-            {
-                
-                
-                Map( 0x8000U, 0xFFFFU, PRG_SWAP_32K );
-            }
-            else
-            {
-                
-                
-                Map( 0x7FFDU, PRG_SWAP_32K );
-                Map( 0x7FFEU, CHR_SWAP_4K_0 );
-                Map( 0x7FFFU, CHR_SWAP_4K_1 );
-            }
-            
-            if (hard)
-                prg.SwapBank<SIZE_32K,0x0000>(0);
-        }
-        
-        
-        
-        
-    }
+	namespace Core
+	{
+		#ifdef NST_MSVC_OPTIMIZE
+		#pragma optimize("s", on)
+		#endif
+
+		void Mapper34::SubReset(const bool hard)
+		{
+			if (chr.Source().Writable())
+			{
+				// BxROM
+
+				Map( 0x8000U, 0xFFFFU, PRG_SWAP_32K );
+			}
+			else
+			{
+				// NINA-1
+
+				Map( 0x7FFDU, PRG_SWAP_32K  );
+				Map( 0x7FFEU, CHR_SWAP_4K_0 );
+				Map( 0x7FFFU, CHR_SWAP_4K_1 );
+			}
+
+			if (hard)
+				prg.SwapBank<SIZE_32K,0x0000>(0);
+		}
+
+		#ifdef NST_MSVC_OPTIMIZE
+		#pragma optimize("", on)
+		#endif
+	}
 }

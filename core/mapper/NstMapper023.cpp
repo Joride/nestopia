@@ -29,46 +29,46 @@
 
 namespace Nes
 {
-    namespace Core
-    {
-        
-        
-        
-        
-        Mapper23::Mapper23(Context& c)
-        : Vrc4(c,TYPE_VRC4_352396,c.chr.Size() ? (CROM_MAX_256K|NMT_VERTICAL) : (PROM_MAX_512K|NMT_VERTICAL)) {}
-        
-        void Mapper23::SubReset(const bool hard)
-        {
-            Vrc4::SubReset( hard );
-            
-            if (chr.Source().Writable())
-            {
-                Map( 0x8000U, 0x8FFFU, &Mapper23::Poke_8000 );
-                Map( 0xA000U, 0xAFFFU, &Mapper23::Poke_A000 );
-                Map( 0xB000U, 0xEFFFU, &Mapper23::Poke_B000 );
-            }
-        }
-        
-        
-        
-        
-        
-        void Mapper23::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Mapper23*>(p_)->Poke_M_8000(i_,j_); } inline void Mapper23::Poke_M_8000(Address,Data data)
-        {
-            prg.SwapBank<SIZE_8K>( prgSwap << 13, (data & 0x1F) | (prg.GetBank<SIZE_8K>(prgSwap << 13) & 0x20) );
-        }
-        
-        void Mapper23::Poke_A000(void* p_,Address i_,Data j_) { static_cast<Mapper23*>(p_)->Poke_M_A000(i_,j_); } inline void Mapper23::Poke_M_A000(Address,Data data)
-        {
-            prg.SwapBank<SIZE_8K,0x2000>( (data & 0x1F) | (prg.GetBank<SIZE_8K,0x2000>() & 0x20) );
-        }
-        
-        void Mapper23::Poke_B000(void* p_,Address i_,Data j_) { static_cast<Mapper23*>(p_)->Poke_M_B000(i_,j_); } inline void Mapper23::Poke_M_B000(Address,Data data)
-        {
-            data = data << 2 & 0x20;
-            prg.SwapBank<SIZE_8K>( prgSwap << 13, (prg.GetBank<SIZE_8K>(prgSwap << 13) & 0x1F) | data );
-            prg.SwapBank<SIZE_8K,0x2000>( (prg.GetBank<SIZE_8K,0x2000>() & 0x1F) | data );
-        }
-    }
+	namespace Core
+	{
+		#ifdef NST_MSVC_OPTIMIZE
+		#pragma optimize("s", on)
+		#endif
+
+		Mapper23::Mapper23(Context& c)
+		: Vrc4(c,TYPE_VRC4_352396,c.chr.Size() ? (CROM_MAX_256K|NMT_VERTICAL) : (PROM_MAX_512K|NMT_VERTICAL)) {}
+
+		void Mapper23::SubReset(const bool hard)
+		{
+			Vrc4::SubReset( hard );
+
+			if (chr.Source().Writable())
+			{
+				Map( 0x8000U, 0x8FFFU, &Mapper23::Poke_8000 );
+				Map( 0xA000U, 0xAFFFU, &Mapper23::Poke_A000 );
+				Map( 0xB000U, 0xEFFFU, &Mapper23::Poke_B000 );
+			}
+		}
+
+		#ifdef NST_MSVC_OPTIMIZE
+		#pragma optimize("", on)
+		#endif
+
+		NES_POKE_D(Mapper23,8000)
+		{
+			prg.SwapBank<SIZE_8K>( prgSwap << 13, (data & 0x1F) | (prg.GetBank<SIZE_8K>(prgSwap << 13) & 0x20) );
+		}
+
+		NES_POKE_D(Mapper23,A000)
+		{
+			prg.SwapBank<SIZE_8K,0x2000>( (data & 0x1F) | (prg.GetBank<SIZE_8K,0x2000>() & 0x20) );
+		}
+
+		NES_POKE_D(Mapper23,B000)
+		{
+			data = data << 2 & 0x20;
+			prg.SwapBank<SIZE_8K>( prgSwap << 13, (prg.GetBank<SIZE_8K>(prgSwap << 13) & 0x1F) | data );
+			prg.SwapBank<SIZE_8K,0x2000>( (prg.GetBank<SIZE_8K,0x2000>() & 0x1F) | data );
+		}
+	}
 }
