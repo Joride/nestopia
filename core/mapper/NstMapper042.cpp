@@ -28,114 +28,114 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper42::Mapper42(Context& c)
-		:
-		Mapper (c,WRAM_NONE),
-		irq    (c.cpu,c.cpu)
-		{}
-
-		void Mapper42::Irq::Reset(const bool hard)
-		{
-			if (hard)
-				count = 0;
-		}
-
-		void Mapper42::SubReset(const bool hard)
-		{
-			Map( WRK_PEEK );
-
-			for (uint i=0x0000; i < 0x2000; i += 0x4)
-			{
-				Map( 0x8000 + i, CHR_SWAP_8K          );
-				Map( 0xE000 + i, &Mapper42::Poke_E000 );
-				Map( 0xE001 + i, &Mapper42::Poke_E001 );
-				Map( 0xE002 + i, &Mapper42::Poke_E002 );
-			}
-
-			irq.Reset( hard, hard ? false : irq.Connected() );
-
-			if (hard)
-				prg.SwapBank<SIZE_32K,0x0000>(~0U);
-		}
-
-		void Mapper42::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'I','R','Q'>::V)
-				{
-					State::Loader::Data<3> data( state );
-
-					irq.Connect( data[0] & 0x1 );
-					irq.unit.count = data[1] | (data[2] << 8 & 0x7F00);
-				}
-
-				state.End();
-			}
-		}
-
-		void Mapper42::SubSave(State::Saver& state) const
-		{
-			const byte data[3] =
-			{
-				irq.Connected() ? 0x1 : 0x0,
-				irq.unit.count >> 0 & 0xFF,
-				irq.unit.count >> 8 & 0x7F
-			};
-
-			state.Begin( AsciiId<'I','R','Q'>::V ).Write( data ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper42,E000)
-		{
-			wrk.SwapBank<SIZE_8K,0x0000>(data & 0xF);
-		}
-
-		NES_POKE_D(Mapper42,E001)
-		{
-			ppu.SetMirroring( (data & 0x8) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
-		}
-
-		NES_POKE_D(Mapper42,E002)
-		{
-			irq.Update();
-
-			if (!irq.Connect( data & 0x2 ))
-			{
-				irq.unit.count = 0;
-				irq.ClearIRQ();
-			}
-		}
-
-		bool Mapper42::Irq::Clock()
-		{
-			const uint prev = count++;
-
-			if ((count & 0x6000) != (prev & 0x6000))
-			{
-				if ((count & 0x6000) == 0x6000)
-					return true;
-				else
-					cpu.ClearIRQ();
-			}
-
-			return false;
-		}
-
-		void Mapper42::Sync(Event event,Input::Controllers*)
-		{
-			if (event == EVENT_END_FRAME)
-				irq.VSync();
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper42::Mapper42(Context& c)
+        :
+        Mapper (c,WRAM_NONE),
+        irq (c.cpu,c.cpu)
+        {}
+        
+        void Mapper42::Irq::Reset(const bool hard)
+        {
+            if (hard)
+                count = 0;
+        }
+        
+        void Mapper42::SubReset(const bool hard)
+        {
+            Map( WRK_PEEK );
+            
+            for (uint i=0x0000; i < 0x2000; i += 0x4)
+            {
+                Map( 0x8000 + i, CHR_SWAP_8K );
+                Map( 0xE000 + i, &Mapper42::Poke_E000 );
+                Map( 0xE001 + i, &Mapper42::Poke_E001 );
+                Map( 0xE002 + i, &Mapper42::Poke_E002 );
+            }
+            
+            irq.Reset( hard, hard ? false : irq.Connected() );
+            
+            if (hard)
+                prg.SwapBank<SIZE_32K,0x0000>(~0U);
+        }
+        
+        void Mapper42::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'I','R','Q'>::V)
+                {
+                    State::Loader::Data<3> data( state );
+                    
+                    irq.Connect( data[0] & 0x1 );
+                    irq.unit.count = data[1] | (data[2] << 8 & 0x7F00);
+                }
+                
+                state.End();
+            }
+        }
+        
+        void Mapper42::SubSave(State::Saver& state) const
+        {
+            const byte data[3] =
+            {
+                irq.Connected() ? 0x1 : 0x0,
+                irq.unit.count >> 0 & 0xFF,
+                irq.unit.count >> 8 & 0x7F
+            };
+            
+            state.Begin( AsciiId<'I','R','Q'>::V ).Write( data ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper42::Poke_E000(void* p_,Address i_,Data j_) { static_cast<Mapper42*>(p_)->Poke_M_E000(i_,j_); } inline void Mapper42::Poke_M_E000(Address,Data data)
+        {
+            wrk.SwapBank<SIZE_8K,0x0000>(data & 0xF);
+        }
+        
+        void Mapper42::Poke_E001(void* p_,Address i_,Data j_) { static_cast<Mapper42*>(p_)->Poke_M_E001(i_,j_); } inline void Mapper42::Poke_M_E001(Address,Data data)
+        {
+            ppu.SetMirroring( (data & 0x8) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
+        }
+        
+        void Mapper42::Poke_E002(void* p_,Address i_,Data j_) { static_cast<Mapper42*>(p_)->Poke_M_E002(i_,j_); } inline void Mapper42::Poke_M_E002(Address,Data data)
+        {
+            irq.Update();
+            
+            if (!irq.Connect( data & 0x2 ))
+            {
+                irq.unit.count = 0;
+                irq.ClearIRQ();
+            }
+        }
+        
+        bool Mapper42::Irq::Clock()
+        {
+            const uint prev = count++;
+            
+            if ((count & 0x6000) != (prev & 0x6000))
+            {
+                if ((count & 0x6000) == 0x6000)
+                    return true;
+                else
+                    cpu.ClearIRQ();
+            }
+            
+            return false;
+        }
+        
+        void Mapper42::Sync(Event event,Input::Controllers*)
+        {
+            if (event == EVENT_END_FRAME)
+                irq.VSync();
+        }
+    }
 }

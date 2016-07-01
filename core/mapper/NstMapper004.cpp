@@ -28,144 +28,144 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper4::Board Mapper4::GetBoard(uint attribute)
-		{
-			switch (attribute & ATR_BOARD)
-			{
-				case ATR_TEROM:  return BRD_TEROM;
-				case ATR_TFROM:  return BRD_TFROM;
-				case ATR_TGROM:  return BRD_TGROM;
-				case ATR_TKROM:  return BRD_TKROM;
-				case ATR_TLROM:  return BRD_TLROM;
-				case ATR_TL1ROM: return BRD_TL1ROM;
-				case ATR_TLSROM: return BRD_TLSROM;
-				case ATR_TR1ROM: return BRD_TR1ROM;
-				case ATR_TSROM:  return BRD_TSROM;
-				case ATR_TVROM:  return BRD_TVROM;
-				case ATR_TNROM:  return BRD_TNROM;
-			}
-
-			return BRD_GENERIC;
-		}
-
-		Mapper4::Chip Mapper4::GetChip(const Context& c)
-		{
-			switch (c.attribute & ATR_CHIP)
-			{
-				case ATR_MMC3A:  return CHIP_MMC3A;
-				case ATR_MMC6:   return CHIP_MMC6;
-				case ATR_MIMIC1: return CHIP_MIMIC;
-			}
-
-			if (c.wrk.Size() == SIZE_1K && (c.attribute & ATR_BOARD) == 0)
-				return CHIP_MMC6;
-
-			return CHIP_MMC3B;
-		}
-
-		Mapper4::Mapper4(Context& c)
-		: Mmc3
-		(
-			c,
-			GetBoard(c.attribute),
-			GetChip(c) == CHIP_MMC6  ? PROM_MAX_512K|CROM_MAX_256K|WRAM_1K :
-			GetChip(c) == CHIP_MIMIC ? PROM_MAX_512K|CROM_MAX_256K|WRAM_NONE :
-                                       PROM_MAX_512K|CROM_MAX_256K|WRAM_AUTO,
-			GetChip(c) == CHIP_MMC3A ? REV_A :
-                                       REV_B
-		),
-		chip (GetChip(c))
-		{
-		}
-
-		void Mapper4::SubReset(const bool hard)
-		{
-			Mmc3::SubReset( hard );
-
-			if (chip == CHIP_MMC6)
-			{
-				mmc6.wRam = 0;
-
-				Map( 0x7000U, 0x7FFFU, &Mapper4::Peek_Mmc6_wRam, &Mapper4::Poke_Mmc6_wRam );
-
-				for (uint i=0xA001; i < 0xC000; i += 0x2)
-					Map( i, &Mapper4::Poke_Mmc6_A001 );
-			}
-			else if (chip == CHIP_MIMIC)
-			{
-				Map( 0xA000U, 0xFFFFU, NOP_POKE );
-			}
-		}
-
-		void Mapper4::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-				{
-					NST_VERIFY( chip == CHIP_MMC6 );
-
-					if (chip == CHIP_MMC6)
-						mmc6.wRam = state.Read8();
-				}
-
-				state.End();
-			}
-		}
-
-		void Mapper4::SubSave(State::Saver& state) const
-		{
-			if (chip == CHIP_MMC6)
-				state.Begin( AsciiId<'R','E','G'>::V ).Write8( mmc6.wRam ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		inline bool Mapper4::Mmc6::IsWRamEnabled() const
-		{
-			return wRam & (WRAM_LO_BANK_ENABLED|WRAM_HI_BANK_ENABLED);
-		}
-
-		inline bool Mapper4::Mmc6::IsWRamReadable(uint address) const
-		{
-			return (wRam >> (address >> 8 & 0x2)) & 0x20;
-		}
-
-		inline bool Mapper4::Mmc6::IsWRamWritable(uint address) const
-		{
-			return ((wRam >> (address >> 8 & 0x2)) & 0x30) == 0x30;
-		}
-
-		NES_POKE_AD(Mapper4,Mmc6_wRam)
-		{
-			NST_VERIFY( mmc6.IsWRamWritable( address ) );
-
-			if (mmc6.IsWRamWritable( address ))
-				wrk[0][address & 0x3FF] = data;
-		}
-
-		NES_PEEK_A(Mapper4,Mmc6_wRam)
-		{
-			NST_VERIFY( mmc6.IsWRamEnabled() );
-
-			if (mmc6.IsWRamEnabled())
-				return mmc6.IsWRamReadable( address ) ? wrk[0][address & 0x3FF] : 0x00;
-			else
-				return address >> 8;
-		}
-
-		NES_POKE_D(Mapper4,Mmc6_A001)
-		{
-			if ((mmc6.wRam & 0x1) | (regs.ctrl0 & Mmc6::WRAM_ENABLE))
-				mmc6.wRam = data | 0x1;
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper4::Board Mapper4::GetBoard(uint attribute)
+        {
+            switch (attribute & ATR_BOARD)
+            {
+                case ATR_TEROM: return BRD_TEROM;
+                case ATR_TFROM: return BRD_TFROM;
+                case ATR_TGROM: return BRD_TGROM;
+                case ATR_TKROM: return BRD_TKROM;
+                case ATR_TLROM: return BRD_TLROM;
+                case ATR_TL1ROM: return BRD_TL1ROM;
+                case ATR_TLSROM: return BRD_TLSROM;
+                case ATR_TR1ROM: return BRD_TR1ROM;
+                case ATR_TSROM: return BRD_TSROM;
+                case ATR_TVROM: return BRD_TVROM;
+                case ATR_TNROM: return BRD_TNROM;
+            }
+            
+            return BRD_GENERIC;
+        }
+        
+        Mapper4::Chip Mapper4::GetChip(const Context& c)
+        {
+            switch (c.attribute & ATR_CHIP)
+            {
+                case ATR_MMC3A: return CHIP_MMC3A;
+                case ATR_MMC6: return CHIP_MMC6;
+                case ATR_MIMIC1: return CHIP_MIMIC;
+            }
+            
+            if (c.wrk.Size() == SIZE_1K && (c.attribute & ATR_BOARD) == 0)
+                return CHIP_MMC6;
+            
+            return CHIP_MMC3B;
+        }
+        
+        Mapper4::Mapper4(Context& c)
+        : Mmc3
+        (
+         c,
+         GetBoard(c.attribute),
+         GetChip(c) == CHIP_MMC6 ? PROM_MAX_512K|CROM_MAX_256K|WRAM_1K :
+         GetChip(c) == CHIP_MIMIC ? PROM_MAX_512K|CROM_MAX_256K|WRAM_NONE :
+         PROM_MAX_512K|CROM_MAX_256K|WRAM_AUTO,
+         GetChip(c) == CHIP_MMC3A ? REV_A :
+         REV_B
+         ),
+        chip (GetChip(c))
+        {
+        }
+        
+        void Mapper4::SubReset(const bool hard)
+        {
+            Mmc3::SubReset( hard );
+            
+            if (chip == CHIP_MMC6)
+            {
+                mmc6.wRam = 0;
+                
+                Map( 0x7000U, 0x7FFFU, &Mapper4::Peek_Mmc6_wRam, &Mapper4::Poke_Mmc6_wRam );
+                
+                for (uint i=0xA001; i < 0xC000; i += 0x2)
+                    Map( i, &Mapper4::Poke_Mmc6_A001 );
+            }
+            else if (chip == CHIP_MIMIC)
+            {
+                Map( 0xA000U, 0xFFFFU, NOP_POKE );
+            }
+        }
+        
+        void Mapper4::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                {
+                    ((void)0);
+                    
+                    if (chip == CHIP_MMC6)
+                        mmc6.wRam = state.Read8();
+                }
+                
+                state.End();
+            }
+        }
+        
+        void Mapper4::SubSave(State::Saver& state) const
+        {
+            if (chip == CHIP_MMC6)
+                state.Begin( AsciiId<'R','E','G'>::V ).Write8( mmc6.wRam ).End();
+        }
+        
+        
+        
+        
+        
+        inline bool Mapper4::Mmc6::IsWRamEnabled() const
+        {
+            return wRam & (WRAM_LO_BANK_ENABLED|WRAM_HI_BANK_ENABLED);
+        }
+        
+        inline bool Mapper4::Mmc6::IsWRamReadable(uint address) const
+        {
+            return (wRam >> (address >> 8 & 0x2)) & 0x20;
+        }
+        
+        inline bool Mapper4::Mmc6::IsWRamWritable(uint address) const
+        {
+            return ((wRam >> (address >> 8 & 0x2)) & 0x30) == 0x30;
+        }
+        
+        void Mapper4::Poke_Mmc6_wRam(void* p_,Address i_,Data j_) { static_cast<Mapper4*>(p_)->Poke_M_Mmc6_wRam(i_,j_); } inline void Mapper4::Poke_M_Mmc6_wRam(Address address,Data data)
+        {
+            ((void)0);
+            
+            if (mmc6.IsWRamWritable( address ))
+                wrk[0][address & 0x3FF] = data;
+        }
+        
+        Data Mapper4::Peek_Mmc6_wRam(void* p_,Address i_) { return static_cast<Mapper4*>(p_)->Peek_M_Mmc6_wRam(i_); } inline Data Mapper4::Peek_M_Mmc6_wRam(Address address)
+        {
+            ((void)0);
+            
+            if (mmc6.IsWRamEnabled())
+                return mmc6.IsWRamReadable( address ) ? wrk[0][address & 0x3FF] : 0x00;
+            else
+                return address >> 8;
+        }
+        
+        void Mapper4::Poke_Mmc6_A001(void* p_,Address i_,Data j_) { static_cast<Mapper4*>(p_)->Poke_M_Mmc6_A001(i_,j_); } inline void Mapper4::Poke_M_Mmc6_A001(Address,Data data)
+        {
+            if ((mmc6.wRam & 0x1) | (regs.ctrl0 & Mmc6::WRAM_ENABLE))
+                mmc6.wRam = data | 0x1;
+        }
+    }
 }

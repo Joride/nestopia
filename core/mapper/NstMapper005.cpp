@@ -26,31 +26,32 @@
 #include "../board/NstBrdMmc5.hpp"
 #include "NstMapper005.hpp"
 
+
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper5::Board Mapper5::GetBoard(uint attribute)
-		{
-			switch (attribute)
-			{
-				case ATR_ELROM: return BRD_ELROM;
-				case ATR_EKROM: return BRD_EKROM;
-				case ATR_ETROM: return BRD_ETROM;
-				case ATR_EWROM: return BRD_EWROM;
-				default:        return BRD_GENERIC;
-			}
-		}
-
-		Mapper5::Mapper5(Context& c)
-		: Mmc5(c,GetBoard(c.attribute)) {}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper5::Board Mapper5::GetBoard(uint attribute)
+        {
+            switch (attribute)
+            {
+                case ATR_ELROM: return BRD_ELROM;
+                case ATR_EKROM: return BRD_EKROM;
+                case ATR_ETROM: return BRD_ETROM;
+                case ATR_EWROM: return BRD_EWROM;
+                default: return BRD_GENERIC;
+            }
+        }
+        
+        Mapper5::Mapper5(Context& c)
+        : Mmc5(c,GetBoard(c.attribute)) {}
+        
+        
+        
+        
+    }
 }
