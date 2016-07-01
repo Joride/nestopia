@@ -27,26 +27,26 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper89::SubReset(bool)
-		{
-			Map( 0x8000U, 0xFFFFU, &Mapper89::Poke_Prg );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper89,Prg)
-		{
-			ppu.SetMirroring( (data & 0x8) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
-			prg.SwapBank<SIZE_16K,0x0000>( data >> 4 );
-			chr.SwapBank<SIZE_8K,0x0000>( (data >> 4 & 0x8) | (data & 0x7) );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper89::SubReset(bool)
+        {
+            Map( 0x8000U, 0xFFFFU, &Mapper89::Poke_Prg );
+        }
+        
+        
+        
+        
+        
+        void Mapper89::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper89*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper89::Poke_M_Prg(Address,Data data)
+        {
+            ppu.SetMirroring( (data & 0x8) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
+            prg.SwapBank<SIZE_16K,0x0000>( data >> 4 );
+            chr.SwapBank<SIZE_8K,0x0000>( (data >> 4 & 0x8) | (data & 0x7) );
+        }
+    }
 }

@@ -27,33 +27,33 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper71::Mapper71(Context& c)
-		:
-		Mapper  (c,c.attribute == ATR_BF9097 ? (CROM_MAX_8K|WRAM_NONE|NMT_ZERO) : c.attribute == ATR_BF9093 ? (CROM_MAX_8K|WRAM_NONE) : CROM_MAX_8K),
-		nmtCtrl (c.attribute == ATR_BF9097)
-		{}
-
-		void Mapper71::SubReset(bool)
-		{
-			if (nmtCtrl)
-				Map( 0x8000U, 0x9FFFU, &Mapper71::Poke_8000 );
-
-			Map( 0xC000U, 0xFFFFU, PRG_SWAP_16K_0 );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper71,8000)
-		{
-			ppu.SetMirroring( (data & 0x10) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper71::Mapper71(Context& c)
+        :
+        Mapper (c,c.attribute == ATR_BF9097 ? (CROM_MAX_8K|WRAM_NONE|NMT_ZERO) : c.attribute == ATR_BF9093 ? (CROM_MAX_8K|WRAM_NONE) : CROM_MAX_8K),
+        nmtCtrl (c.attribute == ATR_BF9097)
+        {}
+        
+        void Mapper71::SubReset(bool)
+        {
+            if (nmtCtrl)
+                Map( 0x8000U, 0x9FFFU, &Mapper71::Poke_8000 );
+            
+            Map( 0xC000U, 0xFFFFU, PRG_SWAP_16K_0 );
+        }
+        
+        
+        
+        
+        
+        void Mapper71::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Mapper71*>(p_)->Poke_M_8000(i_,j_); } inline void Mapper71::Poke_M_8000(Address,Data data)
+        {
+            ppu.SetMirroring( (data & 0x10) ? Ppu::NMT_ONE : Ppu::NMT_ZERO );
+        }
+    }
 }

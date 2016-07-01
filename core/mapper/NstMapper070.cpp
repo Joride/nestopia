@@ -27,49 +27,49 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper70::Mapper70(Context& c)
-		:
-		Mapper (c,PROM_MAX_256K|CROM_MAX_128K|WRAM_DEFAULT),
-		useGun (c.attribute == ATR_LIGHTGUN)
-		{}
-
-		void Mapper70::SubReset(bool)
-		{
-			Map( 0x6000U, 0xFFFFU, &Mapper70::Poke_Prg );
-
-			if (useGun)
-			{
-				p4016 = cpu.Map( 0x4016 );
-				cpu.Map( 0x4016 ).Set( this, &Mapper70::Peek_SpaceShadow, &Mapper70::Poke_SpaceShadow );
-			}
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper70,Prg)
-		{
-			ppu.Update();
-			chr.SwapBank<SIZE_8K,0x0000>( data );
-			prg.SwapBank<SIZE_16K,0x0000>( data >> 4 );
-		}
-
-		NES_PEEK(Mapper70,SpaceShadow)
-		{
-			const uint data = p4016.Peek( 0x4016 );
-			return (data & 0xFE) | (data << 1 & 0x2);
-		}
-
-		NES_POKE_AD(Mapper70,SpaceShadow)
-		{
-			p4016.Poke( address, data );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper70::Mapper70(Context& c)
+        :
+        Mapper (c,PROM_MAX_256K|CROM_MAX_128K|WRAM_DEFAULT),
+        useGun (c.attribute == ATR_LIGHTGUN)
+        {}
+        
+        void Mapper70::SubReset(bool)
+        {
+            Map( 0x6000U, 0xFFFFU, &Mapper70::Poke_Prg );
+            
+            if (useGun)
+            {
+                p4016 = cpu.Map( 0x4016 );
+                cpu.Map( 0x4016 ).Set( this, &Mapper70::Peek_SpaceShadow, &Mapper70::Poke_SpaceShadow );
+            }
+        }
+        
+        
+        
+        
+        
+        void Mapper70::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper70*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper70::Poke_M_Prg(Address,Data data)
+        {
+            ppu.Update();
+            chr.SwapBank<SIZE_8K,0x0000>( data );
+            prg.SwapBank<SIZE_16K,0x0000>( data >> 4 );
+        }
+        
+        Data Mapper70::Peek_SpaceShadow(void* p_,Address i_) { return static_cast<Mapper70*>(p_)->Peek_M_SpaceShadow(i_); } inline Data Mapper70::Peek_M_SpaceShadow(Address)
+        {
+            const uint data = p4016.Peek( 0x4016 );
+            return (data & 0xFE) | (data << 1 & 0x2);
+        }
+        
+        void Mapper70::Poke_SpaceShadow(void* p_,Address i_,Data j_) { static_cast<Mapper70*>(p_)->Poke_M_SpaceShadow(i_,j_); } inline void Mapper70::Poke_M_SpaceShadow(Address address,Data data)
+        {
+            p4016.Poke( address, data );
+        }
+    }
 }

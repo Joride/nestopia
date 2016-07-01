@@ -27,29 +27,29 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper76::Mapper76(Context& c)
-		: Mmc3(c,BRD_GENERIC,PROM_MAX_512K|CROM_MAX_256K|WRAM_DEFAULT) {}
-
-		void Mapper76::SubReset(const bool hard)
-		{
-			Mmc3::SubReset( hard );
-			Map( 0xC000U, 0xFFFFU, NOP_POKE );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		void Mapper76::UpdateChr() const
-		{
-			ppu.Update();
-			chr.SwapBanks<SIZE_2K,0x0000>( banks.chr[2], banks.chr[3], banks.chr[4], banks.chr[5] );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper76::Mapper76(Context& c)
+        : Mmc3(c,BRD_GENERIC,PROM_MAX_512K|CROM_MAX_256K|WRAM_DEFAULT) {}
+        
+        void Mapper76::SubReset(const bool hard)
+        {
+            Mmc3::SubReset( hard );
+            Map( 0xC000U, 0xFFFFU, NOP_POKE );
+        }
+        
+        
+        
+        
+        
+        void Mapper76::UpdateChr() const
+        {
+            ppu.Update();
+            chr.SwapBanks<SIZE_2K,0x0000>( banks.chr[2], banks.chr[3], banks.chr[4], banks.chr[5] );
+        }
+    }
 }

@@ -27,47 +27,47 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper75::SubReset(bool)
-		{
-			Map( 0x8000U, 0x8FFFU, PRG_SWAP_8K_0);
-			Map( 0x9000U, 0x9FFFU, &Mapper75::Poke_9000 );
-			Map( 0xA000U, 0xAFFFU, PRG_SWAP_8K_1);
-			Map( 0xC000U, 0xCFFFU, PRG_SWAP_8K_2);
-			Map( 0xE000U, 0xEFFFU, &Mapper75::Poke_E000 );
-			Map( 0xF000U, 0xFFFFU, &Mapper75::Poke_F000 );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper75,9000)
-		{
-			ppu.SetMirroring( (data & 0x1) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
-
-			chr.SwapBanks<SIZE_4K,0x0000>
-			(
-				(data << 3 & 0x10) | (chr.GetBank<SIZE_4K,0x0000>() & 0xF),
-				(data << 2 & 0x10) | (chr.GetBank<SIZE_4K,0x1000>() & 0xF)
-			);
-		}
-
-		NES_POKE_D(Mapper75,E000)
-		{
-			ppu.Update();
-			chr.SwapBank<SIZE_4K,0x0000>( (chr.GetBank<SIZE_4K,0x0000>() & 0x10) | (data & 0xF) );
-		}
-
-		NES_POKE_D(Mapper75,F000)
-		{
-			ppu.Update();
-			chr.SwapBank<SIZE_4K,0x1000>( (chr.GetBank<SIZE_4K,0x1000>() & 0x10) | (data & 0xF) );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper75::SubReset(bool)
+        {
+            Map( 0x8000U, 0x8FFFU, PRG_SWAP_8K_0);
+            Map( 0x9000U, 0x9FFFU, &Mapper75::Poke_9000 );
+            Map( 0xA000U, 0xAFFFU, PRG_SWAP_8K_1);
+            Map( 0xC000U, 0xCFFFU, PRG_SWAP_8K_2);
+            Map( 0xE000U, 0xEFFFU, &Mapper75::Poke_E000 );
+            Map( 0xF000U, 0xFFFFU, &Mapper75::Poke_F000 );
+        }
+        
+        
+        
+        
+        
+        void Mapper75::Poke_9000(void* p_,Address i_,Data j_) { static_cast<Mapper75*>(p_)->Poke_M_9000(i_,j_); } inline void Mapper75::Poke_M_9000(Address,Data data)
+        {
+            ppu.SetMirroring( (data & 0x1) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
+            
+            chr.SwapBanks<SIZE_4K,0x0000>
+            (
+             (data << 3 & 0x10) | (chr.GetBank<SIZE_4K,0x0000>() & 0xF),
+             (data << 2 & 0x10) | (chr.GetBank<SIZE_4K,0x1000>() & 0xF)
+             );
+        }
+        
+        void Mapper75::Poke_E000(void* p_,Address i_,Data j_) { static_cast<Mapper75*>(p_)->Poke_M_E000(i_,j_); } inline void Mapper75::Poke_M_E000(Address,Data data)
+        {
+            ppu.Update();
+            chr.SwapBank<SIZE_4K,0x0000>( (chr.GetBank<SIZE_4K,0x0000>() & 0x10) | (data & 0xF) );
+        }
+        
+        void Mapper75::Poke_F000(void* p_,Address i_,Data j_) { static_cast<Mapper75*>(p_)->Poke_M_F000(i_,j_); } inline void Mapper75::Poke_M_F000(Address,Data data)
+        {
+            ppu.Update();
+            chr.SwapBank<SIZE_4K,0x1000>( (chr.GetBank<SIZE_4K,0x1000>() & 0x10) | (data & 0xF) );
+        }
+    }
 }

@@ -27,36 +27,36 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper99::SubReset(const bool hard)
-		{
-			p4016 = cpu.Map( 0x4016 );
-			cpu.Map( 0x4016 ).Set( this, &Mapper99::Peek_4016, &Mapper99::Poke_4016 );
-
-			if (hard)
-				prg.SwapBank<SIZE_32K,0x0000>(0);
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper99,4016)
-		{
-			ppu.Update();
-			chr.SwapBank<SIZE_8K,0x0000>( data >> 2 );
-			prg.SwapBank<SIZE_8K,0x0000>( data & 0x4 );
-			p4016.Poke( 0x4016, data );
-		}
-
-		NES_PEEK_A(Mapper99,4016)
-		{
-			return p4016.Peek( address );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper99::SubReset(const bool hard)
+        {
+            p4016 = cpu.Map( 0x4016 );
+            cpu.Map( 0x4016 ).Set( this, &Mapper99::Peek_4016, &Mapper99::Poke_4016 );
+            
+            if (hard)
+                prg.SwapBank<SIZE_32K,0x0000>(0);
+        }
+        
+        
+        
+        
+        
+        void Mapper99::Poke_4016(void* p_,Address i_,Data j_) { static_cast<Mapper99*>(p_)->Poke_M_4016(i_,j_); } inline void Mapper99::Poke_M_4016(Address,Data data)
+        {
+            ppu.Update();
+            chr.SwapBank<SIZE_8K,0x0000>( data >> 2 );
+            prg.SwapBank<SIZE_8K,0x0000>( data & 0x4 );
+            p4016.Poke( 0x4016, data );
+        }
+        
+        Data Mapper99::Peek_4016(void* p_,Address i_) { return static_cast<Mapper99*>(p_)->Peek_M_4016(i_); } inline Data Mapper99::Peek_M_4016(Address address)
+        {
+            return p4016.Peek( address );
+        }
+    }
 }

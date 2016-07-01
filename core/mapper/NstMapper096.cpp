@@ -27,83 +27,83 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper96::SubReset(const bool hard)
-		{
-			nmt.SetAccessor( 0, 0, this, &Mapper96::Access_Name_2000 );
-			nmt.SetAccessor( 1, 0, this, &Mapper96::Access_Name_2400 );
-			nmt.SetAccessor( 2, 0, this, &Mapper96::Access_Name_2800 );
-			nmt.SetAccessor( 3, 0, this, &Mapper96::Access_Name_2C00 );
-
-			Map( 0x8000U, 0xFFFFU, &Mapper96::Poke_Prg );
-
-			p2006 = cpu.Map( 0x2006 );
-
-			for (uint i=0x2006; i < 0x4000; i += 0x8)
-				cpu.Map( i ).Set( this, &Mapper96::Peek_2006, &Mapper96::Poke_2006 );
-
-			if (hard)
-				NES_DO_POKE(Prg,0x8000,0x00);
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		void Mapper96::UpdateLatch(const uint bank) const
-		{
-			chr.SwapBank<SIZE_4K,0x0000>( (chr.GetBank<SIZE_4K,0x0000>() & 0x4) | (bank >> 8) );
-		}
-
-		NES_ACCESSOR(Mapper96,Name_2000)
-		{
-			UpdateLatch( address );
-			return nmt[0][address];
-		}
-
-		NES_ACCESSOR(Mapper96,Name_2400)
-		{
-			UpdateLatch( address );
-			return nmt[1][address];
-		}
-
-		NES_ACCESSOR(Mapper96,Name_2800)
-		{
-			UpdateLatch( address );
-			return nmt[2][address];
-		}
-
-		NES_ACCESSOR(Mapper96,Name_2C00)
-		{
-			UpdateLatch( address );
-			return nmt[3][address];
-		}
-
-		NES_PEEK_A(Mapper96,2006)
-		{
-			return p2006.Peek( address );
-		}
-
-		NES_POKE_D(Mapper96,2006)
-		{
-			p2006.Poke( 0x2006, data );
-
-			const uint address = ppu.GetVRamAddress();
-
-			if ((address & 0x3000) == 0x2000)
-				UpdateLatch( address & 0x0300 );
-		}
-
-		NES_POKE_D(Mapper96,Prg)
-		{
-			ppu.Update();
-			prg.SwapBank<SIZE_32K,0x0000>( data );
-			chr.SwapBanks<SIZE_4K,0x0000>( (data & 0x4) | (chr.GetBank<SIZE_4K,0x0000>() & 0x3), (data & 0x4) | 0x3 );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper96::SubReset(const bool hard)
+        {
+            nmt.SetAccessor( 0, 0, this, &Mapper96::Access_Name_2000 );
+            nmt.SetAccessor( 1, 0, this, &Mapper96::Access_Name_2400 );
+            nmt.SetAccessor( 2, 0, this, &Mapper96::Access_Name_2800 );
+            nmt.SetAccessor( 3, 0, this, &Mapper96::Access_Name_2C00 );
+            
+            Map( 0x8000U, 0xFFFFU, &Mapper96::Poke_Prg );
+            
+            p2006 = cpu.Map( 0x2006 );
+            
+            for (uint i=0x2006; i < 0x4000; i += 0x8)
+                cpu.Map( i ).Set( this, &Mapper96::Peek_2006, &Mapper96::Poke_2006 );
+            
+            if (hard)
+                Poke_Prg(this,0x8000,0x00);
+        }
+        
+        
+        
+        
+        
+        void Mapper96::UpdateLatch(const uint bank) const
+        {
+            chr.SwapBank<SIZE_4K,0x0000>( (chr.GetBank<SIZE_4K,0x0000>() & 0x4) | (bank >> 8) );
+        }
+        
+        __attribute__((noinline)) Data Mapper96::Access_Name_2000(void* p_,Address i_) { return static_cast<Mapper96*>(p_)->Access_M_Name_2000(i_); } inline Data Mapper96::Access_M_Name_2000(Address address)
+        {
+            UpdateLatch( address );
+            return nmt[0][address];
+        }
+        
+        __attribute__((noinline)) Data Mapper96::Access_Name_2400(void* p_,Address i_) { return static_cast<Mapper96*>(p_)->Access_M_Name_2400(i_); } inline Data Mapper96::Access_M_Name_2400(Address address)
+        {
+            UpdateLatch( address );
+            return nmt[1][address];
+        }
+        
+        __attribute__((noinline)) Data Mapper96::Access_Name_2800(void* p_,Address i_) { return static_cast<Mapper96*>(p_)->Access_M_Name_2800(i_); } inline Data Mapper96::Access_M_Name_2800(Address address)
+        {
+            UpdateLatch( address );
+            return nmt[2][address];
+        }
+        
+        __attribute__((noinline)) Data Mapper96::Access_Name_2C00(void* p_,Address i_) { return static_cast<Mapper96*>(p_)->Access_M_Name_2C00(i_); } inline Data Mapper96::Access_M_Name_2C00(Address address)
+        {
+            UpdateLatch( address );
+            return nmt[3][address];
+        }
+        
+        Data Mapper96::Peek_2006(void* p_,Address i_) { return static_cast<Mapper96*>(p_)->Peek_M_2006(i_); } inline Data Mapper96::Peek_M_2006(Address address)
+        {
+            return p2006.Peek( address );
+        }
+        
+        void Mapper96::Poke_2006(void* p_,Address i_,Data j_) { static_cast<Mapper96*>(p_)->Poke_M_2006(i_,j_); } inline void Mapper96::Poke_M_2006(Address,Data data)
+        {
+            p2006.Poke( 0x2006, data );
+            
+            const uint address = ppu.GetVRamAddress();
+            
+            if ((address & 0x3000) == 0x2000)
+                UpdateLatch( address & 0x0300 );
+        }
+        
+        void Mapper96::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper96*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper96::Poke_M_Prg(Address,Data data)
+        {
+            ppu.Update();
+            prg.SwapBank<SIZE_32K,0x0000>( data );
+            chr.SwapBanks<SIZE_4K,0x0000>( (data & 0x4) | (chr.GetBank<SIZE_4K,0x0000>() & 0x3), (data & 0x4) | 0x3 );
+        }
+    }
 }

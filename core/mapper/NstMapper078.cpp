@@ -27,46 +27,46 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper78::Mapper78(Context& c)
-		: Mapper(c,PROM_MAX_128K|CROM_MAX_128K|WRAM_DEFAULT)
-		{
-			if (mirroring == Ppu::NMT_FOURSCREEN)
-			{
-				nmt[0] = Ppu::NMT_FOURSCREEN;
-				nmt[1] = Ppu::NMT_FOURSCREEN;
-			}
-			else if (c.attribute == ATR_HV_MIRRORING)
-			{
-				nmt[0] = Ppu::NMT_HORIZONTAL;
-				nmt[1] = Ppu::NMT_VERTICAL;
-			}
-			else
-			{
-				nmt[0] = Ppu::NMT_ZERO;
-				nmt[1] = Ppu::NMT_ONE;
-			}
-		}
-
-		void Mapper78::SubReset(bool)
-		{
-			Map( 0x8000U, 0xFFFFU, &Mapper78::Poke_Prg );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper78,Prg)
-		{
-			ppu.SetMirroring( nmt[data >> 3 & 0x1] );
-			prg.SwapBank<SIZE_16K,0x0000>( data );
-			chr.SwapBank<SIZE_8K,0x0000>( data >> 4 );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper78::Mapper78(Context& c)
+        : Mapper(c,PROM_MAX_128K|CROM_MAX_128K|WRAM_DEFAULT)
+        {
+            if (mirroring == Ppu::NMT_FOURSCREEN)
+            {
+                nmt[0] = Ppu::NMT_FOURSCREEN;
+                nmt[1] = Ppu::NMT_FOURSCREEN;
+            }
+            else if (c.attribute == ATR_HV_MIRRORING)
+            {
+                nmt[0] = Ppu::NMT_HORIZONTAL;
+                nmt[1] = Ppu::NMT_VERTICAL;
+            }
+            else
+            {
+                nmt[0] = Ppu::NMT_ZERO;
+                nmt[1] = Ppu::NMT_ONE;
+            }
+        }
+        
+        void Mapper78::SubReset(bool)
+        {
+            Map( 0x8000U, 0xFFFFU, &Mapper78::Poke_Prg );
+        }
+        
+        
+        
+        
+        
+        void Mapper78::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper78*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper78::Poke_M_Prg(Address,Data data)
+        {
+            ppu.SetMirroring( nmt[data >> 3 & 0x1] );
+            prg.SwapBank<SIZE_16K,0x0000>( data );
+            chr.SwapBank<SIZE_8K,0x0000>( data >> 4 );
+        }
+    }
 }

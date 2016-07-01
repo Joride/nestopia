@@ -28,132 +28,132 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper65::Mapper65(Context& c)
-		:
-		Mapper (c,CROM_MAX_256K|WRAM_DEFAULT),
-		irq    (c.cpu)
-		{}
-
-		void Mapper65::Irq::Reset(const bool hard)
-		{
-			if (hard)
-			{
-				enabled = false;
-				count = 0;
-				latch = 0;
-			}
-		}
-
-		void Mapper65::SubReset(const bool hard)
-		{
-			irq.Reset( hard, true );
-
-			Map( 0x9001U, &Mapper65::Poke_9001 );
-			Map( 0x9003U, &Mapper65::Poke_9003 );
-			Map( 0x9004U, &Mapper65::Poke_9004 );
-			Map( 0x9005U, &Mapper65::Poke_9005 );
-			Map( 0x9006U, &Mapper65::Poke_9006 );
-
-			Map( 0x8000U, PRG_SWAP_8K_0 );
-			Map( 0xA000U, PRG_SWAP_8K_1 );
-			Map( 0xC000U, PRG_SWAP_8K_2 );
-			Map( 0xB000U, CHR_SWAP_1K_0 );
-			Map( 0xB001U, CHR_SWAP_1K_1 );
-			Map( 0xB002U, CHR_SWAP_1K_2 );
-			Map( 0xB003U, CHR_SWAP_1K_3 );
-			Map( 0xB004U, CHR_SWAP_1K_4 );
-			Map( 0xB005U, CHR_SWAP_1K_5 );
-			Map( 0xB006U, CHR_SWAP_1K_6 );
-			Map( 0xB007U, CHR_SWAP_1K_7 );
-		}
-
-		void Mapper65::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'I','R','Q'>::V)
-				{
-					State::Loader::Data<5> data( state );
-
-					irq.unit.enabled = data[0] & 0x1;
-					irq.unit.latch = data[1] | data[2] << 8;
-					irq.unit.count = data[3] | data[4] << 8;
-				}
-
-				state.End();
-			}
-		}
-
-		void Mapper65::SubSave(State::Saver& state) const
-		{
-			const byte data[5] =
-			{
-				irq.unit.enabled ? 0x1 : 0x0,
-				irq.unit.latch & 0xFF,
-				irq.unit.latch >> 8,
-				irq.unit.count & 0xFF,
-				irq.unit.count >> 8
-			};
-
-			state.Begin( AsciiId<'I','R','Q'>::V ).Write( data ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper65,9001)
-		{
-			ppu.SetMirroring( (data & 0x80) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
-		}
-
-		NES_POKE_D(Mapper65,9003)
-		{
-			irq.Update();
-			irq.unit.enabled = data & 0x80;
-			irq.ClearIRQ();
-		}
-
-		NES_POKE(Mapper65,9004)
-		{
-			irq.Update();
-			irq.unit.count = irq.unit.latch;
-			irq.ClearIRQ();
-		}
-
-		NES_POKE_D(Mapper65,9005)
-		{
-			irq.Update();
-			irq.unit.latch = (irq.unit.latch & 0x00FF) | data << 8;
-		}
-
-		NES_POKE_D(Mapper65,9006)
-		{
-			irq.Update();
-			irq.unit.latch = (irq.unit.latch & 0xFF00) | data << 0;
-		}
-
-		bool Mapper65::Irq::Clock()
-		{
-			if (enabled && count && !--count)
-			{
-				enabled = false;
-				return true;
-			}
-
-			return false;
-		}
-
-		void Mapper65::Sync(Event event,Input::Controllers*)
-		{
-			if (event == EVENT_END_FRAME)
-				irq.VSync();
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper65::Mapper65(Context& c)
+        :
+        Mapper (c,CROM_MAX_256K|WRAM_DEFAULT),
+        irq (c.cpu)
+        {}
+        
+        void Mapper65::Irq::Reset(const bool hard)
+        {
+            if (hard)
+            {
+                enabled = false;
+                count = 0;
+                latch = 0;
+            }
+        }
+        
+        void Mapper65::SubReset(const bool hard)
+        {
+            irq.Reset( hard, true );
+            
+            Map( 0x9001U, &Mapper65::Poke_9001 );
+            Map( 0x9003U, &Mapper65::Poke_9003 );
+            Map( 0x9004U, &Mapper65::Poke_9004 );
+            Map( 0x9005U, &Mapper65::Poke_9005 );
+            Map( 0x9006U, &Mapper65::Poke_9006 );
+            
+            Map( 0x8000U, PRG_SWAP_8K_0 );
+            Map( 0xA000U, PRG_SWAP_8K_1 );
+            Map( 0xC000U, PRG_SWAP_8K_2 );
+            Map( 0xB000U, CHR_SWAP_1K_0 );
+            Map( 0xB001U, CHR_SWAP_1K_1 );
+            Map( 0xB002U, CHR_SWAP_1K_2 );
+            Map( 0xB003U, CHR_SWAP_1K_3 );
+            Map( 0xB004U, CHR_SWAP_1K_4 );
+            Map( 0xB005U, CHR_SWAP_1K_5 );
+            Map( 0xB006U, CHR_SWAP_1K_6 );
+            Map( 0xB007U, CHR_SWAP_1K_7 );
+        }
+        
+        void Mapper65::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'I','R','Q'>::V)
+                {
+                    State::Loader::Data<5> data( state );
+                    
+                    irq.unit.enabled = data[0] & 0x1;
+                    irq.unit.latch = data[1] | data[2] << 8;
+                    irq.unit.count = data[3] | data[4] << 8;
+                }
+                
+                state.End();
+            }
+        }
+        
+        void Mapper65::SubSave(State::Saver& state) const
+        {
+            const byte data[5] =
+            {
+                irq.unit.enabled ? 0x1 : 0x0,
+                irq.unit.latch & 0xFF,
+                irq.unit.latch >> 8,
+                irq.unit.count & 0xFF,
+                irq.unit.count >> 8
+            };
+            
+            state.Begin( AsciiId<'I','R','Q'>::V ).Write( data ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper65::Poke_9001(void* p_,Address i_,Data j_) { static_cast<Mapper65*>(p_)->Poke_M_9001(i_,j_); } inline void Mapper65::Poke_M_9001(Address,Data data)
+        {
+            ppu.SetMirroring( (data & 0x80) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
+        }
+        
+        void Mapper65::Poke_9003(void* p_,Address i_,Data j_) { static_cast<Mapper65*>(p_)->Poke_M_9003(i_,j_); } inline void Mapper65::Poke_M_9003(Address,Data data)
+        {
+            irq.Update();
+            irq.unit.enabled = data & 0x80;
+            irq.ClearIRQ();
+        }
+        
+        void Mapper65::Poke_9004(void* p_,Address i_,Data j_) { static_cast<Mapper65*>(p_)->Poke_M_9004(i_,j_); } inline void Mapper65::Poke_M_9004(Address,Data)
+        {
+            irq.Update();
+            irq.unit.count = irq.unit.latch;
+            irq.ClearIRQ();
+        }
+        
+        void Mapper65::Poke_9005(void* p_,Address i_,Data j_) { static_cast<Mapper65*>(p_)->Poke_M_9005(i_,j_); } inline void Mapper65::Poke_M_9005(Address,Data data)
+        {
+            irq.Update();
+            irq.unit.latch = (irq.unit.latch & 0x00FF) | data << 8;
+        }
+        
+        void Mapper65::Poke_9006(void* p_,Address i_,Data j_) { static_cast<Mapper65*>(p_)->Poke_M_9006(i_,j_); } inline void Mapper65::Poke_M_9006(Address,Data data)
+        {
+            irq.Update();
+            irq.unit.latch = (irq.unit.latch & 0xFF00) | data << 0;
+        }
+        
+        bool Mapper65::Irq::Clock()
+        {
+            if (enabled && count && !--count)
+            {
+                enabled = false;
+                return true;
+            }
+            
+            return false;
+        }
+        
+        void Mapper65::Sync(Event event,Input::Controllers*)
+        {
+            if (event == EVENT_END_FRAME)
+                irq.VSync();
+        }
+    }
 }

@@ -27,31 +27,31 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper97::SubReset(const bool hard)
-		{
-			Map( 0x8000U, 0xBFFFU, &Mapper97::Poke_8000 );
-
-			if (hard)
-			{
-				prg.SwapBank<SIZE_16K,0x0000>( ~0U );
-				NES_DO_POKE(8000,0x8000,0x00);
-			}
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper97,8000)
-		{
-			prg.SwapBank<SIZE_16K,0x4000>( data );
-			ppu.SetMirroring( (data & 0x80) ? Ppu::NMT_VERTICAL : Ppu::NMT_HORIZONTAL );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper97::SubReset(const bool hard)
+        {
+            Map( 0x8000U, 0xBFFFU, &Mapper97::Poke_8000 );
+            
+            if (hard)
+            {
+                prg.SwapBank<SIZE_16K,0x0000>( ~0U );
+                Poke_8000(this,0x8000,0x00);
+            }
+        }
+        
+        
+        
+        
+        
+        void Mapper97::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Mapper97*>(p_)->Poke_M_8000(i_,j_); } inline void Mapper97::Poke_M_8000(Address,Data data)
+        {
+            prg.SwapBank<SIZE_16K,0x4000>( data );
+            ppu.SetMirroring( (data & 0x80) ? Ppu::NMT_VERTICAL : Ppu::NMT_HORIZONTAL );
+        }
+    }
 }
