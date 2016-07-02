@@ -29,97 +29,97 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper165::Mapper165(Context& c)
-		: Mmc3(c,BRD_GENERIC,PROM_MAX_512K|CROM_MAX_256K|CRAM_4K) {}
-
-		void Mapper165::SubReset(bool)
-		{
-			selector[1] = 0;
-			selector[0] = 0;
-
-			chr.SetAccessor( 0, this, &Mapper165::Access_Chr_0000 );
-			chr.SetAccessor( 1, this, &Mapper165::Access_Chr_1000 );
-
-			Mmc3::SubReset( true );
-		}
-
-		void Mapper165::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'L','T','C'>::V ).Write8( selector[0] | selector[1] ).End();
-		}
-
-		void Mapper165::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'L','T','C'>::V)
-				{
-					const uint data = state.Read8();
-					selector[0] = data << 0 & 0x1;
-					selector[1] = data << 1 & 0x6;
-				}
-
-				state.End();
-			}
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		void Mapper165::SwapChrLo() const
-		{
-			chr.Source( banks.chr[selector[0]] == 0 ).SwapBank<SIZE_4K,0x0000>( banks.chr[selector[0]] >> 1 );
-		}
-
-		void Mapper165::SwapChrHi() const
-		{
-			chr.Source( banks.chr[selector[1]] == 0 ).SwapBank<SIZE_4K,0x1000>( banks.chr[selector[1]] >> 2 );
-		}
-
-		void Mapper165::UpdateChr() const
-		{
-			ppu.Update();
-			SwapChrLo();
-			SwapChrHi();
-		}
-
-		NES_ACCESSOR(Mapper165,Chr_0000)
-		{
-			const uint data = chr.Peek( address );
-
-			switch (address & 0xFF8)
-			{
-				case 0xFD0: selector[0] = 0; break;
-				case 0xFE8: selector[0] = 1; break;
-				default: return data;
-			}
-
-			SwapChrLo();
-
-			return data;
-		}
-
-		NES_ACCESSOR(Mapper165,Chr_1000)
-		{
-			const uint data = chr.Peek( address );
-
-			switch (address & 0xFF8)
-			{
-				case 0xFD0: selector[1] = 2; break;
-				case 0xFE8: selector[1] = 4; break;
-				default: return data;
-			}
-
-			SwapChrHi();
-
-			return data;
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper165::Mapper165(Context& c)
+        : Mmc3(c,BRD_GENERIC,PROM_MAX_512K|CROM_MAX_256K|CRAM_4K) {}
+        
+        void Mapper165::SubReset(bool)
+        {
+            selector[1] = 0;
+            selector[0] = 0;
+            
+            chr.SetAccessor( 0, this, &Mapper165::Access_Chr_0000 );
+            chr.SetAccessor( 1, this, &Mapper165::Access_Chr_1000 );
+            
+            Mmc3::SubReset( true );
+        }
+        
+        void Mapper165::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'L','T','C'>::V ).Write8( selector[0] | selector[1] ).End();
+        }
+        
+        void Mapper165::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'L','T','C'>::V)
+                {
+                    const uint data = state.Read8();
+                    selector[0] = data << 0 & 0x1;
+                    selector[1] = data << 1 & 0x6;
+                }
+                
+                state.End();
+            }
+        }
+        
+        
+        
+        
+        
+        void Mapper165::SwapChrLo() const
+        {
+            chr.Source( banks.chr[selector[0]] == 0 ).SwapBank<SIZE_4K,0x0000>( banks.chr[selector[0]] >> 1 );
+        }
+        
+        void Mapper165::SwapChrHi() const
+        {
+            chr.Source( banks.chr[selector[1]] == 0 ).SwapBank<SIZE_4K,0x1000>( banks.chr[selector[1]] >> 2 );
+        }
+        
+        void Mapper165::UpdateChr() const
+        {
+            ppu.Update();
+            SwapChrLo();
+            SwapChrHi();
+        }
+        
+        __attribute__((noinline)) Data Mapper165::Access_Chr_0000(void* p_,Address i_) { return static_cast<Mapper165*>(p_)->Access_M_Chr_0000(i_); } inline Data Mapper165::Access_M_Chr_0000(Address address)
+        {
+            const uint data = chr.Peek( address );
+            
+            switch (address & 0xFF8)
+            {
+                case 0xFD0: selector[0] = 0; break;
+                case 0xFE8: selector[0] = 1; break;
+                default: return data;
+            }
+            
+            SwapChrLo();
+            
+            return data;
+        }
+        
+        __attribute__((noinline)) Data Mapper165::Access_Chr_1000(void* p_,Address i_) { return static_cast<Mapper165*>(p_)->Access_M_Chr_1000(i_); } inline Data Mapper165::Access_M_Chr_1000(Address address)
+        {
+            const uint data = chr.Peek( address );
+            
+            switch (address & 0xFF8)
+            {
+                case 0xFD0: selector[1] = 2; break;
+                case 0xFE8: selector[1] = 4; break;
+                default: return data;
+            }
+            
+            SwapChrHi();
+            
+            return data;
+        }
+    }
 }

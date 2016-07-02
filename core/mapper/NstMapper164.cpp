@@ -27,79 +27,79 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper164::SubReset(bool)
-		{
-			for (uint i=0x5000; i < 0x6000; i += 0x400)
-				Map( i + 0x00, i + 0x1FF, &Mapper164::Poke_5000 );
-
-			regs[0] = ~0U;
-			regs[1] = 0;
-
-			NES_DO_POKE(5000,0x5000,0x00);
-		}
-
-		void Mapper164::SubSave(State::Saver& state) const
-		{
-			const byte data[2] = { regs[0], regs[1] };
-			state.Begin( AsciiId<'R','E','G'>::V ).Write( data ).End();
-		}
-
-		void Mapper164::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-				{
-					State::Loader::Data<2> data( state );
-
-					regs[0] = data[0];
-					regs[1] = data[1];
-				}
-
-				state.End();
-			}
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_AD(Mapper164,5000)
-		{
-			address = address >> 8 & 0x1;
-
-			if (regs[address] != data)
-			{
-				regs[address] = data;
-				data = regs[1] << 5 & 0x20;
-
-				switch (regs[0] & 0x70)
-				{
-					case 0x00:
-					case 0x20:
-					case 0x40:
-					case 0x60:
-
-						prg.SwapBanks<SIZE_16K,0x0000>( data | (regs[0] >> 1 & 0x10) | (regs[0] & 0xF), data | 0x1F );
-						break;
-
-					case 0x50:
-
-						prg.SwapBank<SIZE_32K,0x0000>( (data >> 1) | (regs[0] & 0xF) );
-						break;
-
-					case 0x70:
-
-						prg.SwapBanks<SIZE_16K,0x0000>( data | (regs[0] << 1 & 0x10) | (regs[0] & 0xF), data | 0x1F );
-						break;
-				}
-			}
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper164::SubReset(bool)
+        {
+            for (uint i=0x5000; i < 0x6000; i += 0x400)
+                Map( i + 0x00, i + 0x1FF, &Mapper164::Poke_5000 );
+            
+            regs[0] = ~0U;
+            regs[1] = 0;
+            
+            Poke_5000(this,0x5000,0x00);
+        }
+        
+        void Mapper164::SubSave(State::Saver& state) const
+        {
+            const byte data[2] = { regs[0], regs[1] };
+            state.Begin( AsciiId<'R','E','G'>::V ).Write( data ).End();
+        }
+        
+        void Mapper164::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                {
+                    State::Loader::Data<2> data( state );
+                    
+                    regs[0] = data[0];
+                    regs[1] = data[1];
+                }
+                
+                state.End();
+            }
+        }
+        
+        
+        
+        
+        
+        void Mapper164::Poke_5000(void* p_,Address i_,Data j_) { static_cast<Mapper164*>(p_)->Poke_M_5000(i_,j_); } inline void Mapper164::Poke_M_5000(Address address,Data data)
+        {
+            address = address >> 8 & 0x1;
+            
+            if (regs[address] != data)
+            {
+                regs[address] = data;
+                data = regs[1] << 5 & 0x20;
+                
+                switch (regs[0] & 0x70)
+                {
+                    case 0x00:
+                    case 0x20:
+                    case 0x40:
+                    case 0x60:
+                        
+                        prg.SwapBanks<SIZE_16K,0x0000>( data | (regs[0] >> 1 & 0x10) | (regs[0] & 0xF), data | 0x1F );
+                        break;
+                        
+                    case 0x50:
+                        
+                        prg.SwapBank<SIZE_32K,0x0000>( (data >> 1) | (regs[0] & 0xF) );
+                        break;
+                        
+                    case 0x70:
+                        
+                        prg.SwapBanks<SIZE_16K,0x0000>( data | (regs[0] << 1 & 0x10) | (regs[0] & 0xF), data | 0x1F );
+                        break;
+                }
+            }
+        }
+    }
 }

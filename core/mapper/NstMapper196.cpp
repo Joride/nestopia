@@ -28,23 +28,23 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		void Mapper196::SubReset(bool hard)
-		{
-			Mmc3::SubReset( hard );
-
-			for (uint i=0x0000; i < 0x2000; i += 0x8)
-			{
-				Map( 0x8000 + i, 0x8003 + i, &Mapper196::Poke_8000 );
-				Map( 0x8004 + i, 0x8007 + i, &Mapper196::Poke_8001 );
-				Map( 0xA000 + i, 0xA003 + i, NMT_SWAP_HV           );
-				Map( 0xA004 + i, 0xA007 + i, &Mapper196::Poke_A001 );
-				Map( 0xC000 + i, 0xC003 + i, &Mapper196::Poke_C000 );
-				Map( 0xC004 + i, 0xC007 + i, &Mapper196::Poke_C001 );
-				Map( 0xE000 + i, 0xE003 + i, &Mapper196::Poke_E000 );
-				Map( 0xE004 + i, 0xE007 + i, &Mapper196::Poke_E001 );
-			}
-		}
-	}
+    namespace Core
+    {
+        void Mapper196::SubReset(bool hard)
+        {
+            Mmc3::SubReset( hard );
+            
+            for (uint i=0x0000; i < 0x2000; i += 0x8)
+            {
+                Map( 0x8000 + i, 0x8003 + i, &Mapper196::Poke_8000 );
+                Map( 0x8004 + i, 0x8007 + i, &Mapper196::Poke_8001 );
+                Map( 0xA000 + i, 0xA003 + i, NMT_SWAP_HV );
+                Map( 0xA004 + i, 0xA007 + i, &Mapper196::Poke_A001 );
+                Map( 0xC000 + i, 0xC003 + i, &Mapper196::Poke_C000 );
+                Map( 0xC004 + i, 0xC007 + i, &Mapper196::Poke_C001 );
+                Map( 0xE000 + i, 0xE003 + i, &Mapper196::Poke_E000 );
+                Map( 0xE004 + i, 0xE007 + i, &Mapper196::Poke_E001 );
+            }
+        }
+    }
 }

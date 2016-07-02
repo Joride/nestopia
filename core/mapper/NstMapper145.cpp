@@ -27,26 +27,26 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper145::SubReset(bool)
-		{
-			for (uint i=0x4100; i < 0x6000; i += 0x200)
-				Map( i, i + 0x100, &Mapper145::Poke_4100 );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper145,4100)
-		{
-			ppu.Update();
-			chr.SwapBank<SIZE_8K,0x0000>( data >> 7 );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper145::SubReset(bool)
+        {
+            for (uint i=0x4100; i < 0x6000; i += 0x200)
+                Map( i, i + 0x100, &Mapper145::Poke_4100 );
+        }
+        
+        
+        
+        
+        
+        void Mapper145::Poke_4100(void* p_,Address i_,Data j_) { static_cast<Mapper145*>(p_)->Poke_M_4100(i_,j_); } inline void Mapper145::Poke_M_4100(Address,Data data)
+        {
+            ppu.Update();
+            chr.SwapBank<SIZE_8K,0x0000>( data >> 7 );
+        }
+    }
 }

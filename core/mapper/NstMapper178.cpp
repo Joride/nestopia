@@ -27,54 +27,54 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper178::SubReset(const bool hard)
-		{
-			Map( 0x4800U, NMT_SWAP_HV );
-			Map( 0x4801U, &Mapper178::Poke_4801 );
-			Map( 0x4802U, &Mapper178::Poke_4802 );
-
-			if (hard)
-			{
-				reg = 0;
-				NES_DO_POKE(4801,0x4801,0x00);
-			}
-		}
-
-		void Mapper178::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-					reg = state.Read8() & 0xF;
-
-				state.End();
-			}
-		}
-
-		void Mapper178::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','E','G'>::V ).Write8( reg ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper178,4801)
-		{
-			reg = (data >> 1 & 0x3) | (reg & 0xC);
-			prg.SwapBank<SIZE_32K,0x0000>( reg );
-		}
-
-		NES_POKE_D(Mapper178,4802)
-		{
-			reg = (reg & 0x3) | (data << 2 & 0xC);
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper178::SubReset(const bool hard)
+        {
+            Map( 0x4800U, NMT_SWAP_HV );
+            Map( 0x4801U, &Mapper178::Poke_4801 );
+            Map( 0x4802U, &Mapper178::Poke_4802 );
+            
+            if (hard)
+            {
+                reg = 0;
+                Poke_4801(this,0x4801,0x00);
+            }
+        }
+        
+        void Mapper178::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                    reg = state.Read8() & 0xF;
+                
+                state.End();
+            }
+        }
+        
+        void Mapper178::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','E','G'>::V ).Write8( reg ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper178::Poke_4801(void* p_,Address i_,Data j_) { static_cast<Mapper178*>(p_)->Poke_M_4801(i_,j_); } inline void Mapper178::Poke_M_4801(Address,Data data)
+        {
+            reg = (data >> 1 & 0x3) | (reg & 0xC);
+            prg.SwapBank<SIZE_32K,0x0000>( reg );
+        }
+        
+        void Mapper178::Poke_4802(void* p_,Address i_,Data j_) { static_cast<Mapper178*>(p_)->Poke_M_4802(i_,j_); } inline void Mapper178::Poke_M_4802(Address,Data data)
+        {
+            reg = (reg & 0x3) | (data << 2 & 0xC);
+        }
+    }
 }

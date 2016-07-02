@@ -28,83 +28,83 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper186::SubReset(const bool hard)
-		{
-			Map( 0x4200U, 0x4201U, &Mapper186::Peek_4200 );
-			Map( 0x4202U,          &Mapper186::Peek_4202 );
-			Map( 0x4203U,          &Mapper186::Peek_4200 );
-			Map( 0x4204U, 0x43FFU, &Mapper186::Peek_4204 );
-
-			for (uint i=0x4200; i < 0x4400; i += 0x2)
-			{
-				Map( i + 0x0, &Mapper186::Poke_4200 );
-				Map( i + 0x1, PRG_SWAP_16K_0        );
-			}
-
-			Map( 0x4400U, 0x4EFFU, &Mapper186::Peek_4400, &Mapper186::Poke_4400 );
-			Map( WRK_PEEK );
-
-			if (hard)
-			{
-				std::memset( ram, 0, sizeof(ram) );
-				prg.SwapBanks<SIZE_16K,0x0000>(0,0);
-			}
-		}
-
-		void Mapper186::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','A','M'>::V)
-					state.Uncompress( ram );
-
-				state.End();
-			}
-		}
-
-		void Mapper186::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','A','M'>::V ).Compress( ram ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_PEEK(Mapper186,4200)
-		{
-			return 0x00;
-		}
-
-		NES_PEEK(Mapper186,4202)
-		{
-			return 0x40;
-		}
-
-		NES_PEEK(Mapper186,4204)
-		{
-			return 0xFF;
-		}
-
-		NES_POKE_D(Mapper186,4200)
-		{
-			wrk.SwapBank<SIZE_8K,0x0000>( data >> 6 );
-		}
-
-		NES_PEEK_A(Mapper186,4400)
-		{
-			return ram[address - 0x4400];
-		}
-
-		NES_POKE_AD(Mapper186,4400)
-		{
-			ram[address - 0x4400] = data;
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper186::SubReset(const bool hard)
+        {
+            Map( 0x4200U, 0x4201U, &Mapper186::Peek_4200 );
+            Map( 0x4202U, &Mapper186::Peek_4202 );
+            Map( 0x4203U, &Mapper186::Peek_4200 );
+            Map( 0x4204U, 0x43FFU, &Mapper186::Peek_4204 );
+            
+            for (uint i=0x4200; i < 0x4400; i += 0x2)
+            {
+                Map( i + 0x0, &Mapper186::Poke_4200 );
+                Map( i + 0x1, PRG_SWAP_16K_0 );
+            }
+            
+            Map( 0x4400U, 0x4EFFU, &Mapper186::Peek_4400, &Mapper186::Poke_4400 );
+            Map( WRK_PEEK );
+            
+            if (hard)
+            {
+                std::memset( ram, 0, sizeof(ram) );
+                prg.SwapBanks<SIZE_16K,0x0000>(0,0);
+            }
+        }
+        
+        void Mapper186::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','A','M'>::V)
+                    state.Uncompress( ram );
+                
+                state.End();
+            }
+        }
+        
+        void Mapper186::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','A','M'>::V ).Compress( ram ).End();
+        }
+        
+        
+        
+        
+        
+        Data Mapper186::Peek_4200(void* p_,Address i_) { return static_cast<Mapper186*>(p_)->Peek_M_4200(i_); } inline Data Mapper186::Peek_M_4200(Address)
+        {
+            return 0x00;
+        }
+        
+        Data Mapper186::Peek_4202(void* p_,Address i_) { return static_cast<Mapper186*>(p_)->Peek_M_4202(i_); } inline Data Mapper186::Peek_M_4202(Address)
+        {
+            return 0x40;
+        }
+        
+        Data Mapper186::Peek_4204(void* p_,Address i_) { return static_cast<Mapper186*>(p_)->Peek_M_4204(i_); } inline Data Mapper186::Peek_M_4204(Address)
+        {
+            return 0xFF;
+        }
+        
+        void Mapper186::Poke_4200(void* p_,Address i_,Data j_) { static_cast<Mapper186*>(p_)->Poke_M_4200(i_,j_); } inline void Mapper186::Poke_M_4200(Address,Data data)
+        {
+            wrk.SwapBank<SIZE_8K,0x0000>( data >> 6 );
+        }
+        
+        Data Mapper186::Peek_4400(void* p_,Address i_) { return static_cast<Mapper186*>(p_)->Peek_M_4400(i_); } inline Data Mapper186::Peek_M_4400(Address address)
+        {
+            return ram[address - 0x4400];
+        }
+        
+        void Mapper186::Poke_4400(void* p_,Address i_,Data j_) { static_cast<Mapper186*>(p_)->Poke_M_4400(i_,j_); } inline void Mapper186::Poke_M_4400(Address address,Data data)
+        {
+            ram[address - 0x4400] = data;
+        }
+    }
 }

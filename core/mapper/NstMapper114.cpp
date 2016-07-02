@@ -28,98 +28,98 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper114::SubReset(const bool hard)
-		{
-			exRegs[0] = 0x00;
-			exRegs[1] = false;
-
-			Mmc3::SubReset( hard );
-
-			Map( 0x5000U, 0x7FFFU, &Mapper114::Poke_5000 );
-			Map( 0x8000U, 0x9FFFU, NMT_SWAP_HV           );
-			Map( 0xA000U, 0xBFFFU, &Mapper114::Poke_A000 );
-			Map( 0xC000U, 0xDFFFU, &Mapper114::Poke_C000 );
-			Map( 0xE000U, 0xFFFFU, NOP_POKE              );
-			Map( 0xE002U,          &Mapper114::Poke_E000 );
-			Map( 0xE003U,          &Mapper114::Poke_E003 );
-		}
-
-		void Mapper114::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-				{
-					State::Loader::Data<2> data( state );
-
-					exRegs[0] = data[0];
-					exRegs[1] = data[1] & 0x1;
-				}
-
-				state.End();
-			}
-		}
-
-		void Mapper114::SubSave(State::Saver& state) const
-		{
-			const byte data[2] =
-			{
-				exRegs[0],
-				exRegs[1]
-			};
-
-			state.Begin( AsciiId<'R','E','G'>::V ).Write( data ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper114,5000)
-		{
-			exRegs[0] = data;
-
-			if (data & 0x80)
-			{
-				data &= 0x1F;
-				prg.SwapBanks<SIZE_16K,0x0000>( data, data );
-			}
-			else
-			{
-				Mmc3::UpdatePrg();
-			}
-		}
-
-		NES_POKE_D(Mapper114,A000)
-		{
-			static const byte security[8] = {0,3,1,5,6,7,2,4};
-
-			data = (data & 0xC0) | security[data & 0x07];
-			exRegs[1] = true;
-
-			Mmc3::NES_DO_POKE(8000,0x8000,data);
-		}
-
-		NES_POKE_D(Mapper114,C000)
-		{
-			if (exRegs[1] && ((exRegs[0] & 0x80) == 0 || (regs.ctrl0 & Regs::CTRL0_MODE) < 6))
-			{
-				exRegs[1] = false;
-				Mmc3::NES_DO_POKE(8001,0x8001,data);
-			}
-		}
-
-		NES_POKE_D(Mapper114,E003)
-		{
-			Mmc3::NES_DO_POKE(E001,0xE001,data);
-			Mmc3::NES_DO_POKE(C000,0xC000,data);
-			Mmc3::NES_DO_POKE(C001,0xC001,data);
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper114::SubReset(const bool hard)
+        {
+            exRegs[0] = 0x00;
+            exRegs[1] = false;
+            
+            Mmc3::SubReset( hard );
+            
+            Map( 0x5000U, 0x7FFFU, &Mapper114::Poke_5000 );
+            Map( 0x8000U, 0x9FFFU, NMT_SWAP_HV );
+            Map( 0xA000U, 0xBFFFU, &Mapper114::Poke_A000 );
+            Map( 0xC000U, 0xDFFFU, &Mapper114::Poke_C000 );
+            Map( 0xE000U, 0xFFFFU, NOP_POKE );
+            Map( 0xE002U, &Mapper114::Poke_E000 );
+            Map( 0xE003U, &Mapper114::Poke_E003 );
+        }
+        
+        void Mapper114::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                {
+                    State::Loader::Data<2> data( state );
+                    
+                    exRegs[0] = data[0];
+                    exRegs[1] = data[1] & 0x1;
+                }
+                
+                state.End();
+            }
+        }
+        
+        void Mapper114::SubSave(State::Saver& state) const
+        {
+            const byte data[2] =
+            {
+                exRegs[0],
+                exRegs[1]
+            };
+            
+            state.Begin( AsciiId<'R','E','G'>::V ).Write( data ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper114::Poke_5000(void* p_,Address i_,Data j_) { static_cast<Mapper114*>(p_)->Poke_M_5000(i_,j_); } inline void Mapper114::Poke_M_5000(Address,Data data)
+        {
+            exRegs[0] = data;
+            
+            if (data & 0x80)
+            {
+                data &= 0x1F;
+                prg.SwapBanks<SIZE_16K,0x0000>( data, data );
+            }
+            else
+            {
+                Mmc3::UpdatePrg();
+            }
+        }
+        
+        void Mapper114::Poke_A000(void* p_,Address i_,Data j_) { static_cast<Mapper114*>(p_)->Poke_M_A000(i_,j_); } inline void Mapper114::Poke_M_A000(Address,Data data)
+        {
+            static const byte security[8] = {0,3,1,5,6,7,2,4};
+            
+            data = (data & 0xC0) | security[data & 0x07];
+            exRegs[1] = true;
+            
+            Mmc3::Poke_8000(this,0x8000,data);
+        }
+        
+        void Mapper114::Poke_C000(void* p_,Address i_,Data j_) { static_cast<Mapper114*>(p_)->Poke_M_C000(i_,j_); } inline void Mapper114::Poke_M_C000(Address,Data data)
+        {
+            if (exRegs[1] && ((exRegs[0] & 0x80) == 0 || (regs.ctrl0 & Regs::CTRL0_MODE) < 6))
+            {
+                exRegs[1] = false;
+                Mmc3::Poke_8001(this,0x8001,data);
+            }
+        }
+        
+        void Mapper114::Poke_E003(void* p_,Address i_,Data j_) { static_cast<Mapper114*>(p_)->Poke_M_E003(i_,j_); } inline void Mapper114::Poke_M_E003(Address,Data data)
+        {
+            Mmc3::Poke_E001(this,0xE001,data);
+            Mmc3::Poke_C000(this,0xC000,data);
+            Mmc3::Poke_C001(this,0xC001,data);
+        }
+    }
 }

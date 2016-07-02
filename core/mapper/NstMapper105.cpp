@@ -30,265 +30,265 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper105::CartSwitches::CartSwitches()
-		: time(4), showTime(true) {}
-
-		Mapper105::Mapper105(Context& c)
-		: Mmc1(c,BRD_GENERIC_WRAM,REV_B)
-		{
-			std::strcpy( text, "Time Left: " );
-		}
-
-		uint Mapper105::CartSwitches::NumDips() const
-		{
-			return 2;
-		}
-
-		uint Mapper105::CartSwitches::NumValues(uint dip) const
-		{
-			NST_ASSERT( dip < 2 );
-			return (dip == 0) ? 16 : 2;
-		}
-
-		cstring Mapper105::CartSwitches::GetDipName(uint dip) const
-		{
-			NST_ASSERT( dip < 2 );
-			return (dip == 0) ? "Time" : "Show Time";
-		}
-
-		cstring Mapper105::CartSwitches::GetValueName(uint dip,uint value) const
-		{
-			NST_ASSERT( dip < 2 );
-
-			if (dip == 0)
-			{
-				NST_ASSERT( value < 16 );
-
-				switch (value)
-				{
-					case 0x0: return "5.001";
-					case 0x1: return "5.316";
-					case 0x2: return "5.629";
-					case 0x3: return "5.942";
-					case 0x4: return "6.254";
-					case 0x5: return "6.567";
-					case 0x6: return "6.880";
-					case 0x7: return "7.193";
-					case 0x8: return "7.505";
-					case 0x9: return "7.818";
-					case 0xA: return "8.131";
-					case 0xB: return "8.444";
-					case 0xC: return "8.756";
-					case 0xD: return "9.070";
-					case 0xE: return "9.318";
-					case 0xF: return "9.695";
-
-					NST_UNREACHABLE
-				}
-			}
-
-			NST_ASSERT( value < 2 );
-			return (value == 0) ? "no" : "yes";
-		}
-
-		uint Mapper105::CartSwitches::GetValue(uint dip) const
-		{
-			NST_ASSERT( dip < 2 );
-			return (dip == 0) ? time : showTime;
-		}
-
-		void Mapper105::CartSwitches::SetValue(uint dip,uint value)
-		{
-			NST_ASSERT( dip < 2 );
-
-			if (dip == 0)
-			{
-				NST_ASSERT( value < 16 );
-				time = value;
-			}
-			else
-			{
-				NST_ASSERT( value < 2 );
-				showTime = value;
-			}
-		}
-
-		uint Mapper105::CartSwitches::GetTime() const
-		{
-			static const word lut[16] =
-			{
-				300, // 5.001 * 60
-				318, // 5.316 * 60
-				337, // 5.629 * 60
-				356, // 5.942 * 60
-				375, // 6.254 * 60
-				394, // 6.567 * 60
-				412, // 6.880 * 60
-				431, // 7.193 * 60
-				450, // 7.505 * 60
-				469, // 7.818 * 60
-				487, // 8.131 * 60
-				506, // 8.444 * 60
-				525, // 8.756 * 60
-				544, // 9.070 * 60
-				559, // 9.318 * 60
-				581  // 9.695 * 60
-			};
-
-			NST_ASSERT( time < 16 );
-
-			return lut[time];
-		}
-
-		inline bool Mapper105::CartSwitches::ShowTime() const
-		{
-			return showTime;
-		}
-
-		Mapper105::Device Mapper105::QueryDevice(DeviceType type)
-		{
-			if (type == DEVICE_DIP_SWITCHES)
-				return &cartSwitches;
-			else
-				return Mapper::QueryDevice( type );
-		}
-
-		void Mapper105::SubReset(const bool hard)
-		{
-			irqEnabled = false;
-			time = cartSwitches.GetTime();
-
-			Mmc1::SubReset( hard );
-
-			prg.SwapBank<SIZE_16K,0x4000>( 1 );
-		}
-
-		void Mapper105::SubLoad(State::Loader& state)
-		{
-			irqEnabled = (regs[1] & uint(IRQ_DISABLE)) ^ IRQ_DISABLE;
-			frames = 1;
-
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'T','I','M'>::V)
-				{
-					seconds = state.Read32();
-
-					if (seconds > time)
-					{
-						seconds = time;
-					}
-					else if (seconds == 0)
-					{
-						seconds = 1;
-					}
-				}
-
-				state.End();
-			}
-		}
-
-		void Mapper105::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'T','I','M'>::V ).Write32( seconds ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		void Mapper105::UpdateRegisters(const uint index)
-		{
-			NST_ASSERT( index < 4 );
-
-			if (index != 2)
-			{
-				if (regs[1] & 0x8U)
-				{
-					switch (regs[0] & 0xCU)
-					{
-						case 0x0:
-						case 0x4:
-
-							prg.SwapBank<SIZE_32K,0x0000>( 0x4 | (regs[3] >> 1 & 0x3U) );
-							break;
-
-						case 0x8:
-
-							prg.SwapBanks<SIZE_16K,0x0000>( 0x8, 0x8 | (regs[3] & 0x7U) );
-							break;
-
-						case 0xC:
-
-							prg.SwapBanks<SIZE_16K,0x0000>( 0x8 | (regs[3] & 0x7U), 0xF );
-							break;
-					}
-				}
-				else
-				{
-					prg.SwapBank<SIZE_32K,0x0000>( regs[1] >> 1 & 0x3U );
-				}
-
-				UpdateWrk();
-
-				if (index == 0)
-				{
-					UpdateNmt();
-				}
-				else
-				{
-					const uint state = (regs[1] & uint(IRQ_DISABLE)) ^ IRQ_DISABLE;
-
-					if (irqEnabled != state)
-					{
-						irqEnabled = state;
-
-						if (state)
-						{
-							frames = 1;
-							seconds = time;
-						}
-						else
-						{
-							cpu.ClearIRQ();
-						}
-					}
-				}
-			}
-		}
-
-		void Mapper105::Sync(Event event,Input::Controllers* controllers)
-		{
-			if (event == EVENT_END_FRAME)
-			{
-				if (irqEnabled)
-				{
-					if (!--frames)
-					{
-						frames = ppu.GetFps();
-
-						if (cartSwitches.ShowTime())
-							std::sprintf( text + TIME_OFFSET, "%u:%u", uint(seconds / 60), uint(seconds % 60) );
-
-						if (!--seconds)
-						{
-							seconds = time;
-							cpu.DoIRQ();
-						}
-					}
-
-					if (cartSwitches.ShowTime())
-						Api::User::eventCallback( Api::User::EVENT_DISPLAY_TIMER, text );
-				}
-
-				Mmc1::Sync( event, controllers );
-			}
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper105::CartSwitches::CartSwitches()
+        : time(4), showTime(true) {}
+        
+        Mapper105::Mapper105(Context& c)
+        : Mmc1(c,BRD_GENERIC_WRAM,REV_B)
+        {
+            std::strcpy( text, "Time Left: " );
+        }
+        
+        uint Mapper105::CartSwitches::NumDips() const
+        {
+            return 2;
+        }
+        
+        uint Mapper105::CartSwitches::NumValues(uint dip) const
+        {
+            (__builtin_expect(!(!!(dip < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 55, "!!(dip < 2)") : (void)0);
+            return (dip == 0) ? 16 : 2;
+        }
+        
+        cstring Mapper105::CartSwitches::GetDipName(uint dip) const
+        {
+            (__builtin_expect(!(!!(dip < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 61, "!!(dip < 2)") : (void)0);
+            return (dip == 0) ? "Time" : "Show Time";
+        }
+        
+        cstring Mapper105::CartSwitches::GetValueName(uint dip,uint value) const
+        {
+            (__builtin_expect(!(!!(dip < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 67, "!!(dip < 2)") : (void)0);
+            
+            if (dip == 0)
+            {
+                (__builtin_expect(!(!!(value < 16)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 71, "!!(value < 16)") : (void)0);
+                
+                switch (value)
+                {
+                    case 0x0: return "5.001";
+                    case 0x1: return "5.316";
+                    case 0x2: return "5.629";
+                    case 0x3: return "5.942";
+                    case 0x4: return "6.254";
+                    case 0x5: return "6.567";
+                    case 0x6: return "6.880";
+                    case 0x7: return "7.193";
+                    case 0x8: return "7.505";
+                    case 0x9: return "7.818";
+                    case 0xA: return "8.131";
+                    case 0xB: return "8.444";
+                    case 0xC: return "8.756";
+                    case 0xD: return "9.070";
+                    case 0xE: return "9.318";
+                    case 0xF: return "9.695";
+                        
+                        
+                }
+            }
+            
+            (__builtin_expect(!(!!(value < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 96, "!!(value < 2)") : (void)0);
+            return (value == 0) ? "no" : "yes";
+        }
+        
+        uint Mapper105::CartSwitches::GetValue(uint dip) const
+        {
+            (__builtin_expect(!(!!(dip < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 102, "!!(dip < 2)") : (void)0);
+            return (dip == 0) ? time : showTime;
+        }
+        
+        void Mapper105::CartSwitches::SetValue(uint dip,uint value)
+        {
+            (__builtin_expect(!(!!(dip < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 108, "!!(dip < 2)") : (void)0);
+            
+            if (dip == 0)
+            {
+                (__builtin_expect(!(!!(value < 16)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 112, "!!(value < 16)") : (void)0);
+                time = value;
+            }
+            else
+            {
+                (__builtin_expect(!(!!(value < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 117, "!!(value < 2)") : (void)0);
+                showTime = value;
+            }
+        }
+        
+        uint Mapper105::CartSwitches::GetTime() const
+        {
+            static const word lut[16] =
+            {
+                300,
+                318,
+                337,
+                356,
+                375,
+                394,
+                412,
+                431,
+                450,
+                469,
+                487,
+                506,
+                525,
+                544,
+                559,
+                581
+            };
+            
+            (__builtin_expect(!(!!(time < 16)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 144, "!!(time < 16)") : (void)0);
+            
+            return lut[time];
+        }
+        
+        inline bool Mapper105::CartSwitches::ShowTime() const
+        {
+            return showTime;
+        }
+        
+        Mapper105::Device Mapper105::QueryDevice(DeviceType type)
+        {
+            if (type == DEVICE_DIP_SWITCHES)
+                return &cartSwitches;
+            else
+                return Mapper::QueryDevice( type );
+        }
+        
+        void Mapper105::SubReset(const bool hard)
+        {
+            irqEnabled = false;
+            time = cartSwitches.GetTime();
+            
+            Mmc1::SubReset( hard );
+            
+            prg.SwapBank<SIZE_16K,0x4000>( 1 );
+        }
+        
+        void Mapper105::SubLoad(State::Loader& state)
+        {
+            irqEnabled = (regs[1] & uint(IRQ_DISABLE)) ^ IRQ_DISABLE;
+            frames = 1;
+            
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'T','I','M'>::V)
+                {
+                    seconds = state.Read32();
+                    
+                    if (seconds > time)
+                    {
+                        seconds = time;
+                    }
+                    else if (seconds == 0)
+                    {
+                        seconds = 1;
+                    }
+                }
+                
+                state.End();
+            }
+        }
+        
+        void Mapper105::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'T','I','M'>::V ).Write32( seconds ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper105::UpdateRegisters(const uint index)
+        {
+            (__builtin_expect(!(!!(index < 4)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/mapper/NstMapper105.cpp", 208, "!!(index < 4)") : (void)0);
+            
+            if (index != 2)
+            {
+                if (regs[1] & 0x8U)
+                {
+                    switch (regs[0] & 0xCU)
+                    {
+                        case 0x0:
+                        case 0x4:
+                            
+                            prg.SwapBank<SIZE_32K,0x0000>( 0x4 | (regs[3] >> 1 & 0x3U) );
+                            break;
+                            
+                        case 0x8:
+                            
+                            prg.SwapBanks<SIZE_16K,0x0000>( 0x8, 0x8 | (regs[3] & 0x7U) );
+                            break;
+                            
+                        case 0xC:
+                            
+                            prg.SwapBanks<SIZE_16K,0x0000>( 0x8 | (regs[3] & 0x7U), 0xF );
+                            break;
+                    }
+                }
+                else
+                {
+                    prg.SwapBank<SIZE_32K,0x0000>( regs[1] >> 1 & 0x3U );
+                }
+                
+                UpdateWrk();
+                
+                if (index == 0)
+                {
+                    UpdateNmt();
+                }
+                else
+                {
+                    const uint state = (regs[1] & uint(IRQ_DISABLE)) ^ IRQ_DISABLE;
+                    
+                    if (irqEnabled != state)
+                    {
+                        irqEnabled = state;
+                        
+                        if (state)
+                        {
+                            frames = 1;
+                            seconds = time;
+                        }
+                        else
+                        {
+                            cpu.ClearIRQ();
+                        }
+                    }
+                }
+            }
+        }
+        
+        void Mapper105::Sync(Event event,Input::Controllers* controllers)
+        {
+            if (event == EVENT_END_FRAME)
+            {
+                if (irqEnabled)
+                {
+                    if (!--frames)
+                    {
+                        frames = ppu.GetFps();
+                        
+                        if (cartSwitches.ShowTime())
+                            std::sprintf( text + TIME_OFFSET, "%u:%u", uint(seconds / 60), uint(seconds % 60) );
+                        
+                        if (!--seconds)
+                        {
+                            seconds = time;
+                            cpu.DoIRQ();
+                        }
+                    }
+                    
+                    if (cartSwitches.ShowTime())
+                        Api::User::eventCallback( Api::User::EVENT_DISPLAY_TIMER, text );
+                }
+                
+                Mmc1::Sync( event, controllers );
+            }
+        }
+    }
 }

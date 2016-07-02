@@ -27,28 +27,28 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper108::SubReset(const bool hard)
-		{
-			Map( WRK_PEEK );
-			Map( 0x8FFFU, &Mapper108::Poke_8FFF );
-
-			if (hard)
-				prg.SwapBank<SIZE_32K,0x0000>(~0U);
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper108,8FFF)
-		{
-			wrk.SwapBank<SIZE_8K,0x0000U>(data);
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper108::SubReset(const bool hard)
+        {
+            Map( WRK_PEEK );
+            Map( 0x8FFFU, &Mapper108::Poke_8FFF );
+            
+            if (hard)
+                prg.SwapBank<SIZE_32K,0x0000>(~0U);
+        }
+        
+        
+        
+        
+        
+        void Mapper108::Poke_8FFF(void* p_,Address i_,Data j_) { static_cast<Mapper108*>(p_)->Poke_M_8FFF(i_,j_); } inline void Mapper108::Poke_M_8FFF(Address,Data data)
+        {
+            wrk.SwapBank<SIZE_8K,0x0000U>(data);
+        }
+    }
 }

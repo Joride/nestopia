@@ -27,33 +27,33 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper147::SubReset(const bool hard)
-		{
-			for (dword i=0x4100; i <= 0xFFFF; ++i)
-			{
-				if ((i & 0x103) == 0x102)
-					Map( i, &Mapper147::Poke_4100 );
-			}
-
-			if (hard)
-				NES_DO_POKE(4100,0x4102,0x00);
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper147,4100)
-		{
-			ppu.Update();
-			prg.SwapBank<SIZE_32K,0x0000>( (data >> 6 & 0x2) | (data >> 2 & 0x1) );
-			chr.SwapBank<SIZE_8K,0x0000>( data >> 3 );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper147::SubReset(const bool hard)
+        {
+            for (dword i=0x4100; i <= 0xFFFF; ++i)
+            {
+                if ((i & 0x103) == 0x102)
+                    Map( i, &Mapper147::Poke_4100 );
+            }
+            
+            if (hard)
+                Poke_4100(this,0x4102,0x00);
+        }
+        
+        
+        
+        
+        
+        void Mapper147::Poke_4100(void* p_,Address i_,Data j_) { static_cast<Mapper147*>(p_)->Poke_M_4100(i_,j_); } inline void Mapper147::Poke_M_4100(Address,Data data)
+        {
+            ppu.Update();
+            prg.SwapBank<SIZE_32K,0x0000>( (data >> 6 & 0x2) | (data >> 2 & 0x1) );
+            chr.SwapBank<SIZE_8K,0x0000>( data >> 3 );
+        }
+    }
 }

@@ -28,19 +28,19 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		void Mapper118::UpdateChr() const
-		{
-			Mmc3::UpdateChr();
-
-			nmt.SwapBanks<SIZE_1K,0x0000>
-			(
-				((regs.ctrl0 & Regs::CTRL0_XOR_CHR) ? banks.chr[2] >> 7 : banks.chr[0] >> 6) ^ 1,
-				((regs.ctrl0 & Regs::CTRL0_XOR_CHR) ? banks.chr[3] >> 7 : banks.chr[0] >> 6) ^ 1,
-				((regs.ctrl0 & Regs::CTRL0_XOR_CHR) ? banks.chr[4] >> 7 : banks.chr[1] >> 6) ^ 1,
-				((regs.ctrl0 & Regs::CTRL0_XOR_CHR) ? banks.chr[5] >> 7 : banks.chr[1] >> 6) ^ 1
-			);
-		}
-	}
+    namespace Core
+    {
+        void Mapper118::UpdateChr() const
+        {
+            Mmc3::UpdateChr();
+            
+            nmt.SwapBanks<SIZE_1K,0x0000>
+            (
+             ((regs.ctrl0 & Regs::CTRL0_XOR_CHR) ? banks.chr[2] >> 7 : banks.chr[0] >> 6) ^ 1,
+             ((regs.ctrl0 & Regs::CTRL0_XOR_CHR) ? banks.chr[3] >> 7 : banks.chr[0] >> 6) ^ 1,
+             ((regs.ctrl0 & Regs::CTRL0_XOR_CHR) ? banks.chr[4] >> 7 : banks.chr[1] >> 6) ^ 1,
+             ((regs.ctrl0 & Regs::CTRL0_XOR_CHR) ? banks.chr[5] >> 7 : banks.chr[1] >> 6) ^ 1
+             );
+        }
+    }
 }

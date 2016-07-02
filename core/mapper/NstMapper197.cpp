@@ -28,16 +28,16 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		void Mapper197::UpdateChr() const
-		{
-			ppu.Update();
-
-			const uint swap = regs.ctrl0 & Regs::CTRL0_XOR_CHR;
-
-			chr.SwapBank<SIZE_4K,0x0000>( banks.chr[swap ? 2 : 0] );
-			chr.SwapBanks<SIZE_2K,0x1000>( banks.chr[swap ? 0 : 2], banks.chr[swap ? 1 : 3] );
-		}
-	}
+    namespace Core
+    {
+        void Mapper197::UpdateChr() const
+        {
+            ppu.Update();
+            
+            const uint swap = regs.ctrl0 & Regs::CTRL0_XOR_CHR;
+            
+            chr.SwapBank<SIZE_4K,0x0000>( banks.chr[swap ? 2 : 0] );
+            chr.SwapBanks<SIZE_2K,0x1000>( banks.chr[swap ? 0 : 2], banks.chr[swap ? 1 : 3] );
+        }
+    }
 }

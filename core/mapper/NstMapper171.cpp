@@ -27,23 +27,23 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper171::SubReset(bool)
-		{
-			for (dword i=0xF000; i <= 0xFFFF; i += 0x100)
-			{
-				Map( uint(i)+0x00, uint(i)+0x7F, CHR_SWAP_4K_0 );
-				Map( uint(i)+0x80, uint(i)+0xFF, CHR_SWAP_4K_1 );
-			}
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper171::SubReset(bool)
+        {
+            for (dword i=0xF000; i <= 0xFFFF; i += 0x100)
+            {
+                Map( uint(i)+0x00, uint(i)+0x7F, CHR_SWAP_4K_0 );
+                Map( uint(i)+0x80, uint(i)+0xFF, CHR_SWAP_4K_1 );
+            }
+        }
+        
+        
+        
+        
+    }
 }

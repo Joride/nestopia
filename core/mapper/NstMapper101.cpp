@@ -27,19 +27,19 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper101::SubReset(bool)
-		{
-			Map( 0x6000U, 0xFFFFU, CHR_SWAP_8K );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper101::SubReset(bool)
+        {
+            Map( 0x6000U, 0xFFFFU, CHR_SWAP_8K );
+        }
+        
+        
+        
+        
+    }
 }

@@ -29,19 +29,19 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		void Mapper198::UpdatePrg()
-		{
-			if (banks.prg[0] >= 0x50)
-				banks.prg[0] &= 0x4F;
-
-			Mmc3Waixing::UpdatePrg();
-		}
-
-		uint Mapper198::GetChrSource(uint) const
-		{
-			return 0;
-		}
-	}
+    namespace Core
+    {
+        void Mapper198::UpdatePrg()
+        {
+            if (banks.prg[0] >= 0x50)
+                banks.prg[0] &= 0x4F;
+            
+            Mmc3Waixing::UpdatePrg();
+        }
+        
+        uint Mapper198::GetChrSource(uint) const
+        {
+            return 0;
+        }
+    }
 }

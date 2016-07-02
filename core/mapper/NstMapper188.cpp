@@ -28,52 +28,52 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper188::SubReset(const bool hard)
-		{
-			if (hard)
-				prg.SwapBank<SIZE_16K,0x4000>(7);
-
-			Map( 0x6000U, 0x7FFFU, &Mapper188::Peek_Mic );
-			Map( 0x8000U, 0xFFFFU, &Mapper188::Poke_Prg );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper188,Prg)
-		{
-			prg.SwapBank<SIZE_16K,0x0000>
-			(
-				data ? (data & 0x7) | (~data >> 1 & 0x8) : (prg.Source().Size() >> 18) + 0x7
-			);
-		}
-
-		NES_PEEK(Mapper188,Mic)
-		{
-			return mic;
-		}
-
-		void Mapper188::Sync(Event event,Input::Controllers* controllers)
-		{
-			if (event == EVENT_BEGIN_FRAME)
-			{
-				if (controllers)
-				{
-					Input::Controllers::KaraokeStudio::callback( controllers->karaokeStudio );
-					mic = controllers->karaokeStudio.buttons & 0x7 ^ 0x3;
-				}
-				else
-				{
-					mic = 0x3;
-				}
-			}
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper188::SubReset(const bool hard)
+        {
+            if (hard)
+                prg.SwapBank<SIZE_16K,0x4000>(7);
+            
+            Map( 0x6000U, 0x7FFFU, &Mapper188::Peek_Mic );
+            Map( 0x8000U, 0xFFFFU, &Mapper188::Poke_Prg );
+        }
+        
+        
+        
+        
+        
+        void Mapper188::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper188*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper188::Poke_M_Prg(Address,Data data)
+        {
+            prg.SwapBank<SIZE_16K,0x0000>
+            (
+             data ? (data & 0x7) | (~data >> 1 & 0x8) : (prg.Source().Size() >> 18) + 0x7
+             );
+        }
+        
+        Data Mapper188::Peek_Mic(void* p_,Address i_) { return static_cast<Mapper188*>(p_)->Peek_M_Mic(i_); } inline Data Mapper188::Peek_M_Mic(Address)
+        {
+            return mic;
+        }
+        
+        void Mapper188::Sync(Event event,Input::Controllers* controllers)
+        {
+            if (event == EVENT_BEGIN_FRAME)
+            {
+                if (controllers)
+                {
+                    Input::Controllers::KaraokeStudio::callback( controllers->karaokeStudio );
+                    mic = controllers->karaokeStudio.buttons & 0x7 ^ 0x3;
+                }
+                else
+                {
+                    mic = 0x3;
+                }
+            }
+        }
+    }
 }

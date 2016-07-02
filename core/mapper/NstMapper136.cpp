@@ -27,57 +27,57 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper136::SubReset(const bool hard)
-		{
-			if (hard)
-				reg = 0;
-
-			for (uint i=0x4100; i < 0x6000; i += 0x200)
-			{
-				for (uint j=0x0; j < 0x100; j += 0x4)
-				{
-					Map( i + j + 0x0, &Mapper136::Peek_4100 );
-					Map( i + j + 0x2, &Mapper136::Poke_4102 );
-				}
-			}
-		}
-
-		void Mapper136::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-					reg = state.Read8();
-
-				state.End();
-			}
-		}
-
-		void Mapper136::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','E','G'>::V ).Write8( reg ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_PEEK(Mapper136,4100)
-		{
-			return reg | 0x40;
-		}
-
-		NES_POKE_D(Mapper136,4102)
-		{
-			ppu.Update();
-			reg = (data & 0x30) | ((data+3) & 0x0F);
-			chr.SwapBank<SIZE_8K,0x0000>( reg );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper136::SubReset(const bool hard)
+        {
+            if (hard)
+                reg = 0;
+            
+            for (uint i=0x4100; i < 0x6000; i += 0x200)
+            {
+                for (uint j=0x0; j < 0x100; j += 0x4)
+                {
+                    Map( i + j + 0x0, &Mapper136::Peek_4100 );
+                    Map( i + j + 0x2, &Mapper136::Poke_4102 );
+                }
+            }
+        }
+        
+        void Mapper136::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                    reg = state.Read8();
+                
+                state.End();
+            }
+        }
+        
+        void Mapper136::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','E','G'>::V ).Write8( reg ).End();
+        }
+        
+        
+        
+        
+        
+        Data Mapper136::Peek_4100(void* p_,Address i_) { return static_cast<Mapper136*>(p_)->Peek_M_4100(i_); } inline Data Mapper136::Peek_M_4100(Address)
+        {
+            return reg | 0x40;
+        }
+        
+        void Mapper136::Poke_4102(void* p_,Address i_,Data j_) { static_cast<Mapper136*>(p_)->Poke_M_4102(i_,j_); } inline void Mapper136::Poke_M_4102(Address,Data data)
+        {
+            ppu.Update();
+            reg = (data & 0x30) | ((data+3) & 0x0F);
+            chr.SwapBank<SIZE_8K,0x0000>( reg );
+        }
+    }
 }

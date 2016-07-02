@@ -27,25 +27,25 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper143::SubReset(bool)
-		{
-			for (uint i=0x4100; i < 0x6000; i += 0x200)
-				Map( i + 0x00, i + 0xFF, &Mapper143::Peek_4100 );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_PEEK_A(Mapper143,4100)
-		{
-			return (~address & 0x3F) | 0x40;
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper143::SubReset(bool)
+        {
+            for (uint i=0x4100; i < 0x6000; i += 0x200)
+                Map( i + 0x00, i + 0xFF, &Mapper143::Peek_4100 );
+        }
+        
+        
+        
+        
+        
+        Data Mapper143::Peek_4100(void* p_,Address i_) { return static_cast<Mapper143*>(p_)->Peek_M_4100(i_); } inline Data Mapper143::Peek_M_4100(Address address)
+        {
+            return (~address & 0x3F) | 0x40;
+        }
+    }
 }

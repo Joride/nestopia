@@ -27,27 +27,27 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper156::SubReset(bool)
-		{
-			Map( 0xC000U, CHR_SWAP_1K_0  );
-			Map( 0xC001U, CHR_SWAP_1K_1  );
-			Map( 0xC002U, CHR_SWAP_1K_2  );
-			Map( 0xC003U, CHR_SWAP_1K_3  );
-			Map( 0xC008U, CHR_SWAP_1K_4  );
-			Map( 0xC009U, CHR_SWAP_1K_5  );
-			Map( 0xC00AU, CHR_SWAP_1K_6  );
-			Map( 0xC00BU, CHR_SWAP_1K_7  );
-			Map( 0xC010U, PRG_SWAP_16K_0 );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper156::SubReset(bool)
+        {
+            Map( 0xC000U, CHR_SWAP_1K_0 );
+            Map( 0xC001U, CHR_SWAP_1K_1 );
+            Map( 0xC002U, CHR_SWAP_1K_2 );
+            Map( 0xC003U, CHR_SWAP_1K_3 );
+            Map( 0xC008U, CHR_SWAP_1K_4 );
+            Map( 0xC009U, CHR_SWAP_1K_5 );
+            Map( 0xC00AU, CHR_SWAP_1K_6 );
+            Map( 0xC00BU, CHR_SWAP_1K_7 );
+            Map( 0xC010U, PRG_SWAP_16K_0 );
+        }
+        
+        
+        
+        
+    }
 }

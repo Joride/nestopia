@@ -27,63 +27,63 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper185::SubReset(bool)
-		{
-			Map( 0x8000U, 0xFFFFU, &Mapper185::Poke_Prg );
-
-			openBus = 0;
-		}
-
-		void Mapper185::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'O','P','B'>::V ).Write8( openBus ).End();
-		}
-
-		void Mapper185::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'O','P','B'>::V)
-				{
-					openBus = state.Read8() & 0x1;
-
-					if (openBus)
-						chr.SetAccessors( this, &Mapper185::Access_Chr, &Mapper185::Access_Chr );
-					else
-						chr.ResetAccessors();
-				}
-
-				state.End();
-			}
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_ACCESSOR(Mapper185,Chr)
-		{
-			return 0xFF;
-		}
-
-		NES_POKE_D(Mapper185,Prg)
-		{
-			ppu.Update();
-
-			chr.SwapBank<SIZE_8K,0x0000>( data );
-
-			openBus ^= 0x1;
-
-			if (openBus)
-				chr.SetAccessors( this, &Mapper185::Access_Chr, &Mapper185::Access_Chr );
-			else
-				chr.ResetAccessors();
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper185::SubReset(bool)
+        {
+            Map( 0x8000U, 0xFFFFU, &Mapper185::Poke_Prg );
+            
+            openBus = 0;
+        }
+        
+        void Mapper185::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'O','P','B'>::V ).Write8( openBus ).End();
+        }
+        
+        void Mapper185::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'O','P','B'>::V)
+                {
+                    openBus = state.Read8() & 0x1;
+                    
+                    if (openBus)
+                        chr.SetAccessors( this, &Mapper185::Access_Chr, &Mapper185::Access_Chr );
+                    else
+                        chr.ResetAccessors();
+                }
+                
+                state.End();
+            }
+        }
+        
+        
+        
+        
+        
+        __attribute__((noinline)) Data Mapper185::Access_Chr(void* p_,Address i_) { return static_cast<Mapper185*>(p_)->Access_M_Chr(i_); } inline Data Mapper185::Access_M_Chr(Address address)
+        {
+            return 0xFF;
+        }
+        
+        void Mapper185::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper185*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper185::Poke_M_Prg(Address,Data data)
+        {
+            ppu.Update();
+            
+            chr.SwapBank<SIZE_8K,0x0000>( data );
+            
+            openBus ^= 0x1;
+            
+            if (openBus)
+                chr.SetAccessors( this, &Mapper185::Access_Chr, &Mapper185::Access_Chr );
+            else
+                chr.ResetAccessors();
+        }
+    }
 }

@@ -28,20 +28,20 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		void Mapper119::UpdateChr() const
-		{
-			ppu.Update();
-
-			const uint swap = (regs.ctrl0 & Regs::CTRL0_XOR_CHR) << 5;
-
-			chr.Source( banks.chr[0] >> 5 & 0x1 ).SwapBank<SIZE_2K>( 0x0000 ^ swap, banks.chr[0] );
-			chr.Source( banks.chr[1] >> 5 & 0x1 ).SwapBank<SIZE_2K>( 0x0800 ^ swap, banks.chr[1] );
-			chr.Source( banks.chr[2] >> 6 & 0x1 ).SwapBank<SIZE_1K>( 0x1000 ^ swap, banks.chr[2] );
-			chr.Source( banks.chr[3] >> 6 & 0x1 ).SwapBank<SIZE_1K>( 0x1400 ^ swap, banks.chr[3] );
-			chr.Source( banks.chr[4] >> 6 & 0x1 ).SwapBank<SIZE_1K>( 0x1800 ^ swap, banks.chr[4] );
-			chr.Source( banks.chr[5] >> 6 & 0x1 ).SwapBank<SIZE_1K>( 0x1C00 ^ swap, banks.chr[5] );
-		}
-	}
+    namespace Core
+    {
+        void Mapper119::UpdateChr() const
+        {
+            ppu.Update();
+            
+            const uint swap = (regs.ctrl0 & Regs::CTRL0_XOR_CHR) << 5;
+            
+            chr.Source( banks.chr[0] >> 5 & 0x1 ).SwapBank<SIZE_2K>( 0x0000 ^ swap, banks.chr[0] );
+            chr.Source( banks.chr[1] >> 5 & 0x1 ).SwapBank<SIZE_2K>( 0x0800 ^ swap, banks.chr[1] );
+            chr.Source( banks.chr[2] >> 6 & 0x1 ).SwapBank<SIZE_1K>( 0x1000 ^ swap, banks.chr[2] );
+            chr.Source( banks.chr[3] >> 6 & 0x1 ).SwapBank<SIZE_1K>( 0x1400 ^ swap, banks.chr[3] );
+            chr.Source( banks.chr[4] >> 6 & 0x1 ).SwapBank<SIZE_1K>( 0x1800 ^ swap, banks.chr[4] );
+            chr.Source( banks.chr[5] >> 6 & 0x1 ).SwapBank<SIZE_1K>( 0x1C00 ^ swap, banks.chr[5] );
+        }
+    }
 }
