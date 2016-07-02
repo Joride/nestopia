@@ -27,61 +27,61 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper230::SubReset(const bool hard)
-		{
-			if (hard)
-				romSwitch = 0;
-			else
-				romSwitch ^= 1;
-
-			prg.SwapBanks<SIZE_16K,0x0000>( romSwitch ? 0 : 8, romSwitch ? 7 : 39 );
-
-			if (romSwitch)
-				ppu.SetMirroring( Ppu::NMT_VERTICAL );
-
-			Map( 0x8000U, 0xFFFFU, &Mapper230::Poke_Prg );
-
-			// for the soft reset triggering feature
-			cpu.Poke( 0x2000, 0x00 );
-		}
-
-		void Mapper230::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-					romSwitch = state.Read8() & 0x1;
-
-				state.End();
-			}
-		}
-
-		void Mapper230::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','E','G'>::V ).Write8( romSwitch ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper230,Prg)
-		{
-			if (romSwitch)
-			{
-				prg.SwapBank<SIZE_16K,0x0000>( data & 0x7 );
-			}
-			else
-			{
-				prg.SwapBanks<SIZE_16K,0x0000>( 8 + (data & 0x1F), (8 + (data & 0x1F)) | (~data >> 5 & 0x1) );
-				ppu.SetMirroring( (data & 0x40) ? Ppu::NMT_VERTICAL : Ppu::NMT_HORIZONTAL );
-			}
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper230::SubReset(const bool hard)
+        {
+            if (hard)
+                romSwitch = 0;
+            else
+                romSwitch ^= 1;
+            
+            prg.SwapBanks<SIZE_16K,0x0000>( romSwitch ? 0 : 8, romSwitch ? 7 : 39 );
+            
+            if (romSwitch)
+                ppu.SetMirroring( Ppu::NMT_VERTICAL );
+            
+            Map( 0x8000U, 0xFFFFU, &Mapper230::Poke_Prg );
+            
+            
+            cpu.Poke( 0x2000, 0x00 );
+        }
+        
+        void Mapper230::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                    romSwitch = state.Read8() & 0x1;
+                
+                state.End();
+            }
+        }
+        
+        void Mapper230::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','E','G'>::V ).Write8( romSwitch ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper230::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper230*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper230::Poke_M_Prg(Address,Data data)
+        {
+            if (romSwitch)
+            {
+                prg.SwapBank<SIZE_16K,0x0000>( data & 0x7 );
+            }
+            else
+            {
+                prg.SwapBanks<SIZE_16K,0x0000>( 8 + (data & 0x1F), (8 + (data & 0x1F)) | (~data >> 5 & 0x1) );
+                ppu.SetMirroring( (data & 0x40) ? Ppu::NMT_VERTICAL : Ppu::NMT_HORIZONTAL );
+            }
+        }
+    }
 }

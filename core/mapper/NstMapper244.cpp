@@ -27,34 +27,34 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper244::SubReset(const bool hard)
-		{
-			Map( 0x8065U, 0x80A4U, &Mapper244::Poke_8065 );
-			Map( 0x80A5U, 0x80E4U, &Mapper244::Poke_80A5 );
-
-			if (hard)
-				NES_DO_POKE(8065,0x8065,0x00);
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_A(Mapper244,8065)
-		{
-			prg.SwapBank<SIZE_32K,0x0000>( (address - 0x8065) & 0x3 );
-		}
-
-		NES_POKE_A(Mapper244,80A5)
-		{
-			ppu.Update();
-			chr.SwapBank<SIZE_8K,0x0000>( (address - 0x80A5) & 0x7 );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper244::SubReset(const bool hard)
+        {
+            Map( 0x8065U, 0x80A4U, &Mapper244::Poke_8065 );
+            Map( 0x80A5U, 0x80E4U, &Mapper244::Poke_80A5 );
+            
+            if (hard)
+                Poke_8065(this,0x8065,0x00);
+        }
+        
+        
+        
+        
+        
+        void Mapper244::Poke_8065(void* p_,Address i_,Data j_) { static_cast<Mapper244*>(p_)->Poke_M_8065(i_,j_); } inline void Mapper244::Poke_M_8065(Address address,Data)
+        {
+            prg.SwapBank<SIZE_32K,0x0000>( (address - 0x8065) & 0x3 );
+        }
+        
+        void Mapper244::Poke_80A5(void* p_,Address i_,Data j_) { static_cast<Mapper244*>(p_)->Poke_M_80A5(i_,j_); } inline void Mapper244::Poke_M_80A5(Address address,Data)
+        {
+            ppu.Update();
+            chr.SwapBank<SIZE_8K,0x0000>( (address - 0x80A5) & 0x7 );
+        }
+    }
 }

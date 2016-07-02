@@ -28,195 +28,195 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper217::SubReset(const bool hard)
-		{
-			if (hard)
-			{
-				exRegs[0] = 0x00;
-				exRegs[1] = 0xFF;
-				exRegs[2] = 0x03;
-			}
-
-			exRegs[3] = false;
-
-			Mmc3::SubReset( hard );
-
-			Map( 0x5000U, &Mapper217::Poke_5000 );
-			Map( 0x5001U, &Mapper217::Poke_5001 );
-			Map( 0x5007U, &Mapper217::Poke_5007 );
-
-			for (uint i=0x0000; i < 0x2000; i += 0x2)
-			{
-				Map( 0x8000 + i, &Mapper217::Poke_8000 );
-				Map( 0x8001 + i, &Mapper217::Poke_8001 );
-				Map( 0xA000 + i, &Mapper217::Poke_A000 );
-				Map( 0xA001 + i, &Mapper217::Poke_A001 );
-			}
-		}
-
-		void Mapper217::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-				{
-					state.Read( exRegs );
-					exRegs[3] &= 0x1U;
-				}
-
-				state.End();
-			}
-		}
-
-		void Mapper217::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','E','G'>::V ).Write( exRegs ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		uint Mapper217::GetPrgBank(const uint bank) const
-		{
-			const uint high = exRegs[1] << 5 & 0x60U;
-
-			if (exRegs[1] & 0x8U)
-				return high | (bank & 0x1F);
-			else
-				return high | (exRegs[1] & 0x10U) | (bank & 0x0F);
-		}
-
-		void Mapper217::UpdatePrg()
-		{
-			const uint i = (regs.ctrl0 & Regs::CTRL0_XOR_PRG) >> 5;
-
-			prg.SwapBanks<SIZE_8K,0x0000>
-			(
-				GetPrgBank( banks.prg[i]   ),
-				GetPrgBank( banks.prg[1]   ),
-				GetPrgBank( banks.prg[i^2] ),
-				GetPrgBank( banks.prg[3]   )
-			);
-		}
-
-		uint Mapper217::GetChrBank(const uint bank) const
-		{
-			const uint high = exRegs[1] << 8 & 0x300U;
-
-			if (exRegs[1] & 0x8U)
-				return high | bank;
-			else
-				return high | (exRegs[1] << 3 & 0x80U) | (bank & 0x7F);
-		}
-
-		void Mapper217::UpdateChr() const
-		{
-			ppu.Update();
-
-			const uint swap = (regs.ctrl0 & Regs::CTRL0_XOR_CHR) << 5;
-
-			chr.SwapBanks<SIZE_1K>
-			(
-				0x0000 ^ swap,
-				GetChrBank( banks.chr[0] << 1 | 0x0 ),
-				GetChrBank( banks.chr[0] << 1 | 0x1 ),
-				GetChrBank( banks.chr[1] << 1 | 0x0 ),
-				GetChrBank( banks.chr[1] << 1 | 0x1 )
-			);
-
-			chr.SwapBanks<SIZE_1K>
-			(
-				0x1000 ^ swap,
-				GetChrBank( banks.chr[2] ),
-				GetChrBank( banks.chr[3] ),
-				GetChrBank( banks.chr[4] ),
-				GetChrBank( banks.chr[5] )
-			);
-		}
-
-		NES_POKE_D(Mapper217,5000)
-		{
-			exRegs[0] = data;
-
-			if (data & 0x80)
-			{
-				data = (data & 0x0F) | (exRegs[1] << 4 & 0x30U);
-				prg.SwapBanks<SIZE_16K,0x0000>( data, data );
-			}
-			else
-			{
-				Mapper217::UpdatePrg();
-			}
-		}
-
-		NES_POKE_D(Mapper217,5001)
-		{
-			if (exRegs[1] != data)
-			{
-				exRegs[1] = data;
-				Mapper217::UpdatePrg();
-			}
-		}
-
-		NES_POKE_D(Mapper217,5007)
-		{
-			exRegs[2] = data;
-		}
-
-		NES_POKE_D(Mapper217,8000)
-		{
-			if (exRegs[2])
-				Mmc3::NES_DO_POKE(C000,0xC000,data);
-			else
-				Mmc3::NES_DO_POKE(8000,0x8000,data);
-		}
-
-		NES_POKE_D(Mapper217,8001)
-		{
-			if (exRegs[2])
-			{
-				static const byte lut[8] = {0,6,3,7,5,2,4,1};
-
-				data = (data & 0xC0) | lut[data & 0x07];
-				exRegs[3] = true;
-
-				Mmc3::NES_DO_POKE(8000,0x8000,data);
-			}
-			else
-			{
-				Mmc3::NES_DO_POKE(8001,0x8001,data);
-			}
-		}
-
-		NES_POKE_D(Mapper217,A000)
-		{
-			if (exRegs[2])
-			{
-				if (exRegs[3] && ((exRegs[0] & 0x80U) == 0 || (regs.ctrl0 & Regs::CTRL0_MODE) < 6))
-				{
-					exRegs[3] = false;
-					Mmc3::NES_DO_POKE(8001,0x8001,data);
-				}
-			}
-			else
-			{
-				SetMirroringHV( data );
-			}
-		}
-
-		NES_POKE_D(Mapper217,A001)
-		{
-			if (exRegs[2])
-				SetMirroringHV( data );
-			else
-				Mmc3::NES_DO_POKE(A001,0xA001,data);
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper217::SubReset(const bool hard)
+        {
+            if (hard)
+            {
+                exRegs[0] = 0x00;
+                exRegs[1] = 0xFF;
+                exRegs[2] = 0x03;
+            }
+            
+            exRegs[3] = false;
+            
+            Mmc3::SubReset( hard );
+            
+            Map( 0x5000U, &Mapper217::Poke_5000 );
+            Map( 0x5001U, &Mapper217::Poke_5001 );
+            Map( 0x5007U, &Mapper217::Poke_5007 );
+            
+            for (uint i=0x0000; i < 0x2000; i += 0x2)
+            {
+                Map( 0x8000 + i, &Mapper217::Poke_8000 );
+                Map( 0x8001 + i, &Mapper217::Poke_8001 );
+                Map( 0xA000 + i, &Mapper217::Poke_A000 );
+                Map( 0xA001 + i, &Mapper217::Poke_A001 );
+            }
+        }
+        
+        void Mapper217::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                {
+                    state.Read( exRegs );
+                    exRegs[3] &= 0x1U;
+                }
+                
+                state.End();
+            }
+        }
+        
+        void Mapper217::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','E','G'>::V ).Write( exRegs ).End();
+        }
+        
+        
+        
+        
+        
+        uint Mapper217::GetPrgBank(const uint bank) const
+        {
+            const uint high = exRegs[1] << 5 & 0x60U;
+            
+            if (exRegs[1] & 0x8U)
+                return high | (bank & 0x1F);
+            else
+                return high | (exRegs[1] & 0x10U) | (bank & 0x0F);
+        }
+        
+        void Mapper217::UpdatePrg()
+        {
+            const uint i = (regs.ctrl0 & Regs::CTRL0_XOR_PRG) >> 5;
+            
+            prg.SwapBanks<SIZE_8K,0x0000>
+            (
+             GetPrgBank( banks.prg[i] ),
+             GetPrgBank( banks.prg[1] ),
+             GetPrgBank( banks.prg[i^2] ),
+             GetPrgBank( banks.prg[3] )
+             );
+        }
+        
+        uint Mapper217::GetChrBank(const uint bank) const
+        {
+            const uint high = exRegs[1] << 8 & 0x300U;
+            
+            if (exRegs[1] & 0x8U)
+                return high | bank;
+            else
+                return high | (exRegs[1] << 3 & 0x80U) | (bank & 0x7F);
+        }
+        
+        void Mapper217::UpdateChr() const
+        {
+            ppu.Update();
+            
+            const uint swap = (regs.ctrl0 & Regs::CTRL0_XOR_CHR) << 5;
+            
+            chr.SwapBanks<SIZE_1K>
+            (
+             0x0000 ^ swap,
+             GetChrBank( banks.chr[0] << 1 | 0x0 ),
+             GetChrBank( banks.chr[0] << 1 | 0x1 ),
+             GetChrBank( banks.chr[1] << 1 | 0x0 ),
+             GetChrBank( banks.chr[1] << 1 | 0x1 )
+             );
+            
+            chr.SwapBanks<SIZE_1K>
+            (
+             0x1000 ^ swap,
+             GetChrBank( banks.chr[2] ),
+             GetChrBank( banks.chr[3] ),
+             GetChrBank( banks.chr[4] ),
+             GetChrBank( banks.chr[5] )
+             );
+        }
+        
+        void Mapper217::Poke_5000(void* p_,Address i_,Data j_) { static_cast<Mapper217*>(p_)->Poke_M_5000(i_,j_); } inline void Mapper217::Poke_M_5000(Address,Data data)
+        {
+            exRegs[0] = data;
+            
+            if (data & 0x80)
+            {
+                data = (data & 0x0F) | (exRegs[1] << 4 & 0x30U);
+                prg.SwapBanks<SIZE_16K,0x0000>( data, data );
+            }
+            else
+            {
+                Mapper217::UpdatePrg();
+            }
+        }
+        
+        void Mapper217::Poke_5001(void* p_,Address i_,Data j_) { static_cast<Mapper217*>(p_)->Poke_M_5001(i_,j_); } inline void Mapper217::Poke_M_5001(Address,Data data)
+        {
+            if (exRegs[1] != data)
+            {
+                exRegs[1] = data;
+                Mapper217::UpdatePrg();
+            }
+        }
+        
+        void Mapper217::Poke_5007(void* p_,Address i_,Data j_) { static_cast<Mapper217*>(p_)->Poke_M_5007(i_,j_); } inline void Mapper217::Poke_M_5007(Address,Data data)
+        {
+            exRegs[2] = data;
+        }
+        
+        void Mapper217::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Mapper217*>(p_)->Poke_M_8000(i_,j_); } inline void Mapper217::Poke_M_8000(Address,Data data)
+        {
+            if (exRegs[2])
+                Mmc3::Poke_C000(this,0xC000,data);
+            else
+                Mmc3::Poke_8000(this,0x8000,data);
+        }
+        
+        void Mapper217::Poke_8001(void* p_,Address i_,Data j_) { static_cast<Mapper217*>(p_)->Poke_M_8001(i_,j_); } inline void Mapper217::Poke_M_8001(Address,Data data)
+        {
+            if (exRegs[2])
+            {
+                static const byte lut[8] = {0,6,3,7,5,2,4,1};
+                
+                data = (data & 0xC0) | lut[data & 0x07];
+                exRegs[3] = true;
+                
+                Mmc3::Poke_8000(this,0x8000,data);
+            }
+            else
+            {
+                Mmc3::Poke_8001(this,0x8001,data);
+            }
+        }
+        
+        void Mapper217::Poke_A000(void* p_,Address i_,Data j_) { static_cast<Mapper217*>(p_)->Poke_M_A000(i_,j_); } inline void Mapper217::Poke_M_A000(Address,Data data)
+        {
+            if (exRegs[2])
+            {
+                if (exRegs[3] && ((exRegs[0] & 0x80U) == 0 || (regs.ctrl0 & Regs::CTRL0_MODE) < 6))
+                {
+                    exRegs[3] = false;
+                    Mmc3::Poke_8001(this,0x8001,data);
+                }
+            }
+            else
+            {
+                SetMirroringHV( data );
+            }
+        }
+        
+        void Mapper217::Poke_A001(void* p_,Address i_,Data j_) { static_cast<Mapper217*>(p_)->Poke_M_A001(i_,j_); } inline void Mapper217::Poke_M_A001(Address,Data data)
+        {
+            if (exRegs[2])
+                SetMirroringHV( data );
+            else
+                Mmc3::Poke_A001(this,0xA001,data);
+        }
+    }
 }

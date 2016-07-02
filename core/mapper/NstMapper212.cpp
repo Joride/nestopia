@@ -27,41 +27,41 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper212::SubReset(const bool hard)
-		{
-			Map( 0x8000U, 0xBFFFU, &Mapper212::Poke_8000 );
-			Map( 0xC000U, 0xFFFFU, &Mapper212::Poke_C000 );
-
-			if (hard)
-				NES_DO_POKE(C000,0xFFFF,0x00);
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		void Mapper212::SwapGfx(const uint address) const
-		{
-			ppu.SetMirroring( (address & 0x8) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
-			chr.SwapBank<SIZE_8K,0x0000>( address );
-		}
-
-		NES_POKE_A(Mapper212,8000)
-		{
-			prg.SwapBanks<SIZE_16K,0x0000>( address, address );
-			SwapGfx( address );
-		}
-
-		NES_POKE_A(Mapper212,C000)
-		{
-			prg.SwapBank<SIZE_32K,0x0000>( address >> 1 );
-			SwapGfx( address );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper212::SubReset(const bool hard)
+        {
+            Map( 0x8000U, 0xBFFFU, &Mapper212::Poke_8000 );
+            Map( 0xC000U, 0xFFFFU, &Mapper212::Poke_C000 );
+            
+            if (hard)
+                Poke_C000(this,0xFFFF,0x00);
+        }
+        
+        
+        
+        
+        
+        void Mapper212::SwapGfx(const uint address) const
+        {
+            ppu.SetMirroring( (address & 0x8) ? Ppu::NMT_HORIZONTAL : Ppu::NMT_VERTICAL );
+            chr.SwapBank<SIZE_8K,0x0000>( address );
+        }
+        
+        void Mapper212::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Mapper212*>(p_)->Poke_M_8000(i_,j_); } inline void Mapper212::Poke_M_8000(Address address,Data)
+        {
+            prg.SwapBanks<SIZE_16K,0x0000>( address, address );
+            SwapGfx( address );
+        }
+        
+        void Mapper212::Poke_C000(void* p_,Address i_,Data j_) { static_cast<Mapper212*>(p_)->Poke_M_C000(i_,j_); } inline void Mapper212::Poke_M_C000(Address address,Data)
+        {
+            prg.SwapBank<SIZE_32K,0x0000>( address >> 1 );
+            SwapGfx( address );
+        }
+    }
 }

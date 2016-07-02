@@ -28,21 +28,21 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper206::SubReset(bool hard)
-		{
-			Mmc3::SubReset( hard );
-
-			Map( 0xA000U, 0xFFFFU, NOP_POKE );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper206::SubReset(bool hard)
+        {
+            Mmc3::SubReset( hard );
+            
+            Map( 0xA000U, 0xFFFFU, NOP_POKE );
+        }
+        
+        
+        
+        
+    }
 }

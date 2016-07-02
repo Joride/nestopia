@@ -27,96 +27,96 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		Mapper235::Mapper235(Context& c)
-		:
-		Mapper (c,CROM_MAX_8K|WRAM_DEFAULT|NMT_VERTICAL),
-		selector
-		(
-			prg.Source().Size() == SIZE_1024K ? 0 :
-			prg.Source().Size() == SIZE_2048K ? 1 :
-			prg.Source().Size() == SIZE_3072K ? 2 : 3
-		)
-		{
-		}
-
-		void Mapper235::SubReset(const bool hard)
-		{
-			Map( 0x8000U, 0xFFFFU, &Mapper235::Poke_Prg );
-
-			if (selector != 3)
-				Map( 0x8000U, 0xFFFFU, &Mapper235::Peek_Prg );
-
-			if (hard)
-			{
-				open = false;
-				NES_DO_POKE(Prg,0x8000,0x00);
-			}
-		}
-
-		void Mapper235::SubLoad(State::Loader& state)
-		{
-			if (selector != 3)
-			{
-				while (const dword chunk = state.Begin())
-				{
-					if (chunk == AsciiId<'B','U','S'>::V)
-						open = state.Read8() & 0x1;
-
-					state.End();
-				}
-			}
-		}
-
-		void Mapper235::SubSave(State::Saver& state) const
-		{
-			if (selector != 3)
-				state.Begin( AsciiId<'B','U','S'>::V ).Write8( open != 0 ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_A(Mapper235,Prg)
-		{
-			ppu.SetMirroring
-			(
-				(address & 0x0400) ? Ppu::NMT_ZERO :
-				(address & 0x2000) ? Ppu::NMT_HORIZONTAL :
-                                     Ppu::NMT_VERTICAL
-			);
-
-			static const byte slots[4][4][2] =
-			{
-				{ {0x00,0}, {0x00,1}, {0x00,1}, {0x00,1} },
-				{ {0x00,0}, {0x00,1}, {0x20,0}, {0x00,1} },
-				{ {0x00,0}, {0x00,1}, {0x20,0}, {0x40,0} },
-				{ {0x00,0}, {0x20,0}, {0x40,0}, {0x60,0} }
-			};
-
-			uint bank = slots[selector][address >> 8 & 0x3][0] | (address & 0x1F);
-			open = slots[selector][address >> 8 & 0x3][1];
-
-			if (address & 0x800)
-			{
-				bank = (bank << 1) | (address >> 12 & 0x1);
-				prg.SwapBanks<SIZE_16K,0x0000>( bank, bank );
-			}
-			else
-			{
-				prg.SwapBank<SIZE_32K,0x0000>( bank );
-			}
-		}
-
-		NES_PEEK_A(Mapper235,Prg)
-		{
-			return !open ? prg.Peek(address - 0x8000) : (address >> 8);
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        Mapper235::Mapper235(Context& c)
+        :
+        Mapper (c,CROM_MAX_8K|WRAM_DEFAULT|NMT_VERTICAL),
+        selector
+        (
+         prg.Source().Size() == SIZE_1024K ? 0 :
+         prg.Source().Size() == SIZE_2048K ? 1 :
+         prg.Source().Size() == SIZE_3072K ? 2 : 3
+         )
+        {
+        }
+        
+        void Mapper235::SubReset(const bool hard)
+        {
+            Map( 0x8000U, 0xFFFFU, &Mapper235::Poke_Prg );
+            
+            if (selector != 3)
+                Map( 0x8000U, 0xFFFFU, &Mapper235::Peek_Prg );
+            
+            if (hard)
+            {
+                open = false;
+                Poke_Prg(this,0x8000,0x00);
+            }
+        }
+        
+        void Mapper235::SubLoad(State::Loader& state)
+        {
+            if (selector != 3)
+            {
+                while (const dword chunk = state.Begin())
+                {
+                    if (chunk == AsciiId<'B','U','S'>::V)
+                        open = state.Read8() & 0x1;
+                    
+                    state.End();
+                }
+            }
+        }
+        
+        void Mapper235::SubSave(State::Saver& state) const
+        {
+            if (selector != 3)
+                state.Begin( AsciiId<'B','U','S'>::V ).Write8( open != 0 ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper235::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper235*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper235::Poke_M_Prg(Address address,Data)
+        {
+            ppu.SetMirroring
+            (
+             (address & 0x0400) ? Ppu::NMT_ZERO :
+             (address & 0x2000) ? Ppu::NMT_HORIZONTAL :
+             Ppu::NMT_VERTICAL
+             );
+            
+            static const byte slots[4][4][2] =
+            {
+                { {0x00,0}, {0x00,1}, {0x00,1}, {0x00,1} },
+                { {0x00,0}, {0x00,1}, {0x20,0}, {0x00,1} },
+                { {0x00,0}, {0x00,1}, {0x20,0}, {0x40,0} },
+                { {0x00,0}, {0x20,0}, {0x40,0}, {0x60,0} }
+            };
+            
+            uint bank = slots[selector][address >> 8 & 0x3][0] | (address & 0x1F);
+            open = slots[selector][address >> 8 & 0x3][1];
+            
+            if (address & 0x800)
+            {
+                bank = (bank << 1) | (address >> 12 & 0x1);
+                prg.SwapBanks<SIZE_16K,0x0000>( bank, bank );
+            }
+            else
+            {
+                prg.SwapBank<SIZE_32K,0x0000>( bank );
+            }
+        }
+        
+        Data Mapper235::Peek_Prg(void* p_,Address i_) { return static_cast<Mapper235*>(p_)->Peek_M_Prg(i_); } inline Data Mapper235::Peek_M_Prg(Address address)
+        {
+            return !open ? prg.Peek(address - 0x8000) : (address >> 8);
+        }
+    }
 }

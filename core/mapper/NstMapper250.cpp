@@ -28,39 +28,39 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper250::SubReset(const bool hard)
-		{
-			Mmc3::SubReset( hard );
-
-			Map( 0x8000U, 0xFFFFU, &Mapper250::Poke_Prg );
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_A(Mapper250,Prg)
-		{
-			const uint data = address & 0xFF;
-			address = (address & 0xE000) | (address >> 10 & 0x1);
-
-			switch (address)
-			{
-				case 0x8000: Mmc3::NES_DO_POKE( 8000, address, data ); break;
-				case 0x8001: Mmc3::NES_DO_POKE( 8001, address, data ); break;
-				case 0xA000: SetMirroringHV( data );                   break;
-				case 0xA001: Mmc3::NES_DO_POKE( A001, address, data ); break;
-				case 0xC000: Mmc3::NES_DO_POKE( C000, address, data ); break;
-				case 0xC001: Mmc3::NES_DO_POKE( C001, address, data ); break;
-				case 0xE000: Mmc3::NES_DO_POKE( E000, address, data ); break;
-				case 0xE001: Mmc3::NES_DO_POKE( E001, address, data ); break;
-			}
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper250::SubReset(const bool hard)
+        {
+            Mmc3::SubReset( hard );
+            
+            Map( 0x8000U, 0xFFFFU, &Mapper250::Poke_Prg );
+        }
+        
+        
+        
+        
+        
+        void Mapper250::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper250*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper250::Poke_M_Prg(Address address,Data)
+        {
+            const uint data = address & 0xFF;
+            address = (address & 0xE000) | (address >> 10 & 0x1);
+            
+            switch (address)
+            {
+                case 0x8000: Mmc3::Poke_8000(this,address,data); break;
+                case 0x8001: Mmc3::Poke_8001(this,address,data); break;
+                case 0xA000: SetMirroringHV( data ); break;
+                case 0xA001: Mmc3::Poke_A001(this,address,data); break;
+                case 0xC000: Mmc3::Poke_C000(this,address,data); break;
+                case 0xC001: Mmc3::Poke_C001(this,address,data); break;
+                case 0xE000: Mmc3::Poke_E000(this,address,data); break;
+                case 0xE001: Mmc3::Poke_E001(this,address,data); break;
+            }
+        }
+    }
 }

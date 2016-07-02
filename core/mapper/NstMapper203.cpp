@@ -27,29 +27,29 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper203::SubReset(const bool hard)
-		{
-			Map( 0x8000U, 0xFFFFU, &Mapper203::Poke_Prg );
-
-			if (hard)
-				NES_DO_POKE(Prg,0x8000,0x00);
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_POKE_D(Mapper203,Prg)
-		{
-			ppu.Update();
-			prg.SwapBanks<SIZE_16K,0x0000>( data >> 2, data >> 2 );
-			chr.SwapBank<SIZE_8K,0x0000>( data );
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper203::SubReset(const bool hard)
+        {
+            Map( 0x8000U, 0xFFFFU, &Mapper203::Poke_Prg );
+            
+            if (hard)
+                Poke_Prg(this,0x8000,0x00);
+        }
+        
+        
+        
+        
+        
+        void Mapper203::Poke_Prg(void* p_,Address i_,Data j_) { static_cast<Mapper203*>(p_)->Poke_M_Prg(i_,j_); } inline void Mapper203::Poke_M_Prg(Address,Data data)
+        {
+            ppu.Update();
+            prg.SwapBanks<SIZE_16K,0x0000>( data >> 2, data >> 2 );
+            chr.SwapBank<SIZE_8K,0x0000>( data );
+        }
+    }
 }

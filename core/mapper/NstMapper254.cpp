@@ -28,54 +28,54 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper254::SubReset(const bool hard)
-		{
-			security = ~0U;
-
-			Mmc3::SubReset( hard );
-
-			for (uint i=0x8000; i < 0xA000; i += 0x2)
-				Map( i, &Mapper254::Poke_8000 );
-
-			Map( WRK_POKE );
-			Map( 0x6000U, 0x7FFFU, &Mapper254::Peek_Wrk );
-		}
-
-		void Mapper254::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-					security = (state.Read8() & 0x1) ? ~0U : 0U;
-
-				state.End();
-			}
-		}
-
-		void Mapper254::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','E','G'>::V ).Write8( security & 0x1 ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		NES_PEEK_A(Mapper254,Wrk)
-		{
-			return wrk[0][address - 0x6000] ^ (regs.ctrl1 & security);
-		}
-
-		NES_POKE_AD(Mapper254,8000)
-		{
-			security = 0U;
-			Mmc3::NES_DO_POKE(8000,address,data);
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper254::SubReset(const bool hard)
+        {
+            security = ~0U;
+            
+            Mmc3::SubReset( hard );
+            
+            for (uint i=0x8000; i < 0xA000; i += 0x2)
+                Map( i, &Mapper254::Poke_8000 );
+            
+            Map( WRK_POKE );
+            Map( 0x6000U, 0x7FFFU, &Mapper254::Peek_Wrk );
+        }
+        
+        void Mapper254::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                    security = (state.Read8() & 0x1) ? ~0U : 0U;
+                
+                state.End();
+            }
+        }
+        
+        void Mapper254::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','E','G'>::V ).Write8( security & 0x1 ).End();
+        }
+        
+        
+        
+        
+        
+        Data Mapper254::Peek_Wrk(void* p_,Address i_) { return static_cast<Mapper254*>(p_)->Peek_M_Wrk(i_); } inline Data Mapper254::Peek_M_Wrk(Address address)
+        {
+            return wrk[0][address - 0x6000] ^ (regs.ctrl1 & security);
+        }
+        
+        void Mapper254::Poke_8000(void* p_,Address i_,Data j_) { static_cast<Mapper254*>(p_)->Poke_M_8000(i_,j_); } inline void Mapper254::Poke_M_8000(Address address,Data data)
+        {
+            security = 0U;
+            Mmc3::Poke_8000(this,address,data);
+        }
+    }
 }

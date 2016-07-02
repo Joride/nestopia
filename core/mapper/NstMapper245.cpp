@@ -28,79 +28,79 @@
 
 namespace Nes
 {
-	namespace Core
-	{
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("s", on)
-		#endif
-
-		void Mapper245::SubReset(const bool hard)
-		{
-			if (hard)
-				exReg = 0;
-
-			Mmc3::SubReset( hard );
-
-			if (wrk.Size() >= SIZE_8K)
-				Map( WRK_PEEK_POKE );
-
-			for (uint i=0x8001; i < 0x9000; i += 0x2)
-				Map( i, &Mapper245::Poke_8001 );
-		}
-
-		void Mapper245::SubLoad(State::Loader& state)
-		{
-			while (const dword chunk = state.Begin())
-			{
-				if (chunk == AsciiId<'R','E','G'>::V)
-					exReg = state.Read8() << 5 & 0x40;
-
-				state.End();
-			}
-		}
-
-		void Mapper245::SubSave(State::Saver& state) const
-		{
-			state.Begin( AsciiId<'R','E','G'>::V ).Write8( exReg >> 5 ).End();
-		}
-
-		#ifdef NST_MSVC_OPTIMIZE
-		#pragma optimize("", on)
-		#endif
-
-		void Mapper245::UpdatePrg()
-		{
-			const uint i = (regs.ctrl0 & Regs::CTRL0_XOR_PRG) >> 5;
-
-			prg.SwapBanks<SIZE_8K,0x0000>
-			(
-				exReg | (banks.prg[i]   & 0x3F),
-				exReg | (banks.prg[1]   & 0x3F),
-				exReg | (banks.prg[i^2] & 0x3F),
-				exReg | (banks.prg[3]   & 0x3F)
-			);
-		}
-
-		void Mapper245::UpdateChr() const
-		{
-			if (!chr.Source().Writable())
-				Mmc3::UpdateChr();
-		}
-
-		NES_POKE_AD(Mapper245,8001)
-		{
-			if (!(regs.ctrl0 & Regs::CTRL0_MODE))
-			{
-				uint ex = data << 5 & 0x40;
-
-				if (exReg != ex)
-				{
-					exReg = ex;
-					Mapper245::UpdatePrg();
-				}
-			}
-
-			Mmc3::NES_DO_POKE(8001,address,data);
-		}
-	}
+    namespace Core
+    {
+        
+        
+        
+        
+        void Mapper245::SubReset(const bool hard)
+        {
+            if (hard)
+                exReg = 0;
+            
+            Mmc3::SubReset( hard );
+            
+            if (wrk.Size() >= SIZE_8K)
+                Map( WRK_PEEK_POKE );
+            
+            for (uint i=0x8001; i < 0x9000; i += 0x2)
+                Map( i, &Mapper245::Poke_8001 );
+        }
+        
+        void Mapper245::SubLoad(State::Loader& state)
+        {
+            while (const dword chunk = state.Begin())
+            {
+                if (chunk == AsciiId<'R','E','G'>::V)
+                    exReg = state.Read8() << 5 & 0x40;
+                
+                state.End();
+            }
+        }
+        
+        void Mapper245::SubSave(State::Saver& state) const
+        {
+            state.Begin( AsciiId<'R','E','G'>::V ).Write8( exReg >> 5 ).End();
+        }
+        
+        
+        
+        
+        
+        void Mapper245::UpdatePrg()
+        {
+            const uint i = (regs.ctrl0 & Regs::CTRL0_XOR_PRG) >> 5;
+            
+            prg.SwapBanks<SIZE_8K,0x0000>
+            (
+             exReg | (banks.prg[i] & 0x3F),
+             exReg | (banks.prg[1] & 0x3F),
+             exReg | (banks.prg[i^2] & 0x3F),
+             exReg | (banks.prg[3] & 0x3F)
+             );
+        }
+        
+        void Mapper245::UpdateChr() const
+        {
+            if (!chr.Source().Writable())
+                Mmc3::UpdateChr();
+        }
+        
+        void Mapper245::Poke_8001(void* p_,Address i_,Data j_) { static_cast<Mapper245*>(p_)->Poke_M_8001(i_,j_); } inline void Mapper245::Poke_M_8001(Address address,Data data)
+        {
+            if (!(regs.ctrl0 & Regs::CTRL0_MODE))
+            {
+                uint ex = data << 5 & 0x40;
+                
+                if (exReg != ex)
+                {
+                    exReg = ex;
+                    Mapper245::UpdatePrg();
+                }
+            }
+            
+            Mmc3::Poke_8001(this,address,data);
+        }
+    }
 }
