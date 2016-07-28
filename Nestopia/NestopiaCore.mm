@@ -295,6 +295,9 @@ static void NST_CALLBACK DoFileIO(void* userData,Nes::Api::User::File operation,
 	{
         NSData *gameData = [NSData dataWithContentsOfFile:self.gamePath];
         if (gameData) {
+            uint8_t *bytes = (uint8_t *)malloc(sizeof(uint8_t) * gameData.length);
+            [gameData getBytes: bytes length: gameData.length];
+            
             dbentry = database.FindEntry([gameData bytes], [gameData length]);
 		}
 	}

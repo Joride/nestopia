@@ -62,6 +62,16 @@
 //    self.tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
 }
 
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear: animated];
+    
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 3
+                                                 inSection: 4];
+    [self tableView: self.tableView
+didSelectRowAtIndexPath: indexPath];
+
+}
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     

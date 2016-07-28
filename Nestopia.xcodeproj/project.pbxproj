@@ -344,6 +344,7 @@
 		80C3B64718397740000B68E0 /* PadRoundTextButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64618397740000B68E0 /* PadRoundTextButton.m */; };
 		80C3B64D18398CFB000B68E0 /* RoundTextMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */; };
 		A286FB811D245A1300B28CF4 /* NstMapper000.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009552117FC75570038888C /* NstMapper000.cpp */; };
+		A2EA2F3D1D27C2BE00B439F0 /* PreprocessorHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2EA2F3B1D27C2BD00B439F0 /* PreprocessorHelper.cpp */; };
 		C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C4848C291A39838600A20A7B /* CGSize+Utilities.m */; };
 		F5EE71540FEEC3A000FDA0A6 /* controller_ls.png in Resources */ = {isa = PBXBuildFile; fileRef = F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */; };
 /* End PBXBuildFile section */
@@ -368,7 +369,6 @@
 		7009547E17FC75570038888C /* NstApiCartridge.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstApiCartridge.hpp; sourceTree = "<group>"; };
 		7009547F17FC75570038888C /* NstApiCheats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstApiCheats.cpp; sourceTree = "<group>"; };
 		7009548017FC75570038888C /* NstApiCheats.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstApiCheats.hpp; sourceTree = "<group>"; };
-		7009548117FC75570038888C /* NstApiConfig.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstApiConfig.hpp; sourceTree = "<group>"; };
 		7009548217FC75570038888C /* NstApiDipSwitches.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstApiDipSwitches.cpp; sourceTree = "<group>"; };
 		7009548317FC75570038888C /* NstApiDipSwitches.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NstApiDipSwitches.hpp; sourceTree = "<group>"; };
 		7009548417FC75570038888C /* NstApiEmulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NstApiEmulator.cpp; sourceTree = "<group>"; };
@@ -1048,6 +1048,7 @@
 		80C3B64B18398CFB000B68E0 /* RoundTextMaskView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTextMaskView.h; sourceTree = "<group>"; };
 		80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundTextMaskView.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2EA2F3B1D27C2BD00B439F0 /* PreprocessorHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PreprocessorHelper.cpp; sourceTree = "<group>"; };
 		C4848C281A39835500A20A7B /* CGSize+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CGSize+Utilities.h"; path = "Extensions/CGGeometry/CGSize+Utilities.h"; sourceTree = "<group>"; };
 		C4848C291A39838600A20A7B /* CGSize+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CGSize+Utilities.m"; path = "Extensions/CGGeometry/CGSize+Utilities.m"; sourceTree = "<group>"; };
 		F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = controller_ls.png; sourceTree = "<group>"; };
@@ -1123,6 +1124,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				A2EA2F3B1D27C2BD00B439F0 /* PreprocessorHelper.cpp */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				C4848C2C1A39847D00A20A7B /* Extensions */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -1282,7 +1284,6 @@
 				7009547E17FC75570038888C /* NstApiCartridge.hpp */,
 				7009547F17FC75570038888C /* NstApiCheats.cpp */,
 				7009548017FC75570038888C /* NstApiCheats.hpp */,
-				7009548117FC75570038888C /* NstApiConfig.hpp */,
 				7009548217FC75570038888C /* NstApiDipSwitches.cpp */,
 				7009548317FC75570038888C /* NstApiDipSwitches.hpp */,
 				7009548417FC75570038888C /* NstApiEmulator.cpp */,
@@ -2279,6 +2280,7 @@
 				7009580E17FC75590038888C /* NstVsTkoBoxing.cpp in Sources */,
 				700957EC17FC75590038888C /* NstMachine.cpp in Sources */,
 				700957F917FC75590038888C /* NstState.cpp in Sources */,
+				A2EA2F3D1D27C2BE00B439F0 /* PreprocessorHelper.cpp in Sources */,
 				7009571817FC75590038888C /* NstBrdJaleco.cpp in Sources */,
 				700957B217FC75590038888C /* NstMapper193.cpp in Sources */,
 				7009576617FC75590038888C /* NstMapper051.cpp in Sources */,
@@ -2370,6 +2372,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = Nestopia;
 			};
 			name = Debug;
@@ -2388,6 +2391,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = Nestopia;
 			};
 			name = Release;
@@ -2427,6 +2431,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = Nestopia;
 			};
 			name = Distribution;
@@ -2507,6 +2512,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = Nestopia;
 			};
 			name = "Debug Optimized";

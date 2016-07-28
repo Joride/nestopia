@@ -138,8 +138,8 @@ namespace Nes
 			class Port
 			{
 				typedef void* Component;
-				typedef Data (NST_REGCALL *Reader)(Component,Address);
-				typedef void (NST_REGCALL *Writer)(Component,Address,Data);
+				typedef Data (*Reader)(Component,Address);
+				typedef void (*Writer)(Component,Address,Data);
 
 				Component component;
 				Reader reader;
@@ -181,7 +181,8 @@ namespace Nes
 
 				Data Peek(Address address) const
 				{
-					return reader( component, address );
+                    Data value = reader( component, address );
+                    return value;
 				}
 
 				void Poke(Address address,Data data) const

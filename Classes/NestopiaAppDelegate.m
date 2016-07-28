@@ -32,7 +32,8 @@
 	SettingsViewController *settingsViewController;
 }
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application {
+- (void)applicationDidFinishLaunching:(UIApplication *)application  {
+    NSLog(@"%@",[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject]);
     [self setupViewControllers];
     
 	window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];

@@ -50,10 +50,10 @@ namespace Nes
 
 			protected:
 
-				Port ports[FULL_SIZE];
+				
 
 			public:
-
+                Port ports[FULL_SIZE];
 				class Section
 				{
 					Port* NST_RESTRICT port;

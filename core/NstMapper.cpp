@@ -1158,9 +1158,15 @@ namespace Nes
         void Mapper::Poke_Chr_4k_1(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_4k_1(i_,j_); } inline void Mapper::Poke_M_Chr_4k_1(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_4K,0x1000>( data ); }
         void Mapper::Poke_Chr_8k(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_8k(i_,j_); } inline void Mapper::Poke_M_Chr_8k(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_8K,0x0000>( data ); }
         
-        void Mapper::Poke_Wrk_6(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Wrk_6(i_,j_); } inline void Mapper::Poke_M_Wrk_6(Address address,Data data)
+        void Mapper::Poke_Wrk_6(void* p_,Address i_,Data j_)
         {
-            ((void)0);
+            printf("%s", __FUNCTION__);
+            static_cast<Mapper*>(p_)->Poke_M_Wrk_6(i_,j_);
+        }
+        
+        inline void Mapper::Poke_M_Wrk_6(Address address,Data data)
+        {
+            printf("%s", __FUNCTION__);
             wrk[0][address - 0x6000] = data;
         }
         
