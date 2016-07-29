@@ -1951,9 +1951,22 @@ namespace Nes
                 do
                 {
                     
-                    
-                    printf("\ncc: %5i\tpc: 0x%2X\tsp: 0x%2X\n",(cycles.count - (7 * 12)) / 12 ,pc ,sp);
-                    
+                    /*
+                     uint nz;
+                     uint c;
+                     uint v;
+                     uint i;
+                     uint d;
+                     */
+                    printf("\ncc:\t%4i\nsp: 0x%02X\npc: 0x%04X\nA:\t0x%02X\nX:\t0x%02X\nY:\t0x%02X\n",(cycles.count - (7 * 12)) / 12 ,sp, pc, a, x, y);
+                    printf("N	V	-	B	D	I	Z	C\n%s	%s	-	%s	%s	%s	%s	%s\n",
+                           ((flags.nz & Flags::N) == Flags::N) ? "1" : "0",
+                           ((flags.v & Flags::V) == Flags::V) ? "1" : "0",
+                           ((flags.B & Flags::B) == Flags::B) ? "1" : "0",
+                           ((flags.D & Flags::D) == Flags::D) ? "1" : "0",
+                           ((flags.I & Flags::I) == Flags::I) ? "1" : "0",
+                           ((flags.nz & Flags::Z) == Flags::Z) ? "1" : "0",
+                           ((flags.C & Flags::C) == Flags::C) ? "1" : "0");
                     uint pc = FetchPc8();
                     (*this.*opcodes[pc])();
                     
