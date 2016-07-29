@@ -1943,6 +1943,24 @@ namespace Nes
             
             cycles.round = clock;
         }
+        void Cpu::PrintFlags()
+        {
+            printf("nz: %i\n", flags.nz);
+            printf("v: %i\n", flags.v);
+            printf("B: %i\n", flags.B);
+            printf("D: %i\n", flags.D);
+            printf("I: %i\n", flags.I);
+            printf("C: %i\n", flags.nz);
+            
+            printf("N	V	-	B	D	I	Z	C\n%s	%s	-	%s	%s	%s	%s	%s\n",
+                   ((flags.nz & Flags::N) == Flags::N) ? "1" : "0",
+                   ((flags.v & Flags::V) == Flags::V) ? "1" : "0",
+                   ((flags.B & Flags::B) == Flags::B) ? "1" : "0",
+                   ((flags.D & Flags::D) == Flags::D) ? "1" : "0",
+                   ((flags.I & Flags::I) == Flags::I) ? "1" : "0",
+                   ((flags.nz & Flags::Z) == Flags::Z) ? "1" : "0",
+                   ((flags.C & Flags::C) == Flags::C) ? "1" : "0");
+        }
         
         void Cpu::Run0()
         {
@@ -1950,23 +1968,9 @@ namespace Nes
             {
                 do
                 {
-                    
-                    /*
-                     uint nz;
-                     uint c;
-                     uint v;
-                     uint i;
-                     uint d;
-                     */
                     printf("\ncc:\t%4i\nsp: 0x%02X\npc: 0x%04X\nA:\t0x%02X\nX:\t0x%02X\nY:\t0x%02X\n",(cycles.count - (7 * 12)) / 12 ,sp, pc, a, x, y);
-                    printf("N	V	-	B	D	I	Z	C\n%s	%s	-	%s	%s	%s	%s	%s\n",
-                           ((flags.nz & Flags::N) == Flags::N) ? "1" : "0",
-                           ((flags.v & Flags::V) == Flags::V) ? "1" : "0",
-                           ((flags.B & Flags::B) == Flags::B) ? "1" : "0",
-                           ((flags.D & Flags::D) == Flags::D) ? "1" : "0",
-                           ((flags.I & Flags::I) == Flags::I) ? "1" : "0",
-                           ((flags.nz & Flags::Z) == Flags::Z) ? "1" : "0",
-                           ((flags.C & Flags::C) == Flags::C) ? "1" : "0");
+                    PrintFlags();
+                    
                     uint pc = FetchPc8();
                     (*this.*opcodes[pc])();
                     

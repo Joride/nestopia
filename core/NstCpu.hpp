@@ -123,6 +123,7 @@ namespace Nes
 			void DoISR(uint);
 			void Clock();
 
+            void PrintFlags();
 			void Run0();
 			void Run1();
 			void Run2();
