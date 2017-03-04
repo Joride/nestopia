@@ -25,6 +25,8 @@
 #ifndef NST_CPU_H
 #define NST_CPU_H
 
+#include <string>
+#include <iostream>
 #include "NstAssert.hpp"
 #include "NstIoMap.hpp"
 #include "NstApu.hpp"
@@ -123,6 +125,9 @@ namespace Nes
 			void DoISR(uint);
 			void Clock();
 
+            int64_t cyclesSubtracted;
+            void printCPU();
+            std::string ListValuesByAdrres();
 			void Run0();
 			void Run1();
 			void Run2();
@@ -346,7 +351,7 @@ namespace Nes
 				inline uint IrqEdge() const;
 				inline void NextRound(Cycle);
 
-				Cycle count;
+                Cycle count;
 				byte clock[8];
 				Cycle round;
 				Cycle frame;

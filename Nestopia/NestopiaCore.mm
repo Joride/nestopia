@@ -135,7 +135,7 @@ static void NST_CALLBACK DoFileIO(void* userData,Nes::Api::User::File operation,
 }
 
 - (void)initializeInput {
-    NSLog(@"%s: %d", __PRETTY_FUNCTION__, self.controllerLayout);
+//    NSLog(@"%s: %d", __PRETTY_FUNCTION__, self.controllerLayout);
  
     controller = 0;
 	Nes::Api::Cartridge::Database database( emulator );
@@ -208,7 +208,7 @@ static void NST_CALLBACK DoFileIO(void* userData,Nes::Api::User::File operation,
 	screenWidth = Widths[filter];
 	screenHeight = Heights[filter];
 
-    NSLog(@"%s initializing resolution %dx%d", __PRETTY_FUNCTION__, screenWidth, screenHeight);
+//    NSLog(@"%s initializing resolution %dx%d", __PRETTY_FUNCTION__, screenWidth, screenHeight);
 	renderState.bits.count  = 16;
 	renderState.bits.mask.r = 0xF800;
 	renderState.bits.mask.g = 0x07E0;
@@ -281,7 +281,7 @@ static void NST_CALLBACK DoFileIO(void* userData,Nes::Api::User::File operation,
 		database.Load(*nstDBFile);
 		database.Enable(true);
 	} else {
-        NSLog(@"%s could not load database", __func__);
+//        NSLog(@"%s could not load database", __func__);
     }
 
 	delete nstDBFile;
@@ -340,7 +340,7 @@ static void NST_CALLBACK DoFileIO(void* userData,Nes::Api::User::File operation,
         controls.zapper.y = input.zapperY;
         
         if (controls.zapper.fire) {
-            NSLog(@"%s zapper: %d at %ux%u", __func__, controls.zapper.fire, controls.zapper.x, controls.zapper.y);
+//            NSLog(@"%s zapper: %d at %ux%u", __func__, controls.zapper.fire, controls.zapper.x, controls.zapper.y);
         }
         
         emulator.Execute(nstVideo, nstSound, &controls);
@@ -386,7 +386,7 @@ static void NST_CALLBACK DoFileIO(void* userData,Nes::Api::User::File operation,
 
     std::ostringstream *buffer = new std::ostringstream(std::stringstream::out | std::stringstream::binary);
     
-    NSLog(@"%s calling SaveState(%@)", __PRETTY_FUNCTION__, self.gameSavePath);
+//    NSLog(@"%s calling SaveState(%@)", __PRETTY_FUNCTION__, self.gameSavePath);
     machine.SaveState( *buffer );
     
     NSData *data = [NSData dataWithBytes:buffer->str().c_str() length:buffer->tellp()];
@@ -394,7 +394,7 @@ static void NST_CALLBACK DoFileIO(void* userData,Nes::Api::User::File operation,
 
     delete buffer;
     
-    NSLog(@"%s returning", __PRETTY_FUNCTION__);
+//    NSLog(@"%s returning", __PRETTY_FUNCTION__);
 }
 
 - (void)toggleCoin1 {

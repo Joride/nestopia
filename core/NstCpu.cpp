@@ -28,6 +28,9 @@
 #include "NstState.hpp"
 #include "api/NstApiUser.hpp"
 
+// use this to turn of the print statements (with them, emulation is slooooowww)
+#define printf(x, ...)
+
 namespace Nes
 {
     namespace Core
@@ -108,6 +111,10 @@ namespace Nes
         map ( this, &Cpu::Peek_Overflow, &Cpu::Poke_Overflow )
         {
             Reset( false, false );
+            
+            std::string a = ListValuesByAdrres();
+            printf("%s", a.c_str());
+            
             cycles.SetRegion( GetRegion() );
         }
         
@@ -179,6 +186,32 @@ namespace Nes
                 if (hard)
                     apu.PowerOff();
             }
+            
+            cyclesSubtracted = 0; // added by joride for debugging purposes
+            printf("AFTER RESET:");
+            printCPU();
+            
+//            std::string a = ListValuesByAdrres();
+//            printf("%s", a.c_str());
+            
+        }
+        
+        std::string Cpu::ListValuesByAdrres()
+        {
+            std::string string = "Address\tValue\n";
+            for (uint16_t index = 0; index < 0xFFFF; index++)
+            {
+//                printf("0x%04X\t0x%02X\n", index, map.Peek8(index));
+                
+                char buffer [16];
+                sprintf(buffer, "0x%04X\t0x%02X\n", index, map.Peek8(index));
+                std::string toAppend = std::string(buffer);
+                string = string + toAppend;
+                
+                
+                
+            }
+            return string;
         }
         
         void Cpu::SetRegion(const Region::Type r)
@@ -369,8 +402,6 @@ namespace Nes
                     ticks = ticks / uint(actualRegion == Region::NTSC ? Clocks::RP2A07_CC : Clocks::RP2A03_CC) *
                     uint(actualRegion == Region::NTSC ? Clocks::RP2A03_CC : Clocks::RP2A07_CC);
                 }
-                
-                ((void)0);
                 
                 if (cycles.count >= cycles.frame)
                     cycles.count = 0;
@@ -608,8 +639,6 @@ namespace Nes
         
         uint Cpu::Flags::Pack() const
         {
-            (__builtin_expect(!(!!((i == 0 || i == I) && (c == 0 || c == C) && (d == 0 || d == D))), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstCpu.cpp", 621, "!!((i == 0 || i == I) && (c == 0 || c == C) && (d == 0 || d == D))") : (void)0);
-            
             return
             (
              ((nz | nz >> 1) & N) |
@@ -751,7 +780,15 @@ namespace Nes
         
         
         
-        Data Cpu::Ram::Peek_Ram_0(void* p_,Address i_) { return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_0(i_); } inline Data Cpu::Ram::Peek_M_Ram_0(Address address) { return mem[address - 0x0000]; }
+        Data Cpu::Ram::Peek_Ram_0(void* p_,Address i_)
+        {
+            return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_0(i_);
+        }
+        inline Data Cpu::Ram::Peek_M_Ram_0(Address address)
+        {
+            return mem[address - 0x0000];
+        }
+        
         Data Cpu::Ram::Peek_Ram_1(void* p_,Address i_) { return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_1(i_); } inline Data Cpu::Ram::Peek_M_Ram_1(Address address) { return mem[address - 0x0800]; }
         Data Cpu::Ram::Peek_Ram_2(void* p_,Address i_) { return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_2(i_); } inline Data Cpu::Ram::Peek_M_Ram_2(Address address) { return mem[address - 0x1000]; }
         Data Cpu::Ram::Peek_Ram_3(void* p_,Address i_) { return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_3(i_); } inline Data Cpu::Ram::Peek_M_Ram_3(Address address) { return mem[address - 0x1800]; }
@@ -761,7 +798,12 @@ namespace Nes
         void Cpu::Ram::Poke_Ram_2(void* p_,Address i_,Data j_) { static_cast<Cpu::Ram*>(p_)->Poke_M_Ram_2(i_,j_); } inline void Cpu::Ram::Poke_M_Ram_2(Address address,Data data) { mem[address - 0x1000] = data; }
         void Cpu::Ram::Poke_Ram_3(void* p_,Address i_,Data j_) { static_cast<Cpu::Ram*>(p_)->Poke_M_Ram_3(i_,j_); } inline void Cpu::Ram::Poke_M_Ram_3(Address address,Data data) { mem[address - 0x1800] = data; }
         
-        Data Cpu::Peek_Nop(void* p_,Address i_) { printf("%s\n", __FUNCTION__); return static_cast<Cpu*>(p_)->Peek_M_Nop(i_); } inline Data Cpu::Peek_M_Nop(Address address)
+        Data Cpu::Peek_Nop(void* p_,Address i_)
+        {
+//            printf("%s\n", __FUNCTION__);
+            return static_cast<Cpu*>(p_)->Peek_M_Nop(i_);
+        }
+        inline Data Cpu::Peek_M_Nop(Address address)
         {
             return address >> 8;
         }
@@ -813,30 +855,44 @@ namespace Nes
             return data;
         }
         
-        
-        
-        
-        
         inline uint Cpu::Imm_R()
         {
-            printf("%s\n", __FUNCTION__);
             const uint data = FetchPc8();
             cycles.count += cycles.clock[1];
+            
+            printf("%s value: 0x%2X\n", __FUNCTION__, data);
+            
             return data;
         }
         
-        
-        
-        
-        
         uint Cpu::Abs_R()
         {
-            printf("%s\n", __FUNCTION__);
             uint data = FetchPc16();
             cycles.count += cycles.clock[2];
+            uint address = data;
+            if (address == 0x2002)
+            {
+                printf("reading 0x2002");
+            }
+                
             
+            // figuring out how to start up the PPU:
+            // what data is returned here causes the CPU.NZ flag to be set
             data = map.Peek8( data );
             cycles.count += cycles.clock[0];
+            
+            printf("%s  address: 0x%04X\tvalue: 0x%02X\n", __FUNCTION__, address, data);
+            
+            
+            if (data == 0x90)
+            {
+                // to reset the printed count in printCPU() to zero, to sync
+                // up with Nestament
+                // (cyclesSubtracted + cycles.count - (7 * 12)) / 12
+                cyclesSubtracted = -((int64_t)cycles.count) + 84;
+                
+                printf("going out of the loop\n");
+            }
             
             return data;
         }
@@ -858,9 +914,11 @@ namespace Nes
         
         inline uint Cpu::Abs_W()
         {
-            printf("%s\n", __FUNCTION__);
             const uint address = FetchPc16();
             cycles.count += cycles.clock[2];
+            
+            printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
+            
             return address;
         }
         
@@ -870,26 +928,31 @@ namespace Nes
         
         inline uint Cpu::Zpg_R()
         {
-            printf("%s\n", __FUNCTION__);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
+            
+            printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
+            
             return ram.mem[address];
         }
         
         inline uint Cpu::Zpg_RW(uint& data)
         {
-            printf("%s\n", __FUNCTION__);
+            
             const uint address = FetchPc8();
             cycles.count += cycles.clock[4];
             data = ram.mem[address];
+            
+            printf("%s: 0x%04X\tvalue: 0x%02X\n", __FUNCTION__, address, map.Peek8(address));
+            
             return address;
         }
         
         inline uint Cpu::Zpg_W()
         {
-            printf("%s\n", __FUNCTION__);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
+            printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
             return address;
         }
         
@@ -1006,7 +1069,11 @@ namespace Nes
         
         inline uint Cpu::AbsX_R() { printf("%s\n", __FUNCTION__); return AbsReg_R( x ); }
         inline uint Cpu::AbsY_R() { printf("%s\n", __FUNCTION__); return AbsReg_R( y ); }
-        inline uint Cpu::AbsX_RW(uint& data) { printf("%s\n", __FUNCTION__); return AbsReg_RW( data, x ); }
+        inline uint Cpu::AbsX_RW(uint& data)
+        {
+            printf("%s\n", __FUNCTION__);
+            return AbsReg_RW( data, x );
+        }
         inline uint Cpu::AbsY_RW(uint& data) { printf("%s\n", __FUNCTION__); return AbsReg_RW( data, y ); }
         inline uint Cpu::AbsX_W() { printf("%s\n", __FUNCTION__); return AbsReg_W( x ); }
         inline uint Cpu::AbsY_W() { printf("%s\n", __FUNCTION__); return AbsReg_W( y ); }
@@ -1098,15 +1165,19 @@ namespace Nes
         
         inline uint Cpu::IndY_W()
         {
-            printf("%s\n", __FUNCTION__);
-            uint address = FetchPc8();
+            uint address = FetchPc8(); // 0
             cycles.count += cycles.clock[4];
             
             const uint indexed = ram.mem[address] + y;
-            address = (uint(ram.mem[(address + 1) & 0xFF]) << 8) + indexed;
+            uint highByteOfTargetAddress = uint(ram.mem[(address + 1) & 0xFF]); // 7 (0x07)
+            uint highByteOfAddress = highByteOfTargetAddress << 8; // 1792 (0x0700)
+            uint finalAddress = highByteOfAddress | indexed; // 1792 (0x0700)
+            
+            address = (uint(ram.mem[(address + 1) & 0xFF]) << 8) + indexed; // 1792 (0x0700)
             
             map.Peek8( address - (indexed & 0x100) );
             
+            printf("%s: 0x%4X\tvalue: 0x%04X\n", __FUNCTION__, address, map.Peek8(address));
             return address;
         }
         
@@ -1121,11 +1192,13 @@ namespace Nes
             {
                 pc = ((tmp=pc+1) + sign_extend_8(uint(map.Peek8( pc )))) & 0xFFFF;
                 cycles.count += cycles.clock[2 + ((tmp^pc) >> 8 & 1)];
+                printf("%s PC: 0x%2X\n", __FUNCTION__, pc);
             }
             else
             {
                 ++pc;
                 cycles.count += cycles.clock[1];
+                printf("%s PC: %i\n", __FUNCTION__, pc);
             }
         }
         
@@ -1156,14 +1229,14 @@ namespace Nes
             ram.mem[0x100+p] = data;
         }
         
-        inline void Cpu::Push16(const uint data)
-        {
-            const uint p0 = sp;
-            const uint p1 = (p0 - 1) & 0xFF;
-            sp = (p1 - 1) & 0xFF;
+        inline void Cpu::Push16(const uint data) // data = 51140
+        {   // sp = 255
+            const uint p0 = sp; // 255
+            const uint p1 = (p0 - 1) & 0xFF; //254
+            sp = (p1 - 1) & 0xFF; // 253
             
-            ram.mem[0x100+p1] = data & 0xFF;
-            ram.mem[0x100+p0] = data >> 8;
+            ram.mem[0x100+p1] = data & 0xFF; // [510] = 196
+            ram.mem[0x100+p0] = data >> 8; // [511] = 199
         }
         
         inline uint Cpu::Pull8()
@@ -1175,11 +1248,14 @@ namespace Nes
         
         inline uint Cpu::Pull16()
         {
-            const uint p0 = (sp + 1) & 0xFF;
-            const uint p1 = (p0 + 1) & 0xFF;
+            // sp = 240
+            const uint p0 = (sp + 1) & 0xFF; // (240 + 1) & 0xFF = 241
+            const uint p1 = (p0 + 1) & 0xFF; // (p0 + 1) & 0xFF = 242
             sp = p1;
             
-            return ram.mem[0x100+p0] | uint(ram.mem[0x100+p1]) << 8;
+            
+            uint returnValue = ram.mem[0x100+p0] | uint(ram.mem[0x100+p1]) << 8; // 226 | 61440 (240)
+            return returnValue; // 61666
         }
         
         
@@ -1188,10 +1264,22 @@ namespace Nes
         
         inline void Cpu::Lda(const uint data) {
             printf("%s\n", __FUNCTION__);
-            a = data; flags.nz = data;
+            a = data;
+            flags.nz = data;
         }
-        inline void Cpu::Ldx(const uint data) { printf("%s\n", __FUNCTION__); x = data; flags.nz = data; }
-        inline void Cpu::Ldy(const uint data) { printf("%s\n", __FUNCTION__); y = data; flags.nz = data; }
+        inline void Cpu::Ldx(const uint data)
+        {
+            printf("%s (0x%02X)\n", __FUNCTION__, data);
+            x = data;
+            flags.nz = data;
+            
+        }
+        inline void Cpu::Ldy(const uint data)
+        {
+            printf("%s\n", __FUNCTION__);
+            y = data;
+            flags.nz = data;
+        }
         
         
         
@@ -1203,7 +1291,11 @@ namespace Nes
             return a;
         }
         inline uint Cpu::Stx() const { printf("%s\n", __FUNCTION__); return x; }
-        inline uint Cpu::Sty() const { printf("%s\n", __FUNCTION__); return y; }
+        inline uint Cpu::Sty() const
+        {
+            printf("%s\n", __FUNCTION__);
+            return y;
+        }
         
         
         
@@ -1264,17 +1356,27 @@ namespace Nes
         
         inline void Cpu::Jsr()
         {
-            
-            printf("%s\n", __FUNCTION__);
-            
-            Push16( pc + 1 );
-            pc = map.Peek16( pc );
+            // pc = 51139
+            Push16( pc + 1 ); // c7c3 + 1
+            pc = map.Peek16( pc ); // pc = 51139 -> 51175
             cycles.count += cycles.clock[JSR_CYCLES-1];
+            printf("absoluteMemoryAddress(): %04X\tvalue: %02X\n", pc, map.Peek8(pc));
+            printf("%s\n", __FUNCTION__);
         }
         
         inline void Cpu::Rts()
         {
             printf("%s\n", __FUNCTION__);
+            
+            /*
+             const uint p0 = (sp + 1) & 0xFF;
+             const uint p1 = (p0 + 1) & 0xFF;
+             sp = p1;
+             
+             pc = ram.mem[0x100+p0] | uint(ram.mem[0x100+p1]) << 8;
+             pc += 1
+             */
+            
             pc = Pull16() + 1;
             cycles.count += cycles.clock[RTS_CYCLES-1];
         }
@@ -1301,14 +1403,26 @@ namespace Nes
             }
         }
         
-        inline void Cpu::Bne() { printf("%s\n", __FUNCTION__); Branch< true >( flags.nz & 0xFF ); }
+        inline void Cpu::Bne()
+        {
+            printf("%s\n", __FUNCTION__);
+            Branch< true >( flags.nz & 0xFF );
+        }
         inline void Cpu::Beq()
         {
             printf("%s\n", __FUNCTION__);
             Branch< false >( flags.nz & 0xFF );
         }
-        inline void Cpu::Bmi() { printf("%s\n", __FUNCTION__); Branch< true >( flags.nz & 0x180 ); }
-        inline void Cpu::Bpl() { printf("%s\n", __FUNCTION__); Branch< false >( flags.nz & 0x180 ); }
+        inline void Cpu::Bmi()
+        {
+            printf("%s\n", __FUNCTION__);
+            Branch< true >( flags.nz & 0x180 );
+        }
+        inline void Cpu::Bpl()
+        {
+            printf("%s\n", __FUNCTION__);
+            Branch< false >( flags.nz & 0x180 );
+        }
         inline void Cpu::Bcs() { printf("%s\n", __FUNCTION__); Branch< true >( flags.c ); }
         inline void Cpu::Bcc() { printf("%s\n", __FUNCTION__); Branch< false >( flags.c ); }
         inline void Cpu::Bvs() { printf("%s\n", __FUNCTION__); Branch< true >( flags.v ); }
@@ -1911,6 +2025,13 @@ namespace Nes
                 case 1: Run1(); break;
                 default: Run2(); break;
             }
+            uint value = map.Peek8(0x2000);
+            printf("\n>>0x2000:\t0x%02X\n", value);
+            if (value == 0x90)
+            {
+                
+                printf("--SET--");
+            }
         }
         
         void Cpu::EndFrame()
@@ -1918,10 +2039,11 @@ namespace Nes
             printf("%s\n", __FUNCTION__);
             apu.EndFrame();
             
-            ((void)0);
+            
             
             ticks += cycles.frame;
             cycles.count -= cycles.frame;
+            cyclesSubtracted += cycles.frame;
             interrupt.EndFrame( cycles.frame );
         }
         
@@ -1944,30 +2066,69 @@ namespace Nes
             cycles.round = clock;
         }
         
+        void Cpu::printCPU()
+        {
+            printf("\nCPU-cc:\t%ld\nsp:\t0x%02X\npc:\t0x%04X\nA:\t0x%02X\nX:\t0x%02X\nY:\t0x%02X\n",(int64_t)(cyclesSubtracted + cycles.count - (7 * 12)) / 12 ,sp, pc, a, x, y);
+            printf("N	V	-	B	D	I	Z	C\n%s	%s	-	%s	%s	%s	%s	%s\n",
+                   ((flags.nz & Flags::N) == Flags::N) ? "1" : "0",
+                   ((flags.v & Flags::V) == Flags::V) ? "1" : "0",
+                   ((flags.B & Flags::B) == Flags::B) ? "1" : "0",
+                   ((flags.D & Flags::D) == Flags::D) ? "1" : "0",
+                   ((flags.I & Flags::I) == Flags::I) ? "1" : "0",
+                   ((flags.nz & Flags::Z) == Flags::Z) ? "1" : "0",
+                   ((flags.C & Flags::C) == Flags::C) ? "1" : "0");
+        }
+        
         void Cpu::Run0()
         {
             do
             {
                 do
                 {
+                    printCPU();
+//                    printf("\nCPU-cc:\t%ld\nsp:\t0x%02X\npc:\t0x%04X\nA:\t0x%02X\nX:\t0x%02X\nY:\t0x%02X\n",(long long)(cycles.count - (7 * 12)) / 12 ,sp, pc, a, x, y);
+//                    printf("N	V	-	B	D	I	Z	C\n%s	%s	-	%s	%s	%s	%s	%s\n",
+//                           ((flags.nz & Flags::N) == Flags::N) ? "1" : "0",
+//                           ((flags.v & Flags::V) == Flags::V) ? "1" : "0",
+//                           ((flags.B & Flags::B) == Flags::B) ? "1" : "0",
+//                           ((flags.D & Flags::D) == Flags::D) ? "1" : "0",
+//                           ((flags.I & Flags::I) == Flags::I) ? "1" : "0",
+//                           ((flags.nz & Flags::Z) == Flags::Z) ? "1" : "0",
+//                           ((flags.C & Flags::C) == Flags::C) ? "1" : "0");
+                    /////
+                    if ((flags.nz & Flags::N) == Flags::N)
+                    {
+//                        printf("N-flag is now %i\n", (flags.nz & Flags::N));
+                    }
+                    else
+                    {
+//                        printf("N-flag is now %i\n", (flags.nz & Flags::N));
+                    }
                     
-                    /*
-                     uint nz;
-                     uint c;
-                     uint v;
-                     uint i;
-                     uint d;
-                     */
-                    printf("\ncc:\t%4i\nsp: 0x%02X\npc: 0x%04X\nA:\t0x%02X\nX:\t0x%02X\nY:\t0x%02X\n",(cycles.count - (7 * 12)) / 12 ,sp, pc, a, x, y);
-                    printf("N	V	-	B	D	I	Z	C\n%s	%s	-	%s	%s	%s	%s	%s\n",
-                           ((flags.nz & Flags::N) == Flags::N) ? "1" : "0",
-                           ((flags.v & Flags::V) == Flags::V) ? "1" : "0",
-                           ((flags.B & Flags::B) == Flags::B) ? "1" : "0",
-                           ((flags.D & Flags::D) == Flags::D) ? "1" : "0",
-                           ((flags.I & Flags::I) == Flags::I) ? "1" : "0",
-                           ((flags.nz & Flags::Z) == Flags::Z) ? "1" : "0",
-                           ((flags.C & Flags::C) == Flags::C) ? "1" : "0");
-                    uint pc = FetchPc8();
+                    if (2253 == (long long)(cycles.count - (7 * 12)) / 12)
+                    {
+//                        printf("\nBpl will be called next\n");
+                    }
+                    
+                    if (2256 == (long long)(cycles.count - (7 * 12)) / 12)
+                    {
+//                        printf("\nLda will be called next\n");
+                    }
+                    
+                    if (2260 == (long long)(cycles.count - (7 * 12)) / 12)
+                    {
+//                        printf("\nBpl will be called next\n");
+                    }
+                    if (2263 == (long long)(cycles.count - (7 * 12)) / 12)
+                    {
+                        // between now and the next iteration, flags.nz will change
+//                        printf("\nLda will be called next. NZ flags will have changed by then.\n");
+                    }
+                    
+                    
+                    /////
+                    
+                    uint pc = FetchPc8(); // 800B
                     (*this.*opcodes[pc])();
                     
                 }
@@ -2062,7 +2223,11 @@ namespace Nes
         void Cpu::op0x2C() { printf("%s\n", __FUNCTION__); Bit( Abs_R() ); }
         void Cpu::op0x30() { printf("%s\n", __FUNCTION__); Bmi(); }
         void Cpu::op0xD0() { printf("%s\n", __FUNCTION__); Bne(); }
-        void Cpu::op0x10() { printf("%s\n", __FUNCTION__); Bpl(); }
+        void Cpu::op0x10()
+        {
+            printf("%s\n", __FUNCTION__);
+            Bpl();
+        }
         void Cpu::op0x50() { printf("%s\n", __FUNCTION__); Bvc(); }
         void Cpu::op0x70() { printf("%s\n", __FUNCTION__); Bvs(); }
         void Cpu::op0x18() { printf("%s\n", __FUNCTION__); Clc(); }
@@ -2100,7 +2265,13 @@ namespace Nes
         void Cpu::op0xE6() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Inc(data) ); }
         void Cpu::op0xF6() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Inc(data)); }
         void Cpu::op0xEE() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Inc(data)); }
-        void Cpu::op0xFE() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Inc(data)); }
+        void Cpu::op0xFE() {
+            printf("%s\n", __FUNCTION__);
+            
+            uint data;
+            const uint dst = AbsX_RW( data );
+            StoreMem(dst,Inc(data));
+        }
         void Cpu::op0xE8() { printf("%s\n", __FUNCTION__); Inx(); }
         void Cpu::op0xC8() { printf("%s\n", __FUNCTION__); Iny(); }
         void Cpu::op0x4C() { printf("%s\n", __FUNCTION__); JmpAbs(); }
@@ -2109,7 +2280,11 @@ namespace Nes
         void Cpu::op0xA9() { printf("%s\n", __FUNCTION__); Lda( Imm_R() ); }
         void Cpu::op0xA5() { printf("%s\n", __FUNCTION__); Lda( Zpg_R() ); }
         void Cpu::op0xB5() { printf("%s\n", __FUNCTION__); Lda( ZpgX_R() );}
-        void Cpu::op0xAD() { printf("%s\n", __FUNCTION__); Lda( Abs_R() ); }
+        void Cpu::op0xAD()
+        {
+            printf("%s\n", __FUNCTION__);
+            Lda( Abs_R() );
+        }
         void Cpu::op0xBD() { printf("%s\n", __FUNCTION__); Lda( AbsX_R() ); }
         void Cpu::op0xB9() { printf("%s\n", __FUNCTION__); Lda( AbsY_R() ); }
         void Cpu::op0xA1() { printf("%s\n", __FUNCTION__); Lda( IndX_R() ); }
@@ -2186,7 +2361,12 @@ namespace Nes
         void Cpu::op0x86() { printf("%s\n", __FUNCTION__); const uint dst = Zpg_W(); StoreZpg( dst, Stx() ); }
         void Cpu::op0x96() { printf("%s\n", __FUNCTION__); const uint dst = ZpgY_W(); StoreZpg(dst,Stx()); }
         void Cpu::op0x8E() { printf("%s\n", __FUNCTION__); const uint dst = Abs_W(); StoreMem(dst,Stx()); }
-        void Cpu::op0x84() { printf("%s\n", __FUNCTION__); const uint dst = Zpg_W(); StoreZpg( dst, Sty() ); }
+        void Cpu::op0x84()
+        {
+            printf("%s\n", __FUNCTION__);
+            const uint dst = Zpg_W(); // 1
+            StoreZpg( dst, Sty() );
+        }
         void Cpu::op0x94() { printf("%s\n", __FUNCTION__); const uint dst = ZpgX_W(); StoreZpg(dst,Sty()); }
         void Cpu::op0x8C() { printf("%s\n", __FUNCTION__); const uint dst = Abs_W(); StoreMem(dst,Sty()); }
         void Cpu::op0xAA() { printf("%s\n", __FUNCTION__); Tax(); }

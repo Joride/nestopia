@@ -65,9 +65,9 @@
 	
 	selectedCell = cell;
     if ([self.delegate respondsToSelector: @selector(didSelectItemFromList:selectedItemIndex:identifier:)]) {
-        NSLog(@"%s selected item: %ld",
-              __PRETTY_FUNCTION__,
-              (long)[indexPath indexAtPosition: 1]);
+//        NSLog(@"%s selected item: %ld",
+//              __PRETTY_FUNCTION__,
+//              (long)[indexPath indexAtPosition: 1]);
 		[self.delegate didSelectItemFromList: self
                            selectedItemIndex: [indexPath indexAtPosition: 1]
                                   identifier: identifier];
@@ -95,11 +95,6 @@
 	}
 }
 
-- (void)dealloc {
-	
-	NSLog(@"%s", __func__);
-	
-}
 
 
 @end

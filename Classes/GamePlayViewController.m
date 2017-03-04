@@ -167,7 +167,7 @@
     nestopiaCore.gameSavePath = self.game.savePath;
     BOOL success = [nestopiaCore powerOn];
 	
-    NSLog(@"%s loading image at path %@", __PRETTY_FUNCTION__, self.game.path);
+//    NSLog(@"%s loading image at path %@", __PRETTY_FUNCTION__, self.game.path);
     
 	if (!success) {
         UIAlertView *myAlert = [[UIAlertView alloc]

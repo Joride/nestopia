@@ -228,7 +228,7 @@ namespace Nes
 	#elif USHRT_MAX >= 0xFFFFFFFF
 	typedef unsigned short dword;
 	#elif UINT_MAX >= 0xFFFFFFFF
-	typedef unsigned int dword;
+	typedef unsigned long dword;
 	#elif ULONG_MAX >= 0xFFFFFFFF
 	typedef unsigned long dword;
 	#else

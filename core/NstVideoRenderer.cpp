@@ -381,7 +381,6 @@ namespace Nes
             
             void Renderer::Palette::Generate(const int b,const int s,const int c,int hue)
             {
-                (__builtin_expect(!(!!(type == PALETTE_YUV)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstVideoRenderer.cpp", 384, "!!(type == PALETTE_YUV)") : (void)0);
                 
                 const double brightness = b / 200.0;
                 const double saturation = (s + 100) / 100.0;
@@ -794,7 +793,7 @@ namespace Nes
                     
                     if (Output::lockCallback( output ))
                     {
-                        ((void)0);
+
                         
                         if (std::labs(output.pitch) >= filter->bpp * WIDTH / 8)
                             filter->Blit( input, output, burstPhase );

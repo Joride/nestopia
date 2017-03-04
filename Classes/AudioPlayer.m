@@ -73,7 +73,7 @@ typedef struct AQCallbackStruct {
     requiredBuffersToOpenSound = 3;
     
     if (soundBuffersInitialized >= requiredBuffersToOpenSound) {
-        NSLog(@"%s skipping sound buffer initialization", __PRETTY_FUNCTION__);
+//        NSLog(@"%s skipping sound buffer initialization", __PRETTY_FUNCTION__);
         return;
     }
     
@@ -85,28 +85,28 @@ typedef struct AQCallbackStruct {
                               0,
                               &audioCallback.queue);
     if (err) {
-        NSLog(@"%s AudioQueueNewOutput error %u", __func__, err);
+//        NSLog(@"%s AudioQueueNewOutput error %u", __func__, err);
         return;
     }
     
     audioCallback.frameCount = samplesPerSync;
     bufferBytes = audioCallback.frameCount * audioCallback.mDataFormat.mBytesPerFrame;
     
-    NSLog(@"%s initializing %d sound buffers", __func__, requiredBuffersToOpenSound);
+//    NSLog(@"%s initializing %d sound buffers", __func__, requiredBuffersToOpenSound);
     for (int i = 0; i < requiredBuffersToOpenSound; i++) {
         err = AudioQueueAllocateBuffer(audioCallback.queue, bufferBytes, &audioCallback.mBuffers[i]);
         if (err) {
-            NSLog(@"%s AudioQueueAllocateBuffer[%u] error %u", __func__, bufferBytes, err);
+//            NSLog(@"%s AudioQueueAllocateBuffer[%u] error %u", __func__, bufferBytes, err);
             continue;
         }
         AQBufferCallback(&audioCallback, audioCallback.queue, audioCallback.mBuffers[i]);
         soundBuffersInitialized++;
     }
     
-    NSLog(@"%s calling AudioQueueStart", __func__);
+//    NSLog(@"%s calling AudioQueueStart", __func__);
     err = AudioQueueStart(audioCallback.queue, NULL);
     if (err) {
-        NSLog(@"%s AudioQueueStart error %u", __func__, err);
+//        NSLog(@"%s AudioQueueStart error %u", __func__, err);
     }
 }
 

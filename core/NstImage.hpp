@@ -77,7 +77,9 @@ namespace Nes
 				Result result;
 
 				Context(Type t,Cpu& c,Apu& a,Ppu& p,StdStream s,const ImageDatabase* d=NULL)
-				: type(t), cpu(c), apu(a), ppu(p), stream(s), database(d), result(RESULT_OK) {}
+				: type(t), cpu(c), apu(a), ppu(p), stream(s), database(d), result(RESULT_OK)
+                {
+                }
 			};
 
 			static Image* Load(Context&);

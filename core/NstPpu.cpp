@@ -120,7 +120,7 @@ namespace Nes
                 stage = WARM_UP_FRAMES;
                 phase = &Ppu::WarmUp;
                 
-                regs.ctrl0 = 0;
+                regs.ctrl0_  = 0;
                 regs.ctrl1 = 0;
                 regs.frame = 0;
                 regs.status = 0;
@@ -204,8 +204,8 @@ namespace Nes
         void Ppu::UpdateStates()
         {
             io.enabled = regs.ctrl1 & (Regs::CTRL1_BG_ENABLED|Regs::CTRL1_SP_ENABLED);
-            scroll.increase = (regs.ctrl0 & Regs::CTRL0_INC32) ? 32 : 1;
-            scroll.pattern = (regs.ctrl0 & Regs::CTRL0_BG_OFFSET) << 8;
+            scroll.increase = (regs.ctrl0_ & Regs::CTRL0_INC32) ? 32 : 1;
+            scroll.pattern = (regs.ctrl0_ & Regs::CTRL0_BG_OFFSET) << 8;
             tiles.show[0] = (regs.ctrl1 & Regs::CTRL1_BG_ENABLED) ? 0xFF : 0x00;
             tiles.show[1] = (regs.ctrl1 & Regs::CTRL1_FULL_BG_ENABLED) == Regs::CTRL1_FULL_BG_ENABLED ? 0xFF : 0x00;
             oam.show[0] = (regs.ctrl1 & Regs::CTRL1_SP_ENABLED) ? 0xFF : 0x00;
@@ -227,7 +227,7 @@ namespace Nes
             {
                 const byte data[11] =
                 {
-                    regs.ctrl0,
+                    regs.ctrl0_,
                     regs.ctrl1,
                     regs.status,
                     scroll.address & 0xFF,
@@ -271,7 +271,7 @@ namespace Nes
                     {
                         State::Loader::Data<11> data( state );
                         
-                        regs.ctrl0 = data[0];
+                        regs.ctrl0_ = data[0];
                         regs.ctrl1 = data[1];
                         regs.status = data[2] & Regs::STATUS_BITS;
                         scroll.address = data[3] | (data[4] << 8 & 0x7F00);
@@ -337,7 +337,6 @@ namespace Nes
         
         void Ppu::ChrMem::SetDefaultAccessor(uint i)
         {
-            (__builtin_expect(!(!!(i < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 358, "!!(i < 2)") : (void)0);
             accessors[i].Set( this, &ChrMem::Access_Pattern );
         }
         
@@ -355,7 +354,6 @@ namespace Nes
         
         void Ppu::NmtMem::SetDefaultAccessor(uint i,uint j)
         {
-            (__builtin_expect(!(!!(i < 4 && j < 2)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 376, "!!(i < 4 && j < 2)") : (void)0);
             
             accessors[i][j].Set
             (
@@ -408,14 +406,6 @@ namespace Nes
         
         void Ppu::BeginFrame(bool frameLock)
         {
-            (__builtin_expect(!(!!(scanline == SCANLINE_VBLANK && (phase == &Ppu::HDummy || phase == &Ppu::WarmUp) && (cpu.GetRegion() == Region::NTSC) == (cycles.one == Clocks::RP2C02_CC) && cycles.spriteOverflow == Cpu::CYCLE_MAX)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 435, "!!( scanline == SCANLINE_VBLANK && (phase == &Ppu::HDummy || phase == &Ppu::WarmUp) && (cpu.GetRegion() == Region::NTSC) == (cycles.one == Clocks::RP2C02_CC) && cycles.spriteOverflow == Cpu::CYCLE_MAX)") : (void)0);
-            
-            
-            
-            
-            
-            
-            
             oam.limit = oam.buffer + ((uint(oam.spriteLimit) | uint(frameLock)) ? Oam::STD_LINE_SPRITES : Oam::MAX_LINE_SPRITES);
             
             output.target = output.pixels;
@@ -434,8 +424,6 @@ namespace Nes
             }
             else
             {
-                (__builtin_expect(!(!!(regs.frame == 0 && output.burstPhase == 0)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 455, "!!(regs.frame == 0 && output.burstPhase == 0)") : (void)0);
-                
                 cycles.count = Clocks::RP2C07_HVINT;
                 frame = Clocks::RP2C07_HVSYNC;
             }
@@ -443,20 +431,27 @@ namespace Nes
             cpu.SetFrameCycles( frame );
         }
         
-        void Ppu::Hook_Nop(void* p_) { static_cast<Ppu*>(p_)->Hook_M_Nop(); } inline void Ppu::Hook_M_Nop()
+        void Ppu::Hook_Nop(void* p_)
+        {
+            static_cast<Ppu*>(p_)->Hook_M_Nop();
+        }
+        
+        inline void Ppu::Hook_M_Nop()
         {
         }
         
-        void Ppu::Hook_Sync(void* p_) { static_cast<Ppu*>(p_)->Hook_M_Sync(); } inline void Ppu::Hook_M_Sync()
+        void Ppu::Hook_Sync(void* p_)
+        {
+            static_cast<Ppu*>(p_)->Hook_M_Sync();
+        }
+        
+        inline void Ppu::Hook_M_Sync()
         {
             const Cycle elapsed = cpu.GetCycles();
             
             if (cycles.count < elapsed)
             {
                 cycles.round = elapsed;
-                
-                
-                
                 
                 do
                 {
@@ -473,9 +468,6 @@ namespace Nes
             {
                 cycles.round = Cpu::CYCLE_MAX;
                 
-                
-                
-                
                 do
                 {
                     (*this.*phase)();
@@ -489,13 +481,9 @@ namespace Nes
         {
             dataSetup += cpu.GetCycles();
             
-            if (cycles.count < dataSetup)
+            if (cycles.count < dataSetup) // cycles here are the PPU-cycles
             {
                 cycles.round = dataSetup;
-                
-                
-                
-                
                 do
                 {
                     (*this.*phase)();
@@ -509,13 +497,11 @@ namespace Nes
         {
             Update( cycles.one );
             
-            (__builtin_expect(!(!!(banks[0] < 4 && banks[1] < 4 && banks[2] < 4 && banks[3] < 4)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 530, "!!(banks[0] < 4 && banks[1] < 4 && banks[2] < 4 && banks[3] < 4)") : (void)0);
             nmt.SwapBanks<SIZE_1K,0x0000>( banks[0], banks[1], banks[2], banks[3] );
         }
         
         void Ppu::SetMirroring(Mirroring type)
         {
-            (__builtin_expect(!(!!(type < 6)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 536, "!!(type < 6)") : (void)0);
             
             typedef char Nestopia_assertion_at_line_546[(NMT_HORIZONTAL == 0 && NMT_VERTICAL == 1 && NMT_FOURSCREEN == 2 && NMT_ZERO == 3 && NMT_ONE == 4 && NMT_CONTROLLED == 5) ? 1 : -1];
             static const byte banks[6][4] =
@@ -531,27 +517,52 @@ namespace Nes
             SetMirroring( banks[type] );
         }
         
-        __attribute__((noinline)) Data Ppu::ChrMem::Access_Pattern(void* p_,Address i_) { return static_cast<Ppu::ChrMem*>(p_)->Access_M_Pattern(i_); } inline Data Ppu::ChrMem::Access_M_Pattern(Address address)
+        Data Ppu::ChrMem::Access_Pattern(void* p_,Address i_)
+        {
+            return static_cast<Ppu::ChrMem*>(p_)->Access_M_Pattern(i_);
+        }
+        
+        inline Data Ppu::ChrMem::Access_M_Pattern(Address address)
         {
             return Peek( address );
         }
         
-        __attribute__((noinline)) Data Ppu::NmtMem::Access_Name_2000(void* p_,Address i_) { return static_cast<Ppu::NmtMem*>(p_)->Access_M_Name_2000(i_); } inline Data Ppu::NmtMem::Access_M_Name_2000(Address address)
+        Data Ppu::NmtMem::Access_Name_2000(void* p_,Address i_)
+        {
+            return static_cast<Ppu::NmtMem*>(p_)->Access_M_Name_2000(i_);
+        }
+        
+        inline Data Ppu::NmtMem::Access_M_Name_2000(Address address)
         {
             return (*this)[0][address];
         }
         
-        __attribute__((noinline)) Data Ppu::NmtMem::Access_Name_2400(void* p_,Address i_) { return static_cast<Ppu::NmtMem*>(p_)->Access_M_Name_2400(i_); } inline Data Ppu::NmtMem::Access_M_Name_2400(Address address)
+        Data Ppu::NmtMem::Access_Name_2400(void* p_,Address i_)
+        {
+            return static_cast<Ppu::NmtMem*>(p_)->Access_M_Name_2400(i_);
+        }
+        
+        inline Data Ppu::NmtMem::Access_M_Name_2400(Address address)
         {
             return (*this)[1][address];
         }
         
-        __attribute__((noinline)) Data Ppu::NmtMem::Access_Name_2800(void* p_,Address i_) { return static_cast<Ppu::NmtMem*>(p_)->Access_M_Name_2800(i_); } inline Data Ppu::NmtMem::Access_M_Name_2800(Address address)
+        Data Ppu::NmtMem::Access_Name_2800(void* p_,Address i_)
+        {
+            return static_cast<Ppu::NmtMem*>(p_)->Access_M_Name_2800(i_);
+        }
+        
+        inline Data Ppu::NmtMem::Access_M_Name_2800(Address address)
         {
             return (*this)[2][address];
         }
         
-        __attribute__((noinline)) Data Ppu::NmtMem::Access_Name_2C00(void* p_,Address i_) { return static_cast<Ppu::NmtMem*>(p_)->Access_M_Name_2C00(i_); } inline Data Ppu::NmtMem::Access_M_Name_2C00(Address address)
+        Data Ppu::NmtMem::Access_Name_2C00(void* p_,Address i_)
+        {
+            return static_cast<Ppu::NmtMem*>(p_)->Access_M_Name_2C00(i_);
+        }
+        
+        inline Data Ppu::NmtMem::Access_M_Name_2C00(Address address)
         {
             return (*this)[3][address];
         }
@@ -607,7 +618,12 @@ namespace Nes
             return (regs.ctrl1 & Regs::CTRL1_EMPHASIS) << 1;
         }
         
-        void Ppu::Poke_2000(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_2000(i_,j_); } inline void Ppu::Poke_M_2000(Address,Data data)
+        void Ppu::Poke_2000(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_2000(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_2000(Address,Data data)
         {
             Update( cycles.one );
             
@@ -616,14 +632,19 @@ namespace Nes
             scroll.pattern = (data & Regs::CTRL0_BG_OFFSET) << 8;
             
             io.latch = data;
-            data = regs.ctrl0;
-            regs.ctrl0 = io.latch;
+            data = regs.ctrl0_;
+            regs.ctrl0_ = io.latch;
             
-            if ((regs.ctrl0 & regs.status & Regs::CTRL0_NMI) > data)
+            if ((regs.ctrl0_ & regs.status & Regs::CTRL0_NMI) > data)
                 cpu.DoNMI();
         }
         
-        void Ppu::Poke_2001(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_2001(i_,j_); } inline void Ppu::Poke_M_2001(Address,Data data)
+        void Ppu::Poke_2001(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_2001(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_2001(Address,Data data)
         {
             Update( cycles.one );
             
@@ -664,9 +685,14 @@ namespace Nes
             }
         }
         
-        Data Ppu::Peek_2002(void* p_,Address i_) { return static_cast<Ppu*>(p_)->Peek_M_2002(i_); } inline Data Ppu::Peek_M_2002(Address)
+        Data Ppu::Peek_2002(void* p_,Address i_)
         {
-            Update( cycles.one );
+            return static_cast<Ppu*>(p_)->Peek_M_2002(i_);
+        }
+        
+        inline Data Ppu::Peek_M_2002(Address)
+        {
+            Update( cycles.one ); // 
             
             uint status = regs.status & 0xFF;
             
@@ -680,7 +706,12 @@ namespace Nes
             return io.latch;
         }
         
-        void Ppu::Poke_2003(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_2003(i_,j_); } inline void Ppu::Poke_M_2003(Address,Data data)
+        void Ppu::Poke_2003(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_2003(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_2003(Address,Data data)
         {
             Update( cycles.one );
             
@@ -688,12 +719,14 @@ namespace Nes
             io.latch = data;
         }
         
-        void Ppu::Poke_2004(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_2004(i_,j_); } inline void Ppu::Poke_M_2004(Address,Data data)
+        void Ppu::Poke_2004(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_2004(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_2004(Address,Data data)
         {
             Update( cycles.one );
-            
-            (__builtin_expect(!(!!(regs.oam < Oam::SIZE)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 722, "!!(regs.oam < Oam::SIZE)") : (void)0);
-            ((void)0);
             
             if (!IsDead())
                 data = Oam::GARBAGE;
@@ -704,12 +737,15 @@ namespace Nes
             *value = data;
         }
         
-        Data Ppu::Peek_2004(void* p_,Address i_) { return static_cast<Ppu*>(p_)->Peek_M_2004(i_); } inline Data Ppu::Peek_M_2004(Address)
+        Data Ppu::Peek_2004(void* p_,Address i_)
+        {
+            return static_cast<Ppu*>(p_)->Peek_M_2004(i_);
+        }
+        
+        inline Data Ppu::Peek_M_2004(Address)
         {
             Update( cycles.one );
-            
-            (__builtin_expect(!(!!(regs.oam < Oam::SIZE)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 738, "!!(regs.oam < Oam::SIZE)") : (void)0);
-            
+
             uint data;
             
             if (IsDead())
@@ -747,7 +783,12 @@ namespace Nes
             return data;
         }
         
-        void Ppu::Poke_2005(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_2005(i_,j_); } inline void Ppu::Poke_M_2005(Address,Data data)
+        void Ppu::Poke_2005(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_2005(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_2005(Address,Data data)
         {
             Update( cycles.one );
             
@@ -764,7 +805,12 @@ namespace Nes
             }
         }
         
-        void Ppu::Poke_2006(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_2006(i_,j_); } inline void Ppu::Poke_M_2006(Address,Data data)
+        void Ppu::Poke_2006(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_2006(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_2006(Address,Data data)
         {
             Update( cycles.one );
             
@@ -782,11 +828,14 @@ namespace Nes
             }
         }
         
-        void Ppu::Poke_2007(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_2007(i_,j_); } inline void Ppu::Poke_M_2007(Address,Data data)
+        void Ppu::Poke_2007(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_2007(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_2007(Address,Data data)
         {
             Update( cycles.four );
-            
-            ((void)0);
             
             uint address = scroll.address;
             UpdateScrollAddress( (scroll.address + scroll.increase) & 0x7FFF );
@@ -819,11 +868,14 @@ namespace Nes
             }
         }
         
-        Data Ppu::Peek_2007(void* p_,Address i_) { return static_cast<Ppu*>(p_)->Peek_M_2007(i_); } inline Data Ppu::Peek_M_2007(Address)
+        Data Ppu::Peek_2007(void* p_,Address i_)
+        {
+            return static_cast<Ppu*>(p_)->Peek_M_2007(i_);
+        }
+        
+        inline Data Ppu::Peek_M_2007(Address)
         {
             Update( cycles.one );
-            
-            ((void)0);
             
             const uint address = scroll.address & 0x3FFF;
             
@@ -835,22 +887,34 @@ namespace Nes
             return io.latch;
         }
         
-        void Ppu::Poke_2xxx(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_2xxx(i_,j_); } inline void Ppu::Poke_M_2xxx(Address,Data data)
+        void Ppu::Poke_2xxx(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_2xxx(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_2xxx(Address,Data data)
         {
             io.latch = data;
         }
         
-        Data Ppu::Peek_2xxx(void* p_,Address i_) { return static_cast<Ppu*>(p_)->Peek_M_2xxx(i_); } inline Data Ppu::Peek_M_2xxx(Address)
+        Data Ppu::Peek_2xxx(void* p_,Address i_)
+        {
+            return static_cast<Ppu*>(p_)->Peek_M_2xxx(i_);
+        }
+        
+        inline Data Ppu::Peek_M_2xxx(Address)
         {
             return io.latch;
         }
         
-        void Ppu::Poke_4014(void* p_,Address i_,Data j_) { static_cast<Ppu*>(p_)->Poke_M_4014(i_,j_); } inline void Ppu::Poke_M_4014(Address,Data data)
+        void Ppu::Poke_4014(void* p_,Address i_,Data j_)
+        {
+            static_cast<Ppu*>(p_)->Poke_M_4014(i_,j_);
+        }
+        
+        inline void Ppu::Poke_M_4014(Address,Data data)
         {
             Update( cycles.one );
-            
-            (__builtin_expect(!(!!(regs.oam < Oam::SIZE)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 879, "!!(regs.oam < Oam::SIZE)") : (void)0);
-            ((void)0);
             
             cpu.StealCycles( cpu.GetClock() * Oam::DMA_CYCLES );
             
@@ -885,7 +949,12 @@ namespace Nes
             }
         }
         
-        Data Ppu::Peek_4014(void* p_,Address i_) { return static_cast<Ppu*>(p_)->Peek_M_4014(i_); } inline Data Ppu::Peek_M_4014(Address)
+        Data Ppu::Peek_4014(void* p_,Address i_)
+        {
+            return static_cast<Ppu*>(p_)->Peek_M_4014(i_);
+        }
+        
+        inline Data Ppu::Peek_M_4014(Address)
         {
             return 0x40;
         }
@@ -920,14 +989,12 @@ namespace Nes
         
         inline void Ppu::EvaluateSprites()
         {
-            (__builtin_expect(!(!!(scanline >= 0 && scanline <= 239 && regs.oam < Oam::SIZE)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 950, "!!(scanline >= 0 && scanline <= 239 && regs.oam < Oam::SIZE)") : (void)0);
-            
             oam.evaluated = oam.buffer;
             
             if (io.enabled)
             {
                 uint i = 0;
-                const uint height = (regs.ctrl0 >> 2 & 8) + 8;
+                const uint height = (regs.ctrl0_ >> 2 & 8) + 8;
                 
                 for (;;)
                 {
@@ -989,11 +1056,9 @@ namespace Nes
         
         void Ppu::LoadSprite()
         {
-            (__builtin_expect(!(!!(oam.loaded < oam.evaluated)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1019, "!!(oam.loaded < oam.evaluated)") : (void)0);
-            
             uint address;
             
-            if (regs.ctrl0 & Regs::CTRL0_SP8X16)
+            if (regs.ctrl0_ & Regs::CTRL0_SP8X16)
             {
                 address =
                 (
@@ -1004,7 +1069,7 @@ namespace Nes
             }
             else
             {
-                address = (regs.ctrl0 & Regs::CTRL0_SP_OFFSET) << 9 | oam.loaded->tile << 4;
+                address = (regs.ctrl0_  & Regs::CTRL0_SP_OFFSET) << 9 | oam.loaded->tile << 4;
             }
             
             address |= oam.loaded->comparitor & uint(Oam::Buffer::XFINE);
@@ -1080,7 +1145,9 @@ namespace Nes
                 const uint index = output.index & 0xFF;
                 pixel = tiles.pixels[(index + scroll.xFine) & 15] & tiles.mask;
                 
-                for (const Oam::Output* __restrict__ sprite=oam.output, *const end=oam.visible; sprite != end; ++sprite)
+                for (const Oam::Output* sprite=oam.output, * end=oam.visible;
+                     sprite != end;
+                     ++sprite)
                 {
                     uint x = index - sprite->x;
                     
@@ -1091,9 +1158,6 @@ namespace Nes
                     
                     if (x)
                     {
-                        
-                        
-                        
                         if (pixel & sprite->zero)
                             regs.status |= Regs::STATUS_SP_ZERO_HIT;
                         
@@ -1110,7 +1174,7 @@ namespace Nes
             }
             
             ++output.index;
-            Video::Screen::Pixel* const __restrict__ target = output.target++;
+            Video::Screen::Pixel* target = output.target++;
             *target = output.palette[pixel];
         }
         
@@ -1227,8 +1291,6 @@ namespace Nes
             if (io.enabled)
                 tiles.pattern[1] = chr.FetchPattern( io.address );
             
-            (__builtin_expect(!(!!(stage < 32)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1257, "!!(stage < 32)") : (void)0);
-            
             stage = (stage + 1) & 31;
             
             if (stage)
@@ -1246,8 +1308,6 @@ namespace Nes
         
         void Ppu::HBlank()
         {
-            (__builtin_expect(!(!!(stage == 0)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1276, "!!(stage == 0)") : (void)0);
-            
             hBlankHook.Execute();
             
             cycles.count += cycles.four - cycles.one;
@@ -1269,7 +1329,7 @@ namespace Nes
             {
                 if (oam.loaded == oam.evaluated)
                 {
-                    if (io.a12 && regs.ctrl0 & (Regs::CTRL0_SP_OFFSET|Regs::CTRL0_SP8X16))
+                    if (io.a12 && regs.ctrl0_ & (Regs::CTRL0_SP_OFFSET|Regs::CTRL0_SP8X16))
                         io.a12.Toggle( cycles.count );
                 }
                 else
@@ -1408,8 +1468,6 @@ namespace Nes
             if (io.enabled)
                 tiles.pattern[1] = chr.FetchPattern( io.address );
             
-            (__builtin_expect(!(!!(stage < 2 && scanline < 240)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1438, "!!(stage < 2 && scanline < 240)") : (void)0);
-            
             if (stage ^= 1)
             {
                 cycles.count += cycles.one;
@@ -1431,8 +1489,6 @@ namespace Nes
                     
                     if (regs.ctrl1 & regs.frame)
                     {
-                        (__builtin_expect(!(!!(cycles.one == Clocks::RP2C02_CC)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1461, "!!(cycles.one == Clocks::RP2C02_CC)") : (void)0);
-                        
                         output.burstPhase = (output.burstPhase + 2) % 3;
                         cycles.count -= cycles.one;
                         cpu.SetFrameCycles( Clocks::RP2C02_HVSYNC_1 );
@@ -1462,9 +1518,6 @@ namespace Nes
         
         void Ppu::VBlank()
         {
-            (__builtin_expect(!(!!(scanline != SCANLINE_VBLANK && regs.oam < Oam::SIZE)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1492, "!!(scanline != SCANLINE_VBLANK && regs.oam < Oam::SIZE)") : (void)0);
-            ((void)0);
-            
             regs.status = (regs.status & 0xFF) | (regs.status >> 1 & Regs::STATUS_VBLANK);
             cycles.count += cycles.one * 2;
             regs.oam = 0x00;
@@ -1485,14 +1538,12 @@ namespace Nes
             cycles.count = Cpu::CYCLE_MAX;
             phase = &Ppu::HDummy;
             
-            if (regs.ctrl0 & regs.status & Regs::CTRL0_NMI)
+            if (regs.ctrl0_ & regs.status & Regs::CTRL0_NMI)
                 cpu.DoNMI( cpu.GetFrameCycles() );
         }
         
         void Ppu::HDummy()
         {
-            (__builtin_expect(!(!!(scanline == SCANLINE_VBLANK)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1521, "!!(scanline == SCANLINE_VBLANK)") : (void)0);
-            
             cycles.count += cycles.four;
             regs.status = 0;
             scanline = SCANLINE_HDUMMY;
@@ -1502,8 +1553,6 @@ namespace Nes
         
         void Ppu::HDummyBg()
         {
-            (__builtin_expect(!(!!(scanline == SCANLINE_HDUMMY)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1532, "!!(scanline == SCANLINE_HDUMMY)") : (void)0);
-            
         hell:
             
             if (io.a12 && scroll.pattern && io.enabled)
@@ -1527,11 +1576,9 @@ namespace Nes
         
         void Ppu::HDummySp()
         {
-            (__builtin_expect(!(!!(scanline == SCANLINE_HDUMMY)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1557, "!!(scanline == SCANLINE_HDUMMY)") : (void)0);
-            
         hell:
             
-            if (io.a12 && regs.ctrl0 & (Regs::CTRL0_SP_OFFSET|Regs::CTRL0_SP8X16) && io.enabled)
+            if (io.a12 && regs.ctrl0_ & (Regs::CTRL0_SP_OFFSET|Regs::CTRL0_SP8X16) && io.enabled)
                 io.a12.Toggle( cycles.count );
             
             stage = (stage + 1) & 7;
@@ -1574,8 +1621,6 @@ namespace Nes
         
         void Ppu::WarmUp()
         {
-            (__builtin_expect(!(!!(stage && phase == &Ppu::WarmUp)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1604, "!!(stage && phase == &Ppu::WarmUp)") : (void)0);
-            
             cycles.count = Cpu::CYCLE_MAX;
             
             if (!--stage)

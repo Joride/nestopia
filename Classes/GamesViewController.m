@@ -65,9 +65,13 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear: animated];
-    
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 3
+
+//    Donkey Kong (U) (PRG1) [!]:
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 2
                                                  inSection: 4];
+    
+//    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 4
+//                                                 inSection: 19];
     [self tableView: self.tableView
 didSelectRowAtIndexPath: indexPath];
 
@@ -194,7 +198,7 @@ didSelectRowAtIndexPath: indexPath];
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     Game *game = [self gameAtIndexPath:indexPath];
     
-    NSLog(@"%s starting game play for %@", __PRETTY_FUNCTION__, game.title);
+    NSLog(@"%@", game.title);
     
     GamePlayViewController *gamePlayViewController = [[GamePlayViewController alloc] initWithGame:game loadState:self.saved];
     gamePlayViewController.delegate = self;

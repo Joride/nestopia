@@ -127,7 +127,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear: animated];
-	NSLog(@"%s saving settings", __func__);
+//	NSLog(@"%s saving settings", __func__);
 	
 	[self saveSettings];
 }

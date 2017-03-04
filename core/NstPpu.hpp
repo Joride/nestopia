@@ -76,9 +76,14 @@ namespace Nes
 			void LoadState(State::Loader&);
 			void SaveState(State::Saver&,dword) const;
 
-			class ChrMem : public Memory<SIZE_8K,SIZE_1K,2>
+			class ChrMem : public Memory<0x2000,0x400,2> //<SIZE_8K,SIZE_1K,2>
 			{
-				NES_DECL_ACCESSOR( Pattern );
+                // this macro evaluates to the code below
+//				NES_DECL_ACCESSOR( Pattern );
+                
+                // this is what the macro above evaluates to
+                Data Access_M_Pattern(Address);
+                static Data Access_Pattern(void*,Address);
 
 			protected:
 
@@ -263,7 +268,7 @@ namespace Nes
 					FRAME_ODD             = CTRL1_BG_ENABLED|CTRL1_SP_ENABLED
 				};
 
-				uint ctrl0;
+				uint ctrl0_;
 				uint ctrl1;
 				uint status;
 				uint frame;
@@ -478,7 +483,7 @@ namespace Nes
 
 			uint GetCtrl0(uint flags) const
 			{
-				return regs.ctrl0 & flags;
+				return regs.ctrl0_ & flags;
 			}
 
 			uint GetCtrl1(uint flags) const
