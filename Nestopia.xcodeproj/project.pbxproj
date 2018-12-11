@@ -1110,13 +1110,13 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				A2C393FD21BF8F8900EC986B /* NESKit.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				C4848C2C1A39847D00A20A7B /* Extensions */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				A2C393FD21BF8F8900EC986B /* NESKit.xcodeproj */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
