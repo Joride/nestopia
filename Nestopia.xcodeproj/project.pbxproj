@@ -1110,41 +1110,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				1D3623240D0F684500981E51 /* NestopiaAppDelegate.h */,
-				1D3623250D0F684500981E51 /* NestopiaAppDelegate.m */,
-				704412BC0ED9D3D800E54091 /* GamesViewController.h */,
-				704412BD0ED9D3D800E54091 /* GamesViewController.m */,
-				28C286DF0D94DF7D0034E888 /* GamePlayViewController.h */,
-				28C286E00D94DF7D0034E888 /* GamePlayViewController.m */,
-				66C1BD5518652F4B00E5A833 /* GameControllerManager.h */,
-				66C1BD5618652F4B00E5A833 /* GameControllerManager.m */,
-				704412E80ED9D58B00E54091 /* SettingsViewController.h */,
-				704412E90ED9D58B00E54091 /* SettingsViewController.m */,
-				70FEB7F9180DDB9F008B6C61 /* MultiValueViewController.h */,
-				70FEB7FA180DDB9F008B6C61 /* MultiValueViewController.m */,
-				70FEB7FC180DDD5F008B6C61 /* DisclosureIndicator.h */,
-				70FEB7FD180DDD5F008B6C61 /* DisclosureIndicator.m */,
-				702087860EDC5A9900E83959 /* ScreenView.h */,
-				702087870EDC5A9900E83959 /* ScreenView.m */,
-				80C3B63618385A85000B68E0 /* AudioPlayer.h */,
-				80C3B63718385A85000B68E0 /* AudioPlayer.m */,
-				80C3B63C18389066000B68E0 /* PadButton.h */,
-				80C3B63D18389066000B68E0 /* PadButton.m */,
-				80C3B63F183890ED000B68E0 /* PadSingleButton.h */,
-				80C3B640183890ED000B68E0 /* PadSingleButton.m */,
-				80C3B64518397740000B68E0 /* PadRoundTextButton.h */,
-				80C3B64618397740000B68E0 /* PadRoundTextButton.m */,
-				80C3B6391838841B000B68E0 /* PadDirectionButton.h */,
-				80C3B63A1838841B000B68E0 /* PadDirectionButton.m */,
-				80C3B64218397526000B68E0 /* TransparentMaskView.h */,
-				80C3B64318397526000B68E0 /* TransparentMaskView.m */,
-				80C3B64B18398CFB000B68E0 /* RoundTextMaskView.h */,
-				80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */,
-				80909A1C1835B1A800CC9F6F /* Game.h */,
-				80909A1D1835B1A800CC9F6F /* Game.m */,
-				80C3B6311836EF25000B68E0 /* NSString+TableViewAlphabeticIndexes.h */,
-				80C3B6321836EF25000B68E0 /* NSString+TableViewAlphabeticIndexes.m */,
 				7052028917FA15F5001FFF8F /* Nestopia */,
+				A2C3940A21BF913700EC986B /* iOS */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1211,6 +1178,7 @@
 				700954F117FC75570038888C /* database */,
 				700954F217FC75570038888C /* input */,
 				7009552017FC75570038888C /* mapper */,
+				700956DF17FC75590038888C /* vssystem */,
 				7009568117FC75580038888C /* NstApu.cpp */,
 				7009568217FC75580038888C /* NstApu.hpp */,
 				7009568317FC75580038888C /* NstAssert.cpp */,
@@ -1305,7 +1273,6 @@
 				700956DC17FC75590038888C /* NstVideoScreen.hpp */,
 				700956DD17FC75590038888C /* NstZlib.cpp */,
 				700956DE17FC75590038888C /* NstZlib.hpp */,
-				700956DF17FC75590038888C /* vssystem */,
 			);
 			path = core;
 			sourceTree = "<group>";
@@ -1970,6 +1937,47 @@
 				A2C3940221BF8F8900EC986B /* NESKit.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A2C3940A21BF913700EC986B /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				1D3623240D0F684500981E51 /* NestopiaAppDelegate.h */,
+				1D3623250D0F684500981E51 /* NestopiaAppDelegate.m */,
+				704412BC0ED9D3D800E54091 /* GamesViewController.h */,
+				704412BD0ED9D3D800E54091 /* GamesViewController.m */,
+				28C286DF0D94DF7D0034E888 /* GamePlayViewController.h */,
+				28C286E00D94DF7D0034E888 /* GamePlayViewController.m */,
+				66C1BD5518652F4B00E5A833 /* GameControllerManager.h */,
+				66C1BD5618652F4B00E5A833 /* GameControllerManager.m */,
+				704412E80ED9D58B00E54091 /* SettingsViewController.h */,
+				704412E90ED9D58B00E54091 /* SettingsViewController.m */,
+				70FEB7F9180DDB9F008B6C61 /* MultiValueViewController.h */,
+				70FEB7FA180DDB9F008B6C61 /* MultiValueViewController.m */,
+				70FEB7FC180DDD5F008B6C61 /* DisclosureIndicator.h */,
+				70FEB7FD180DDD5F008B6C61 /* DisclosureIndicator.m */,
+				702087860EDC5A9900E83959 /* ScreenView.h */,
+				702087870EDC5A9900E83959 /* ScreenView.m */,
+				80C3B63618385A85000B68E0 /* AudioPlayer.h */,
+				80C3B63718385A85000B68E0 /* AudioPlayer.m */,
+				80C3B63C18389066000B68E0 /* PadButton.h */,
+				80C3B63D18389066000B68E0 /* PadButton.m */,
+				80C3B63F183890ED000B68E0 /* PadSingleButton.h */,
+				80C3B640183890ED000B68E0 /* PadSingleButton.m */,
+				80C3B64518397740000B68E0 /* PadRoundTextButton.h */,
+				80C3B64618397740000B68E0 /* PadRoundTextButton.m */,
+				80C3B6391838841B000B68E0 /* PadDirectionButton.h */,
+				80C3B63A1838841B000B68E0 /* PadDirectionButton.m */,
+				80C3B64218397526000B68E0 /* TransparentMaskView.h */,
+				80C3B64318397526000B68E0 /* TransparentMaskView.m */,
+				80C3B64B18398CFB000B68E0 /* RoundTextMaskView.h */,
+				80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */,
+				80909A1C1835B1A800CC9F6F /* Game.h */,
+				80909A1D1835B1A800CC9F6F /* Game.m */,
+				80C3B6311836EF25000B68E0 /* NSString+TableViewAlphabeticIndexes.h */,
+				80C3B6321836EF25000B68E0 /* NSString+TableViewAlphabeticIndexes.m */,
+			);
+			path = iOS;
 			sourceTree = "<group>";
 		};
 		C4848C2B1A39846F00A20A7B /* CGGeometry */ = {
