@@ -344,9 +344,7 @@
 		80C3B64418397526000B68E0 /* TransparentMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64318397526000B68E0 /* TransparentMaskView.m */; };
 		80C3B64718397740000B68E0 /* PadRoundTextButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64618397740000B68E0 /* PadRoundTextButton.m */; };
 		80C3B64D18398CFB000B68E0 /* RoundTextMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */; };
-		A2C3940321BF8FC400EC986B /* NESKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2C3940221BF8F8900EC986B /* NESKit.framework */; };
-		A2C3940421BF8FC800EC986B /* NESKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2C3940221BF8F8900EC986B /* NESKit.framework */; };
-		A2C3940521BF8FC800EC986B /* NESKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A2C3940221BF8F8900EC986B /* NESKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A2C3942621C04AE000EC986B /* NESKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2C3940221BF8F8900EC986B /* NESKit.framework */; };
 		C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C4848C291A39838600A20A7B /* CGSize+Utilities.m */; };
 		F5EE71540FEEC3A000FDA0A6 /* controller_ls.png in Resources */ = {isa = PBXBuildFile; fileRef = F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */; };
 /* End PBXBuildFile section */
@@ -363,24 +361,10 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = A2C393FD21BF8F8900EC986B /* NESKit.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A2C393ED21BF8C0E00EC986B;
+			remoteGlobalIDString = A2C3941721C04A4100EC986B;
 			remoteInfo = NESKit;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		A2C3940821BF8FC800EC986B /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				A2C3940521BF8FC800EC986B /* NESKit.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1D3623240D0F684500981E51 /* NestopiaAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NestopiaAppDelegate.h; sourceTree = "<group>"; };
@@ -1093,9 +1077,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A2C3940321BF8FC400EC986B /* NESKit.framework in Frameworks */,
+				A2C3942621C04AE000EC986B /* NESKit.framework in Frameworks */,
 				66C1BD54186528AF00E5A833 /* GameController.framework in Frameworks */,
-				A2C3940421BF8FC800EC986B /* NESKit.framework in Frameworks */,
 				7044127F0ED9CF6100E54091 /* AudioToolbox.framework in Frameworks */,
 				704412800ED9CF6100E54091 /* QuartzCore.framework in Frameworks */,
 				70F696A8124C289500D39392 /* CoreGraphics.framework in Frameworks */,
@@ -2020,7 +2003,6 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
-				A2C3940821BF8FC800EC986B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
