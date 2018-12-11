@@ -1,0 +1,4 @@
+[submodule "submodules/neskit"]
+	path = submodules/neskit
+	url = git@bitbucket.org:JorritAtHome/neskit.git
+	branch = master

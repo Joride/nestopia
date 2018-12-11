@@ -344,9 +344,43 @@
 		80C3B64418397526000B68E0 /* TransparentMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64318397526000B68E0 /* TransparentMaskView.m */; };
 		80C3B64718397740000B68E0 /* PadRoundTextButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64618397740000B68E0 /* PadRoundTextButton.m */; };
 		80C3B64D18398CFB000B68E0 /* RoundTextMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */; };
+		A2C3940321BF8FC400EC986B /* NESKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2C3940221BF8F8900EC986B /* NESKit.framework */; };
+		A2C3940421BF8FC800EC986B /* NESKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2C3940221BF8F8900EC986B /* NESKit.framework */; };
+		A2C3940521BF8FC800EC986B /* NESKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A2C3940221BF8F8900EC986B /* NESKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C4848C291A39838600A20A7B /* CGSize+Utilities.m */; };
 		F5EE71540FEEC3A000FDA0A6 /* controller_ls.png in Resources */ = {isa = PBXBuildFile; fileRef = F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A2C3940121BF8F8900EC986B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A2C393FD21BF8F8900EC986B /* NESKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A2C393EE21BF8C0E00EC986B;
+			remoteInfo = NESKit;
+		};
+		A2C3940621BF8FC800EC986B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A2C393FD21BF8F8900EC986B /* NESKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A2C393ED21BF8C0E00EC986B;
+			remoteInfo = NESKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A2C3940821BF8FC800EC986B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A2C3940521BF8FC800EC986B /* NESKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1D3623240D0F684500981E51 /* NestopiaAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NestopiaAppDelegate.h; sourceTree = "<group>"; };
@@ -1048,6 +1082,7 @@
 		80C3B64B18398CFB000B68E0 /* RoundTextMaskView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTextMaskView.h; sourceTree = "<group>"; };
 		80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundTextMaskView.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2C393FD21BF8F8900EC986B /* NESKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NESKit.xcodeproj; path = submodules/neskit/NESKit.xcodeproj; sourceTree = "<group>"; };
 		C4848C281A39835500A20A7B /* CGSize+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CGSize+Utilities.h"; path = "Extensions/CGGeometry/CGSize+Utilities.h"; sourceTree = "<group>"; };
 		C4848C291A39838600A20A7B /* CGSize+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CGSize+Utilities.m"; path = "Extensions/CGGeometry/CGSize+Utilities.m"; sourceTree = "<group>"; };
 		F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = controller_ls.png; sourceTree = "<group>"; };
@@ -1058,7 +1093,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2C3940321BF8FC400EC986B /* NESKit.framework in Frameworks */,
 				66C1BD54186528AF00E5A833 /* GameController.framework in Frameworks */,
+				A2C3940421BF8FC800EC986B /* NESKit.framework in Frameworks */,
 				7044127F0ED9CF6100E54091 /* AudioToolbox.framework in Frameworks */,
 				704412800ED9CF6100E54091 /* QuartzCore.framework in Frameworks */,
 				70F696A8124C289500D39392 /* CoreGraphics.framework in Frameworks */,
@@ -1123,6 +1160,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				A2C393FD21BF8F8900EC986B /* NESKit.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				C4848C2C1A39847D00A20A7B /* Extensions */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -1926,6 +1964,14 @@
 			name = Tabs;
 			sourceTree = "<group>";
 		};
+		A2C393FE21BF8F8900EC986B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2C3940221BF8F8900EC986B /* NESKit.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C4848C2B1A39846F00A20A7B /* CGGeometry */ = {
 			isa = PBXGroup;
 			children = (
@@ -1966,10 +2012,12 @@
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				A2C3940821BF8FC800EC986B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A2C3940721BF8FC800EC986B /* PBXTargetDependency */,
 			);
 			name = Nestopia;
 			productName = Nestopia;
@@ -2002,12 +2050,28 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A2C393FE21BF8F8900EC986B /* Products */;
+					ProjectRef = A2C393FD21BF8F8900EC986B /* NESKit.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* Nestopia */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A2C3940221BF8F8900EC986B /* NESKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = NESKit.framework;
+			remoteRef = A2C3940121BF8F8900EC986B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1D60588D0D05DD3D006BFB54 /* Resources */ = {
@@ -2362,6 +2426,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A2C3940721BF8FC800EC986B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NESKit;
+			targetProxy = A2C3940621BF8FC800EC986B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -2377,6 +2449,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = Nestopia;
 			};
 			name = Debug;
@@ -2397,6 +2470,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = Nestopia;
 			};
 			name = Release;
@@ -2438,6 +2512,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = Nestopia;
 			};
 			name = Distribution;
@@ -2520,6 +2595,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = Nestopia;
 			};
 			name = "Debug Optimized";

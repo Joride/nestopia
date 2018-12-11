@@ -22,6 +22,8 @@
 #import "GamesViewController.h"
 #import "SettingsViewController.h"
 
+#import <NESKit/NESKit.h>
+
 @implementation NestopiaAppDelegate {
     UIWindow *window;
     
@@ -30,6 +32,8 @@
 	GamesViewController *savedGamesViewController;
     GamesViewController *favoritesViewController;
 	SettingsViewController *settingsViewController;
+    
+    NES * _console;
 }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
@@ -38,6 +42,13 @@
 	window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     window.rootViewController = tabBarController;
 	[window makeKeyAndVisible];
+    
+    [self testNESKit];
+}
+
+- (void) testNESKit
+{
+    _console = [[NES alloc] init];
 }
 
 - (void)setupViewControllers {
