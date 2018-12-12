@@ -22,7 +22,7 @@
 
 #import "GamePlayViewController.h"
 #import "NestopiaAppDelegate.h"
-#import "NestopiaCore.h"
+#import <NESKit/NESKit.h>
 #import "AudioPlayer.h"
 #import "ScreenView.h"
 #import "SettingsViewController.h"

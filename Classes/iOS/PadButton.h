@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NestopiaCore.h"
+#import <NESKit/NESKit.h>
 
 @interface PadButton : UIView
 

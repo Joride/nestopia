@@ -6,7 +6,7 @@
 //
 //
 
-#import "NestopiaCore.h"
+#import <NESKit/NESKit.h>
 
 @class GameControllerManager;
 

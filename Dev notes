@@ -1,0 +1,9 @@
+main.m is now main.mm
+
+It should become .m again once all C++ code is gone.
+
+This causes the project to use the C++ compiler and be able to use the library
+(which contains) C++ and Objective-C++ code.
+As the build setting is 'compile sources "by filetype"', no additinal warnings or
+errors are introduced in existing files (which could be the case when setting
+the build setting to 'compile sources "as ObjectiveC++"').

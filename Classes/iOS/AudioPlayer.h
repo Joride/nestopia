@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NestopiaCore.h"
+#import <NESKit/NESKit.h>
 
 @interface AudioPlayer : NSObject <NestopiaCoreAudioDelegate>
 

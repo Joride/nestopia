@@ -19,7 +19,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "NestopiaCore.h"
+#import <NESKit/NESKit.h>
 
 @interface ScreenView : UIView <NestopiaCoreVideoDelegate>
 
