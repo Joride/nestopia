@@ -46,7 +46,8 @@ namespace Nes
 		class Ppu
 		{
 		public:
-
+            long long PPUCycleCount;
+            void printPPU();
 			explicit Ppu(Cpu&);
 
 			enum Mirroring

@@ -21,9 +21,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 ////////////////////////////////////////////////////////////////////////////////////////
-
+   
+    
 #ifndef NST_CPU_H
 #define NST_CPU_H
+
 
 #include <string>
 #include <iostream>
@@ -128,6 +130,7 @@ namespace Nes
             int64_t cyclesSubtracted;
             void printCPU();
             std::string ListValuesByAdrres();
+            uint8_t* MemoryBuffer();
 			void Run0();
 			void Run1();
 			void Run2();
@@ -587,3 +590,4 @@ namespace Nes
 }
 
 #endif
+

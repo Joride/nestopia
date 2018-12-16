@@ -29,6 +29,8 @@
 #pragma once
 #endif
 
+#include <stdio.h>
+
 namespace Nes
 {
 	namespace Core
@@ -147,14 +149,16 @@ namespace Nes
 
 			public:
 
-				Port() {}
+				Port(){}
 
 				Port(Component c,Reader r,Writer w)
 				:
 				component ( c ),
 				reader    ( r ),
 				writer    ( w )
-				{}
+				{
+                    printf("Port()");
+                }
 
 				void Set(Component c,Reader r,Writer w)
 				{

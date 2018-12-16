@@ -66,12 +66,15 @@
 {
     [super viewDidAppear: animated];
 
-//    Donkey Kong (U) (PRG1) [!]:
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 2
-                                                 inSection: 4];
     
-//    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 4
-//                                                 inSection: 19];
+//  Donkey Kong (U) (PRG1) [!]: (row 2, section 4)
+//    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 2
+//                                                 inSection: 4];
+    
+//  nestest: (row 0, section 14)
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 0
+                                                 inSection: 14];
+
     [self tableView: self.tableView
 didSelectRowAtIndexPath: indexPath];
 

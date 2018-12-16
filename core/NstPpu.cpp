@@ -28,6 +28,10 @@
 #include "NstPpu.hpp"
 #include "NstState.hpp"
 
+#define NstPpuprintf printf
+#define NstPpuprintf(x, ...) // uncomment this line to disable debug printing
+
+static bool Observing = false;
 
 namespace Nes
 {
@@ -63,6 +67,7 @@ namespace Nes
         cpu (c),
         output (screen.pixels)
         {
+            PPUCycleCount = 0;
             SetRegion( cpu.GetRegion() );
             PowerOff();
         }
@@ -328,7 +333,23 @@ namespace Nes
         {
             cpu.AddHook( Hook(this,&Ppu::Hook_Sync) );
         }
-        
+        void Ppu::printPPU()
+        {
+            Observing = true;
+            NstPpuprintf("PPU-cc:\t\t\t%i\ncycleInFrameCount:\t%i\nPPUCTRL:\t\t\t0x%02X\nPPUMASK:\t\t\t0x%02X\nPPUSTATUS:\t\t0x%02X\nOAMADDR:\t\t\t0x%02X\nOAMDATA:\t\t\t0x%02X\nPPUSCROLL:\t\t0x%02X\nPPUADDR:\t\t\t0x%02X\nPPUDATA:\t\t\t0x%02X\n\n",
+                         PPUCycleCount,         // PPU-cc
+                         -1,                    // cycleInFrameCount
+                         regs.ctrl0_,           // PPUCTRL - 2000
+                         regs.ctrl1,            // PPUMASK - 2001
+                         regs.status,           // PPUSTATUS - 2002
+                         regs.oam,              // OAMADDR - 2003
+                         Ppu::Peek_M_2004(0),   // OAMDATA - 2004
+                         -1,                    // PPUSCROLL
+                         -1,                    // PPUADDR
+                         -1                     // PPUDATA
+                         );
+            Observing = false;
+        }
         void Ppu::ChrMem::ResetAccessors()
         {
             accessors[0].Set( this, &ChrMem::Access_Pattern );
@@ -455,7 +476,9 @@ namespace Nes
                 
                 do
                 {
+                    PPU:printPPU();
                     (*this.*phase)();
+                    PPUCycleCount += 1;
                 }
                 while (cycles.count < elapsed);
                 
@@ -470,7 +493,9 @@ namespace Nes
                 
                 do
                 {
+                    PPU:printPPU();
                     (*this.*phase)();
+                    PPUCycleCount += 1;
                 }
                 while (cycles.count != Cpu::CYCLE_MAX);
                 
@@ -486,7 +511,9 @@ namespace Nes
                 cycles.round = dataSetup;
                 do
                 {
+                    PPU:printPPU();
                     (*this.*phase)();
+                    PPUCycleCount += 1;
                 }
                 while (cycles.count < dataSetup);
                 
@@ -635,6 +662,15 @@ namespace Nes
             data = regs.ctrl0_;
             regs.ctrl0_ = io.latch;
             
+            if ((io.latch & 0x80) == 0x80)
+            {
+                NstPpuprintf("CTRL set");
+            }
+            else
+            {
+                NstPpuprintf("CTRL NOT set");
+            }
+            
             if ((regs.ctrl0_ & regs.status & Regs::CTRL0_NMI) > data)
                 cpu.DoNMI();
         }
@@ -744,7 +780,7 @@ namespace Nes
         
         inline Data Ppu::Peek_M_2004(Address)
         {
-            Update( cycles.one );
+            if (!Observing) Update( cycles.one );
 
             uint data;
             
@@ -777,8 +813,7 @@ namespace Nes
                     data = oam.ram[0];
                 }
             }
-            
-            io.latch = data;
+            if (!Observing) io.latch = data;
             
             return data;
         }
@@ -1302,6 +1337,15 @@ namespace Nes
                 cycles.count += cycles.one;
                 regs.status = noSpHitOn255;
                 
+                if ((noSpHitOn255 & 0x80) == 0x80)
+                {
+                    NstPpuprintf("STATUS set");
+                }
+                else
+                {
+                    NstPpuprintf("STATUS NOT set");
+                }
+                
                 phase = &Ppu::HBlank;
             }
         }
@@ -1338,8 +1382,6 @@ namespace Nes
                 }
             }
             
-            (__builtin_expect(!(!!(stage < 8)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1308, "!!(stage < 8)") : (void)0);
-            
             stage = (stage + 1) & 7;
             
             if (stage)
@@ -1371,8 +1413,7 @@ namespace Nes
         
         void Ppu::HBlankBg()
         {
-            (__builtin_expect(!(!!(stage == 0)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1341, "!!(stage == 0)") : (void)0);
-            
+
             hActiveHook.Execute();
             
             cycles.count += cycles.one;
@@ -1519,6 +1560,14 @@ namespace Nes
         void Ppu::VBlank()
         {
             regs.status = (regs.status & 0xFF) | (regs.status >> 1 & Regs::STATUS_VBLANK);
+            if ((regs.status & 0x80) == 0x80)
+            {
+                NstPpuprintf("STATUS set");
+            }
+            else
+            {
+                NstPpuprintf("STATUS NOT set");
+            }
             cycles.count += cycles.one * 2;
             regs.oam = 0x00;
             scanline = SCANLINE_VBLANK;
@@ -1539,13 +1588,22 @@ namespace Nes
             phase = &Ppu::HDummy;
             
             if (regs.ctrl0_ & regs.status & Regs::CTRL0_NMI)
+            {
                 cpu.DoNMI( cpu.GetFrameCycles() );
+            }
+            else
+            {
+                NstPpuprintf("NMI not happening");
+                ;
+            }
         }
         
         void Ppu::HDummy()
         {
             cycles.count += cycles.four;
             regs.status = 0;
+            NstPpuprintf("STATUS cleared");
+            
             scanline = SCANLINE_HDUMMY;
             
             phase = &Ppu::HDummyBg;
@@ -1609,8 +1667,6 @@ namespace Nes
         
         void Ppu::HDummyScroll()
         {
-            (__builtin_expect(!(!!(scanline == SCANLINE_HDUMMY)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstPpu.cpp", 1592, "!!(scanline == SCANLINE_HDUMMY)") : (void)0);
-            
             cycles.count += cycles.four;
             
             if (io.enabled)

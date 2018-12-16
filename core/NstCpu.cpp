@@ -27,9 +27,21 @@
 #include "NstHook.hpp"
 #include "NstState.hpp"
 #include "api/NstApiUser.hpp"
+#import "CPUTracer-Bridge.h"
 
-// use this to turn of the print statements (with them, emulation is slooooowww)
+
+// use this to turn off the print statements (with them, emulation is slooooowww)
 #define printf(x, ...)
+
+#define TraceFunctionName CPUTracerCurrentOpcodeName(__FUNCTION__)
+
+// use this to turn the printf statements to printToFile statements
+//#define printf(args...) do {\
+//    FILE *out = fopen("/Users/Jorrit/iOS/EmuOutputCompare/output/nestopia.txt", "a");\
+//    fprintf(out, args);\
+//    fclose(out);\
+//    } while(0)
+
 
 namespace Nes
 {
@@ -112,8 +124,8 @@ namespace Nes
         {
             Reset( false, false );
             
-            std::string a = ListValuesByAdrres();
-            printf("%s", a.c_str());
+//            std::string a = ListValuesByAdrres();
+//            printf("%s", a.c_str());
             
             cycles.SetRegion( GetRegion() );
         }
@@ -196,6 +208,17 @@ namespace Nes
             
         }
         
+        uint8_t* Cpu::MemoryBuffer()
+        {
+            uint16_t bufferSize = 0xFFFF;
+            uint8_t * buffer = (uint8_t *) malloc(sizeof(uint8_t) * bufferSize);
+            for (uint16_t index = 0; index < 0xFFFF; index++)
+            {
+                buffer[index] = map.Peek8(index);
+            }
+            return buffer;
+        }
+        
         std::string Cpu::ListValuesByAdrres()
         {
             std::string string = "Address\tValue\n";
@@ -207,9 +230,6 @@ namespace Nes
                 sprintf(buffer, "0x%04X\t0x%02X\n", index, map.Peek8(index));
                 std::string toAppend = std::string(buffer);
                 string = string + toAppend;
-                
-                
-                
             }
             return string;
         }
@@ -726,11 +746,9 @@ namespace Nes
         : Io::Map<SIZE_64K>( cpu, peek, poke ) {}
         
         
-        
-        
-        
         inline uint Cpu::IoMap::Peek8(const uint address) const
-        {   
+        {
+
             return ports[address].Peek( address );
         }
         
@@ -855,8 +873,10 @@ namespace Nes
             return data;
         }
         
+#pragma mark - Addressing
         inline uint Cpu::Imm_R()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImmediate);
             const uint data = FetchPc8();
             cycles.count += cycles.clock[1];
             
@@ -867,6 +887,7 @@ namespace Nes
         
         uint Cpu::Abs_R()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
             uint data = FetchPc16();
             cycles.count += cycles.clock[2];
             uint address = data;
@@ -899,6 +920,7 @@ namespace Nes
         
         uint Cpu::Abs_RW(uint& data)
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
             printf("%s\n", __FUNCTION__);
             const uint address = FetchPc16();
             cycles.count += cycles.clock[2];
@@ -914,6 +936,7 @@ namespace Nes
         
         inline uint Cpu::Abs_W()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
             const uint address = FetchPc16();
             cycles.count += cycles.clock[2];
             
@@ -922,12 +945,9 @@ namespace Nes
             return address;
         }
         
-        
-        
-        
-        
         inline uint Cpu::Zpg_R()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeropage);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
             
@@ -938,7 +958,7 @@ namespace Nes
         
         inline uint Cpu::Zpg_RW(uint& data)
         {
-            
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeropage);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[4];
             data = ram.mem[address];
@@ -950,18 +970,16 @@ namespace Nes
         
         inline uint Cpu::Zpg_W()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeropage);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
             printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
             return address;
         }
         
-        
-        
-        
-        
         inline uint Cpu::ZpgReg_R(uint indexed)
         {
+//            CPUTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[3];
@@ -970,6 +988,7 @@ namespace Nes
         
         inline uint Cpu::ZpgReg_RW(uint& data,uint indexed)
         {
+//            CPUTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[5];
@@ -979,37 +998,55 @@ namespace Nes
         
         inline uint Cpu::ZpgReg_W(uint indexed)
         {
+//            CPUTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[3];
             return indexed;
         }
-        
-        
-        
-        
-        
         inline uint Cpu::ZpgX_R()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedX);
             printf("%s\n", __FUNCTION__);
             return ZpgReg_R( x );
         }
         inline uint Cpu::ZpgX_RW(uint& data)
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedX);
             printf("%s\n", __FUNCTION__);
             return ZpgReg_RW( data, x );
         }
-        inline uint Cpu::ZpgX_W() { printf("%s\n", __FUNCTION__); return ZpgReg_W( x ); }
-        inline uint Cpu::ZpgY_R() { printf("%s\n", __FUNCTION__); return ZpgReg_R( y ); }
-        inline uint Cpu::ZpgY_RW(uint& data) { printf("%s\n", __FUNCTION__); return ZpgReg_RW( data, y ); }
-        inline uint Cpu::ZpgY_W() { printf("%s\n", __FUNCTION__); return ZpgReg_W( y ); }
-        
-        
-        
-        
+        inline uint Cpu::ZpgX_W()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedX);
+            printf("%s\n", __FUNCTION__);
+            return ZpgReg_W( x );
+            
+        }
+        inline uint Cpu::ZpgY_R()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedY);
+            printf("%s\n", __FUNCTION__);
+            return ZpgReg_R( y );
+            
+        }
+        inline uint Cpu::ZpgY_RW(uint& data)
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedY);
+            printf("%s\n", __FUNCTION__);
+            return ZpgReg_RW( data, y );
+            
+        }
+        inline uint Cpu::ZpgY_W()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedY);
+            printf("%s\n", __FUNCTION__);
+            return ZpgReg_W( y );
+        }
         
         uint Cpu::AbsReg_R(uint indexed)
         {
+//            CPUTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             uint data = pc;
             indexed += map.Peek8( data );
@@ -1031,6 +1068,7 @@ namespace Nes
         
         uint Cpu::AbsReg_RW(uint& data,uint indexed)
         {
+//            CPUTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             uint address = pc;
             indexed += map.Peek8( address );
@@ -1051,6 +1089,7 @@ namespace Nes
         
         inline uint Cpu::AbsReg_W(uint indexed)
         {
+//            CPUTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             uint address = pc;
             indexed += map.Peek8( address );
@@ -1063,27 +1102,49 @@ namespace Nes
             return address;
         }
         
-        
-        
-        
-        
-        inline uint Cpu::AbsX_R() { printf("%s\n", __FUNCTION__); return AbsReg_R( x ); }
-        inline uint Cpu::AbsY_R() { printf("%s\n", __FUNCTION__); return AbsReg_R( y ); }
+        inline uint Cpu::AbsX_R()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedX);
+            printf("%s\n", __FUNCTION__);
+            return AbsReg_R( x );
+            
+        }
+        inline uint Cpu::AbsY_R()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedY);
+            printf("%s\n", __FUNCTION__);
+            return AbsReg_R( y );
+            
+        }
         inline uint Cpu::AbsX_RW(uint& data)
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedX);
             printf("%s\n", __FUNCTION__);
             return AbsReg_RW( data, x );
         }
-        inline uint Cpu::AbsY_RW(uint& data) { printf("%s\n", __FUNCTION__); return AbsReg_RW( data, y ); }
-        inline uint Cpu::AbsX_W() { printf("%s\n", __FUNCTION__); return AbsReg_W( x ); }
-        inline uint Cpu::AbsY_W() { printf("%s\n", __FUNCTION__); return AbsReg_W( y ); }
-        
-        
-        
-        
+        inline uint Cpu::AbsY_RW(uint& data)
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedY);
+            printf("%s\n", __FUNCTION__);
+            return AbsReg_RW( data, y );
+            
+        }
+        inline uint Cpu::AbsX_W()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedX);
+            printf("%s\n", __FUNCTION__);
+            return AbsReg_W( x );
+        }
+        inline uint Cpu::AbsY_W()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedY);
+            printf("%s\n", __FUNCTION__);
+            return AbsReg_W( y );
+        }
         
         uint Cpu::IndX_R()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndexedIndirect);
             printf("%s\n", __FUNCTION__);
             uint data = FetchPc8() + x;
             cycles.count += cycles.clock[4];
@@ -1097,6 +1158,7 @@ namespace Nes
         
         inline uint Cpu::IndX_RW(uint& data)
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndexedIndirect);
             printf("%s\n", __FUNCTION__);
             uint address = FetchPc8() + x;
             cycles.count += cycles.clock[4];
@@ -1113,18 +1175,16 @@ namespace Nes
         
         inline uint Cpu::IndX_W()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndexedIndirect);
             printf("%s\n", __FUNCTION__);
             const uint address = FetchPc8() + x;
             cycles.count += cycles.clock[4];
             return FetchZpg16( address );
         }
         
-        
-        
-        
-        
         uint Cpu::IndY_R()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndirectIndexed)
             printf("%s\n", __FUNCTION__);
             uint data = FetchPc8();
             cycles.count += cycles.clock[3];
@@ -1146,6 +1206,7 @@ namespace Nes
         
         inline uint Cpu::IndY_RW(uint& data)
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndirectIndexed)
             printf("%s\n", __FUNCTION__);
             uint address = FetchPc8();
             cycles.count += cycles.clock[4];
@@ -1165,6 +1226,7 @@ namespace Nes
         
         inline uint Cpu::IndY_W()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndirectIndexed);
             uint address = FetchPc8(); // 0
             cycles.count += cycles.clock[4];
             
@@ -1183,7 +1245,7 @@ namespace Nes
         
         
         
-        
+#pragma mark -
         
         template<bool STATE>
         inline void Cpu::Branch(uint tmp)
@@ -1262,13 +1324,16 @@ namespace Nes
         
         
         
-        inline void Cpu::Lda(const uint data) {
+        inline void Cpu::Lda(const uint data)
+        {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a = data;
             flags.nz = data;
         }
         inline void Cpu::Ldx(const uint data)
         {
+            TraceFunctionName
             printf("%s (0x%02X)\n", __FUNCTION__, data);
             x = data;
             flags.nz = data;
@@ -1276,6 +1341,7 @@ namespace Nes
         }
         inline void Cpu::Ldy(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             y = data;
             flags.nz = data;
@@ -1287,12 +1353,14 @@ namespace Nes
         
         inline uint Cpu::Sta() const
         {
+            TraceFunctionName
             printf("%s\n", __FUNCTION__);
             return a;
         }
-        inline uint Cpu::Stx() const { printf("%s\n", __FUNCTION__); return x; }
+        inline uint Cpu::Stx() const { TraceFunctionName; printf("%s\n", __FUNCTION__); return x; }
         inline uint Cpu::Sty() const
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             return y;
         }
@@ -1303,6 +1371,7 @@ namespace Nes
         
         inline void Cpu::Tax()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             x = a;
@@ -1311,6 +1380,7 @@ namespace Nes
         
         inline void Cpu::Tay()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             y = a;
@@ -1319,6 +1389,7 @@ namespace Nes
         
         inline void Cpu::Txa()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             a = x;
@@ -1327,6 +1398,7 @@ namespace Nes
         
         inline void Cpu::Tya()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             a = y;
@@ -1339,6 +1411,7 @@ namespace Nes
         
         inline void Cpu::JmpAbs()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             pc = map.Peek16( pc );
             cycles.count += cycles.clock[JMP_ABS_CYCLES-1];
@@ -1346,7 +1419,7 @@ namespace Nes
         
         inline void Cpu::JmpInd()
         {
-            
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             const uint pos = map.Peek16( pc );
             pc = map.Peek8( pos ) | (map.Peek8( (pos & 0xFF00) | ((pos + 1) & 0x00FF) ) << 8);
@@ -1356,16 +1429,19 @@ namespace Nes
         
         inline void Cpu::Jsr()
         {
+            TraceFunctionName;
             // pc = 51139
             Push16( pc + 1 ); // c7c3 + 1
             pc = map.Peek16( pc ); // pc = 51139 -> 51175
             cycles.count += cycles.clock[JSR_CYCLES-1];
+            
             printf("absoluteMemoryAddress(): %04X\tvalue: %02X\n", pc, map.Peek8(pc));
             printf("%s\n", __FUNCTION__);
         }
         
         inline void Cpu::Rts()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             
             /*
@@ -1383,6 +1459,7 @@ namespace Nes
         
         inline void Cpu::Rti()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[RTI_CYCLES-1];
             
@@ -1405,28 +1482,37 @@ namespace Nes
         
         inline void Cpu::Bne()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             Branch< true >( flags.nz & 0xFF );
         }
         inline void Cpu::Beq()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             Branch< false >( flags.nz & 0xFF );
         }
         inline void Cpu::Bmi()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             Branch< true >( flags.nz & 0x180 );
         }
         inline void Cpu::Bpl()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             Branch< false >( flags.nz & 0x180 );
         }
-        inline void Cpu::Bcs() { printf("%s\n", __FUNCTION__); Branch< true >( flags.c ); }
-        inline void Cpu::Bcc() { printf("%s\n", __FUNCTION__); Branch< false >( flags.c ); }
-        inline void Cpu::Bvs() { printf("%s\n", __FUNCTION__); Branch< true >( flags.v ); }
-        inline void Cpu::Bvc() { printf("%s\n", __FUNCTION__); Branch< false >( flags.v ); }
+        inline void Cpu::Bcs() { TraceFunctionName; printf("%s\n", __FUNCTION__); Branch< true >( flags.c ); }
+        inline void Cpu::Bcc() { TraceFunctionName; printf("%s\n", __FUNCTION__); Branch< false >( flags.c ); }
+        inline void Cpu::Bvs()
+        {
+            TraceFunctionName;
+            printf("%s\n", __FUNCTION__);
+            Branch< true >( flags.v );
+        }
+        inline void Cpu::Bvc() { TraceFunctionName; printf("%s\n", __FUNCTION__); Branch< false >( flags.v ); }
         
         
         
@@ -1434,6 +1520,7 @@ namespace Nes
         
         inline void Cpu::Adc(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             
             const uint tmp = a + data + flags.c;
@@ -1445,6 +1532,7 @@ namespace Nes
         
         inline void Cpu::Sbc(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             Adc( data ^ 0xFF );
         }
@@ -1455,6 +1543,7 @@ namespace Nes
         
         inline void Cpu::And(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a &= data;
             flags.nz = a;
@@ -1462,6 +1551,7 @@ namespace Nes
         
         inline void Cpu::Ora(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a |= data;
             flags.nz = a;
@@ -1469,6 +1559,7 @@ namespace Nes
         
         inline void Cpu::Eor(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a ^= data;
             flags.nz = a;
@@ -1476,6 +1567,7 @@ namespace Nes
         
         inline void Cpu::Bit(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.nz = ((data & a) != 0) | ((data & Flags::N) << 1);
             flags.v = data & Flags::V;
@@ -1483,6 +1575,7 @@ namespace Nes
         
         inline void Cpu::Cmp(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             data = a - data;
             flags.nz = data & 0xFF;
@@ -1491,6 +1584,7 @@ namespace Nes
         
         inline void Cpu::Cpx(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             data = x - data;
             flags.nz = data & 0xFF;
@@ -1499,6 +1593,7 @@ namespace Nes
         
         inline void Cpu::Cpy(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             data = y - data;
             flags.nz = data & 0xFF;
@@ -1508,6 +1603,7 @@ namespace Nes
         
         inline uint Cpu::Asl(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.c = data >> 7;
             flags.nz = data << 1 & 0xFF;
@@ -1516,6 +1612,7 @@ namespace Nes
         
         inline uint Cpu::Lsr(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.c = data & 0x01;
             flags.nz = data >> 1;
@@ -1524,6 +1621,7 @@ namespace Nes
         
         inline uint Cpu::Rol(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.nz = (data << 1 & 0xFF) | flags.c;
             flags.c = data >> 7;
@@ -1533,6 +1631,7 @@ namespace Nes
         
         inline uint Cpu::Ror(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             
             flags.nz = (data >> 1) | (flags.c << 7);
@@ -1544,7 +1643,7 @@ namespace Nes
         
         inline uint Cpu::Dec(const uint data)
         {
-            
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.nz = (data - 1) & 0xFF;
             return flags.nz;
@@ -1552,6 +1651,7 @@ namespace Nes
         
         inline uint Cpu::Inc(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.nz = (data + 1) & 0xFF;
             return flags.nz;
@@ -1559,6 +1659,7 @@ namespace Nes
         
         inline void Cpu::Dex()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             x = (x - 1) & 0xFF;
@@ -1567,6 +1668,7 @@ namespace Nes
         
         inline void Cpu::Dey()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             y = (y - 1) & 0xFF;
@@ -1575,6 +1677,7 @@ namespace Nes
         
         inline void Cpu::Inx()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             x = (x + 1) & 0xFF;
@@ -1583,6 +1686,7 @@ namespace Nes
         
         inline void Cpu::Iny()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             y = (y + 1) & 0xFF;
@@ -1593,8 +1697,10 @@ namespace Nes
         
         
         
+        
         inline void Cpu::Clc()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.c = 0;
@@ -1602,6 +1708,7 @@ namespace Nes
         
         inline void Cpu::Sec()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.c = Flags::C;
@@ -1609,6 +1716,7 @@ namespace Nes
         
         inline void Cpu::Cld()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.d = 0;
@@ -1616,6 +1724,7 @@ namespace Nes
         
         inline void Cpu::Sed()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.d = Flags::D;
@@ -1623,6 +1732,7 @@ namespace Nes
         
         inline void Cpu::Clv()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.v = 0;
@@ -1630,6 +1740,8 @@ namespace Nes
         
         inline void Cpu::Sei()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             
@@ -1638,8 +1750,6 @@ namespace Nes
                 flags.i = Flags::I;
                 interrupt.irqClock = CYCLE_MAX;
                 
-                
-                
                 if (interrupt.low)
                     DoISR( IRQ_VECTOR );
             }
@@ -1647,6 +1757,7 @@ namespace Nes
         
         inline void Cpu::Cli()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             
@@ -1672,6 +1783,7 @@ namespace Nes
         
         inline void Cpu::Pha()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[PHA_CYCLES-1];
             Push8( a );
@@ -1679,7 +1791,7 @@ namespace Nes
         
         inline void Cpu::Php()
         {
-            
+           TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[PHP_CYCLES-1];
             Push8( flags.Pack() | Flags::B );
@@ -1687,6 +1799,8 @@ namespace Nes
         
         inline void Cpu::Pla()
         {
+            
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[PLA_CYCLES-1];
             a = Pull8();
@@ -1695,6 +1809,7 @@ namespace Nes
         
         inline void Cpu::Plp()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[PLP_CYCLES-1];
             
@@ -1720,6 +1835,7 @@ namespace Nes
         
         inline void Cpu::Tsx()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             x = sp;
@@ -1728,6 +1844,7 @@ namespace Nes
         
         inline void Cpu::Txs()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             sp = x;
@@ -1735,6 +1852,7 @@ namespace Nes
         
         __attribute__((noinline)) void Cpu::Anc(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a &= data;
             flags.nz = a;
@@ -1744,6 +1862,7 @@ namespace Nes
         
         inline void Cpu::Ane(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a = (a | 0xEE) & x & data;
             flags.nz = a;
@@ -1752,6 +1871,7 @@ namespace Nes
         
         inline void Cpu::Arr(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a = ((data & a) >> 1) | (flags.c << 7);
             flags.nz = a;
@@ -1762,6 +1882,7 @@ namespace Nes
         
         inline void Cpu::Asr(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.c = data & a & 0x1;
             a = (data & a) >> 1;
@@ -1771,6 +1892,7 @@ namespace Nes
         
         __attribute__((noinline)) uint Cpu::Dcp(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             data = (data - 1) & 0xFF;
             Cmp( data );
@@ -1780,6 +1902,7 @@ namespace Nes
         
         __attribute__((noinline)) uint Cpu::Isb(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             data = (data + 1) & 0xFF;
             Sbc( data );
@@ -1789,6 +1912,7 @@ namespace Nes
         
         inline void Cpu::Las(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             sp &= data;
             x = sp;
@@ -1799,6 +1923,7 @@ namespace Nes
         
         __attribute__((noinline)) void Cpu::Lax(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a = data;
             x = data;
@@ -1808,6 +1933,7 @@ namespace Nes
         
         inline void Cpu::Lxa(const uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             a &= data;
             x = a;
@@ -1817,6 +1943,7 @@ namespace Nes
         
         __attribute__((noinline)) uint Cpu::Rla(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             const uint carry = flags.c;
             flags.c = data >> 7;
@@ -1829,6 +1956,7 @@ namespace Nes
         
         __attribute__((noinline)) uint Cpu::Rra(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             const uint carry = flags.c << 7;
             flags.c = data & 0x01;
@@ -1840,6 +1968,7 @@ namespace Nes
         
         __attribute__((noinline)) uint Cpu::Sax()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             const uint data = a & x;
             NotifyOp("SAX",1UL << 11);
@@ -1848,6 +1977,7 @@ namespace Nes
         
         inline void Cpu::Sbx(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             data = (a & x) - data;
             flags.c = (data <= 0xFF);
@@ -1858,6 +1988,7 @@ namespace Nes
         
         __attribute__((noinline)) uint Cpu::Sha(uint address)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             address = a & x & ((address >> 8) + 1);
             NotifyOp("SHA",1UL << 13);
@@ -1866,6 +1997,7 @@ namespace Nes
         
         inline uint Cpu::Shs(uint address)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             sp = a & x;
             address = sp & ((address >> 8) + 1);
@@ -1875,6 +2007,7 @@ namespace Nes
         
         inline uint Cpu::Shx(uint address)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             address = x & ((address >> 8) + 1);
             NotifyOp("SHX",1UL << 15);
@@ -1883,6 +2016,7 @@ namespace Nes
         
         inline uint Cpu::Shy(uint address)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             address = y & ((address >> 8) + 1);
             NotifyOp("SHY",1UL << 16);
@@ -1891,6 +2025,7 @@ namespace Nes
         
         __attribute__((noinline)) uint Cpu::Slo(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.c = data >> 7;
             data = data << 1 & 0xFF;
@@ -1902,6 +2037,7 @@ namespace Nes
         
         __attribute__((noinline)) uint Cpu::Sre(uint data)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             flags.c = data & 0x01;
             data >>= 1;
@@ -1913,12 +2049,14 @@ namespace Nes
         
         void Cpu::Dop()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             NotifyOp("DOP",1UL << 19);
         }
         
         void Cpu::Top(uint=0)
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             NotifyOp("TOP",1UL << 20);
         }
@@ -1929,6 +2067,7 @@ namespace Nes
         
         inline void Cpu::Brk()
         {
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             Push16( pc + 1 );
             Push8( flags.Pack() | Flags::B );
@@ -1942,7 +2081,7 @@ namespace Nes
         
         __attribute__((noinline)) void Cpu::Jam()
         {
-            
+            TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             
             pc = (pc - 1) & 0xFFFF;
@@ -2038,9 +2177,7 @@ namespace Nes
         {
             printf("%s\n", __FUNCTION__);
             apu.EndFrame();
-            
-            
-            
+                        
             ticks += cycles.frame;
             cycles.count -= cycles.frame;
             cyclesSubtracted += cycles.frame;
@@ -2085,17 +2222,19 @@ namespace Nes
             {
                 do
                 {
-                    printCPU();
-//                    printf("\nCPU-cc:\t%ld\nsp:\t0x%02X\npc:\t0x%04X\nA:\t0x%02X\nX:\t0x%02X\nY:\t0x%02X\n",(long long)(cycles.count - (7 * 12)) / 12 ,sp, pc, a, x, y);
-//                    printf("N	V	-	B	D	I	Z	C\n%s	%s	-	%s	%s	%s	%s	%s\n",
-//                           ((flags.nz & Flags::N) == Flags::N) ? "1" : "0",
-//                           ((flags.v & Flags::V) == Flags::V) ? "1" : "0",
-//                           ((flags.B & Flags::B) == Flags::B) ? "1" : "0",
-//                           ((flags.D & Flags::D) == Flags::D) ? "1" : "0",
-//                           ((flags.I & Flags::I) == Flags::I) ? "1" : "0",
-//                           ((flags.nz & Flags::Z) == Flags::Z) ? "1" : "0",
-//                           ((flags.C & Flags::C) == Flags::C) ? "1" : "0");
-                    /////
+                    CPUTracerStartUpcomingCycle
+                    ((int64_t)(cyclesSubtracted + cycles.count - (7 * 12)) / 12,
+                     pc,
+                     a,
+                     x,
+                     y,
+                     flags.Pack(),
+                     sp,
+                     MemoryBuffer());
+                    
+                    
+//                    printCPU();
+
                     if ((flags.nz & Flags::N) == Flags::N)
                     {
 //                        printf("N-flag is now %i\n", (flags.nz & Flags::N));
@@ -2124,12 +2263,12 @@ namespace Nes
                         // between now and the next iteration, flags.nz will change
 //                        printf("\nLda will be called next. NZ flags will have changed by then.\n");
                     }
-                    
-                    
                     /////
                     
                     uint pc = FetchPc8(); // 800B
                     (*this.*opcodes[pc])();
+                    
+                    CPUTracerEndCycle();
                     
                 }
                 while (cycles.count < cycles.round);
@@ -2159,6 +2298,7 @@ namespace Nes
         
         void Cpu::Run2()
         {
+            
             const Hook* const first = hooks.Ptr();
             const Hook* const last = first + (hooks.Size() - 1);
             
@@ -2171,18 +2311,19 @@ namespace Nes
                     const Hook* __restrict__ hook = first;
                     
                     hook->Execute();
+
                     
                     do
                     {
+                        
                         (++hook)->Execute();
-                    }
-                    while (hook != last);
-                }
-                while (cycles.count < cycles.round);
+                    } while (hook != last);
+                    
+                } while (cycles.count < cycles.round);
                 
                 Clock();
-            }
-            while (cycles.count < cycles.frame);
+                
+            } while (cycles.count < cycles.frame);
         }
         
         uint Cpu::Peek(const uint address) const
@@ -2217,21 +2358,54 @@ namespace Nes
         void Cpu::op0x0E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Asl(data)); }
         void Cpu::op0x1E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Asl(data)); }
         void Cpu::op0x90() { printf("%s\n", __FUNCTION__); Bcc(); }
-        void Cpu::op0xB0() { printf("%s\n", __FUNCTION__); Bcs(); }
-        void Cpu::op0xF0() { printf("%s\n", __FUNCTION__); Beq(); }
+        void Cpu::op0xB0()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeRelative);
+            printf("%s\n", __FUNCTION__);
+            Bcs();
+        }
+        void Cpu::op0xF0()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeRelative);
+            printf("%s\n", __FUNCTION__);
+            Beq();
+            
+        }
         void Cpu::op0x24() { printf("%s\n", __FUNCTION__); Bit( Zpg_R() ); }
         void Cpu::op0x2C() { printf("%s\n", __FUNCTION__); Bit( Abs_R() ); }
-        void Cpu::op0x30() { printf("%s\n", __FUNCTION__); Bmi(); }
-        void Cpu::op0xD0() { printf("%s\n", __FUNCTION__); Bne(); }
+        void Cpu::op0x30()
+        {
+            printf("%s\n", __FUNCTION__);
+            Bmi();
+            
+        }
+        void Cpu::op0xD0()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeRelative);
+            printf("%s\n", __FUNCTION__);
+            Bne();
+            
+        }
         void Cpu::op0x10()
         {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeRelative);
             printf("%s\n", __FUNCTION__);
             Bpl();
         }
         void Cpu::op0x50() { printf("%s\n", __FUNCTION__); Bvc(); }
         void Cpu::op0x70() { printf("%s\n", __FUNCTION__); Bvs(); }
-        void Cpu::op0x18() { printf("%s\n", __FUNCTION__); Clc(); }
-        void Cpu::op0xD8() { printf("%s\n", __FUNCTION__); Cld(); }
+        void Cpu::op0x18()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Clc();
+        }
+        void Cpu::op0xD8()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Cld();
+        }
         void Cpu::op0x58() { printf("%s\n", __FUNCTION__); Cli(); }
         void Cpu::op0xB8() { printf("%s\n", __FUNCTION__); Clv(); }
         void Cpu::op0xC9() { printf("%s\n", __FUNCTION__); Cmp( Imm_R() ); }
@@ -2252,8 +2426,21 @@ namespace Nes
         void Cpu::op0xD6() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Dec(data)); }
         void Cpu::op0xCE() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Dec(data)); }
         void Cpu::op0xDE() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Dec(data)); }
-        void Cpu::op0xCA() { printf("%s\n", __FUNCTION__); Dex(); }
-        void Cpu::op0x88() { printf("%s\n", __FUNCTION__); Dey(); }
+        void Cpu::op0xCA()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            CPUTracerNESAddressingModeImplied
+            printf("%s\n", __FUNCTION__);
+            Dex();
+            
+        }
+        void Cpu::op0x88()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Dey();
+            
+        }
         void Cpu::op0x49() { printf("%s\n", __FUNCTION__); Eor( Imm_R() ); }
         void Cpu::op0x45() { printf("%s\n", __FUNCTION__); Eor( Zpg_R() ); }
         void Cpu::op0x55() { printf("%s\n", __FUNCTION__); Eor( ZpgX_R() ); }
@@ -2272,11 +2459,32 @@ namespace Nes
             const uint dst = AbsX_RW( data );
             StoreMem(dst,Inc(data));
         }
-        void Cpu::op0xE8() { printf("%s\n", __FUNCTION__); Inx(); }
-        void Cpu::op0xC8() { printf("%s\n", __FUNCTION__); Iny(); }
-        void Cpu::op0x4C() { printf("%s\n", __FUNCTION__); JmpAbs(); }
+        void Cpu::op0xE8()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Inx();
+        }
+        void Cpu::op0xC8()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Iny();
+        }
+        void Cpu::op0x4C()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
+            printf("%s\n", __FUNCTION__);
+            JmpAbs();
+        }
         void Cpu::op0x6C() { printf("%s\n", __FUNCTION__); JmpInd(); }
-        void Cpu::op0x20() { printf("%s\n", __FUNCTION__); Jsr(); }
+        void Cpu::op0x20()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
+            printf("%s\n", __FUNCTION__);
+            Jsr();
+            
+        }
         void Cpu::op0xA9() { printf("%s\n", __FUNCTION__); Lda( Imm_R() ); }
         void Cpu::op0xA5() { printf("%s\n", __FUNCTION__); Lda( Zpg_R() ); }
         void Cpu::op0xB5() { printf("%s\n", __FUNCTION__); Lda( ZpgX_R() );}
@@ -2288,8 +2496,16 @@ namespace Nes
         void Cpu::op0xBD() { printf("%s\n", __FUNCTION__); Lda( AbsX_R() ); }
         void Cpu::op0xB9() { printf("%s\n", __FUNCTION__); Lda( AbsY_R() ); }
         void Cpu::op0xA1() { printf("%s\n", __FUNCTION__); Lda( IndX_R() ); }
-        void Cpu::op0xB1() { printf("%s\n", __FUNCTION__); Lda( IndY_R() ); }
-        void Cpu::op0xA2() { printf("%s\n", __FUNCTION__); Ldx( Imm_R() ); }
+        void Cpu::op0xB1()
+        {
+            printf("%s\n", __FUNCTION__);
+            Lda( IndY_R() );
+        }
+        void Cpu::op0xA2()
+        {
+            printf("%s\n", __FUNCTION__);
+            Ldx( Imm_R() );
+        }
         void Cpu::op0xA6() { printf("%s\n", __FUNCTION__); Ldx( Zpg_R() ); }
         void Cpu::op0xB6() { printf("%s\n", __FUNCTION__); Ldx( ZpgY_R() ); }
         void Cpu::op0xAE() { printf("%s\n", __FUNCTION__); Ldx( Abs_R() ); }
@@ -2299,7 +2515,13 @@ namespace Nes
         void Cpu::op0xB4() { printf("%s\n", __FUNCTION__); Ldy( ZpgX_R() ); }
         void Cpu::op0xAC() { printf("%s\n", __FUNCTION__); Ldy( Abs_R() ); }
         void Cpu::op0xBC() { printf("%s\n", __FUNCTION__); Ldy( AbsX_R() ); }
-        void Cpu::op0x4A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[1]; a = Lsr( a ); }
+        void Cpu::op0x4A()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAccumulator);
+            printf("%s\n", __FUNCTION__);
+            cycles.count += cycles.clock[1];
+            a = Lsr( a );
+        }
         void Cpu::op0x46() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Lsr(data) ); }
         void Cpu::op0x56() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Lsr(data)); }
         void Cpu::op0x4E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Lsr(data)); }
@@ -2319,9 +2541,19 @@ namespace Nes
         void Cpu::op0x19() { printf("%s\n", __FUNCTION__); Ora( AbsY_R() ); }
         void Cpu::op0x01() { printf("%s\n", __FUNCTION__); Ora( IndX_R() ); }
         void Cpu::op0x11() { printf("%s\n", __FUNCTION__); Ora( IndY_R() ); }
-        void Cpu::op0x48() { printf("%s\n", __FUNCTION__); Pha(); }
+        void Cpu::op0x48()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Pha();
+        }
         void Cpu::op0x08() { printf("%s\n", __FUNCTION__); Php(); }
-        void Cpu::op0x68() { printf("%s\n", __FUNCTION__); Pla(); }
+        void Cpu::op0x68()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Pla();
+        }
         void Cpu::op0x28() { printf("%s\n", __FUNCTION__); Plp(); }
         void Cpu::op0x2A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[1]; a = Rol( a ); }
         void Cpu::op0x26() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Rol(data) ); }
@@ -2333,8 +2565,18 @@ namespace Nes
         void Cpu::op0x76() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Ror(data)); }
         void Cpu::op0x6E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Ror(data)); }
         void Cpu::op0x7E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Ror(data)); }
-        void Cpu::op0x40() { printf("%s\n", __FUNCTION__); Rti(); }
-        void Cpu::op0x60() { printf("%s\n", __FUNCTION__); Rts(); }
+        void Cpu::op0x40()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Rti();
+        }
+        void Cpu::op0x60()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Rts();
+        }
         void Cpu::op0xE9() { printf("%s\n", __FUNCTION__); Sbc( Imm_R() ); }
         void Cpu::op0xEB() { printf("%s\n", __FUNCTION__); Sbc( Imm_R() ); }
         void Cpu::op0xE5() { printf("%s\n", __FUNCTION__); Sbc( Zpg_R() ); }
@@ -2346,7 +2588,11 @@ namespace Nes
         void Cpu::op0xF1() { printf("%s\n", __FUNCTION__); Sbc( IndY_R() ); }
         void Cpu::op0x38() { printf("%s\n", __FUNCTION__); Sec(); }
         void Cpu::op0xF8() { printf("%s\n", __FUNCTION__); Sed(); }
-        void Cpu::op0x78() { printf("%s\n", __FUNCTION__); Sei(); }
+        void Cpu::op0x78()
+        {
+            printf("%s\n", __FUNCTION__);
+            Sei();
+        }
         void Cpu::op0x85() { printf("%s\n", __FUNCTION__); const uint dst = Zpg_W(); StoreZpg( dst, Sta() ); }
         void Cpu::op0x95() { printf("%s\n", __FUNCTION__); const uint dst = ZpgX_W(); StoreZpg(dst,Sta()); }
         void Cpu::op0x8D() {
@@ -2369,11 +2615,32 @@ namespace Nes
         }
         void Cpu::op0x94() { printf("%s\n", __FUNCTION__); const uint dst = ZpgX_W(); StoreZpg(dst,Sty()); }
         void Cpu::op0x8C() { printf("%s\n", __FUNCTION__); const uint dst = Abs_W(); StoreMem(dst,Sty()); }
-        void Cpu::op0xAA() { printf("%s\n", __FUNCTION__); Tax(); }
-        void Cpu::op0xA8() { printf("%s\n", __FUNCTION__); Tay(); }
+        void Cpu::op0xAA()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Tax();
+        }
+        void Cpu::op0xA8()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Tay();
+        }
         void Cpu::op0xBA() { printf("%s\n", __FUNCTION__); Tsx(); }
-        void Cpu::op0x8A() { printf("%s\n", __FUNCTION__); Txa(); }
-        void Cpu::op0x9A() { printf("%s\n", __FUNCTION__); Txs(); }
+        void Cpu::op0x8A()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Txa();
+        }
+        void Cpu::op0x9A()
+        {
+            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            printf("%s\n", __FUNCTION__);
+            Txs();
+            
+        }
         void Cpu::op0x98() { printf("%s\n", __FUNCTION__); Tya(); }
         
         void Cpu::op0x00() { printf("%s\n", __FUNCTION__); Brk(); }

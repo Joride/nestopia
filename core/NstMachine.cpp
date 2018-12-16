@@ -433,8 +433,6 @@ namespace Nes
          Input::Controllers* const input
          )
         {
-            (__builtin_expect(!(!!(state & Api::Machine::ON)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstMachine.cpp", 435, "!!(state & Api::Machine::ON)") : (void)0);
-            
             if (!(state & Api::Machine::SOUND))
             {
                 if (state & Api::Machine::CARTRIDGE)

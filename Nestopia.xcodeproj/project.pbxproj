@@ -343,8 +343,8 @@
 		80C3B64418397526000B68E0 /* TransparentMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64318397526000B68E0 /* TransparentMaskView.m */; };
 		80C3B64718397740000B68E0 /* PadRoundTextButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64618397740000B68E0 /* PadRoundTextButton.m */; };
 		80C3B64D18398CFB000B68E0 /* RoundTextMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */; };
+		A27DBEE021C4F35300201C9F /* CPUTracer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A27DBEDF21C4F35300201C9F /* CPUTracer.mm */; };
 		A286FB811D245A1300B28CF4 /* NstMapper000.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009552117FC75570038888C /* NstMapper000.cpp */; };
-		A2EA2F3D1D27C2BE00B439F0 /* PreprocessorHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2EA2F3B1D27C2BD00B439F0 /* PreprocessorHelper.cpp */; };
 		C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C4848C291A39838600A20A7B /* CGSize+Utilities.m */; };
 		F5EE71540FEEC3A000FDA0A6 /* controller_ls.png in Resources */ = {isa = PBXBuildFile; fileRef = F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */; };
 /* End PBXBuildFile section */
@@ -1048,7 +1048,10 @@
 		80C3B64B18398CFB000B68E0 /* RoundTextMaskView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTextMaskView.h; sourceTree = "<group>"; };
 		80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundTextMaskView.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A2EA2F3B1D27C2BD00B439F0 /* PreprocessorHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PreprocessorHelper.cpp; sourceTree = "<group>"; };
+		A22608C421C564D100FAFE2C /* CPUTracerNESAddressingMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CPUTracerNESAddressingMode.h; sourceTree = "<group>"; };
+		A27DBEDE21C4F35300201C9F /* CPUTracer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CPUTracer.h; sourceTree = "<group>"; };
+		A27DBEDF21C4F35300201C9F /* CPUTracer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CPUTracer.mm; sourceTree = "<group>"; };
+		A27DBEE121C4F47000201C9F /* CPUTracer-Bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CPUTracer-Bridge.h"; sourceTree = "<group>"; };
 		C4848C281A39835500A20A7B /* CGSize+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CGSize+Utilities.h"; path = "Extensions/CGGeometry/CGSize+Utilities.h"; sourceTree = "<group>"; };
 		C4848C291A39838600A20A7B /* CGSize+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CGSize+Utilities.m"; path = "Extensions/CGGeometry/CGSize+Utilities.m"; sourceTree = "<group>"; };
 		F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = controller_ls.png; sourceTree = "<group>"; };
@@ -1109,6 +1112,10 @@
 				80C3B6311836EF25000B68E0 /* NSString+TableViewAlphabeticIndexes.h */,
 				80C3B6321836EF25000B68E0 /* NSString+TableViewAlphabeticIndexes.m */,
 				7052028917FA15F5001FFF8F /* Nestopia */,
+				A27DBEE121C4F47000201C9F /* CPUTracer-Bridge.h */,
+				A22608C421C564D100FAFE2C /* CPUTracerNESAddressingMode.h */,
+				A27DBEDE21C4F35300201C9F /* CPUTracer.h */,
+				A27DBEDF21C4F35300201C9F /* CPUTracer.mm */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1124,7 +1131,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				A2EA2F3B1D27C2BD00B439F0 /* PreprocessorHelper.cpp */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				C4848C2C1A39847D00A20A7B /* Extensions */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -1984,6 +1990,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = 2C6KT7L4EZ;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Nestopia" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -2154,6 +2165,7 @@
 				700957EB17FC75590038888C /* NstLog.cpp in Sources */,
 				7009577017FC75590038888C /* NstMapper063.cpp in Sources */,
 				700956FB17FC75590038888C /* NstApiEmulator.cpp in Sources */,
+				A27DBEE021C4F35300201C9F /* CPUTracer.mm in Sources */,
 				7009572117FC75590038888C /* NstBrdN106.cpp in Sources */,
 				7009571F17FC75590038888C /* NstBrdMmc3Waixing.cpp in Sources */,
 				7009576817FC75590038888C /* NstMapper053.cpp in Sources */,
@@ -2280,7 +2292,6 @@
 				7009580E17FC75590038888C /* NstVsTkoBoxing.cpp in Sources */,
 				700957EC17FC75590038888C /* NstMachine.cpp in Sources */,
 				700957F917FC75590038888C /* NstState.cpp in Sources */,
-				A2EA2F3D1D27C2BE00B439F0 /* PreprocessorHelper.cpp in Sources */,
 				7009571817FC75590038888C /* NstBrdJaleco.cpp in Sources */,
 				700957B217FC75590038888C /* NstMapper193.cpp in Sources */,
 				7009576617FC75590038888C /* NstMapper051.cpp in Sources */,
@@ -2365,10 +2376,14 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LIBRARY = "libc++";
+				DEVELOPMENT_TEAM = 2C6KT7L4EZ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
@@ -2382,12 +2397,16 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LIBRARY = "libc++";
 				COMPRESS_PNG_FILES = YES;
+				DEVELOPMENT_TEAM = 2C6KT7L4EZ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
 				);
 				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
@@ -2422,12 +2441,16 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LIBRARY = "libc++";
 				COMPRESS_PNG_FILES = YES;
+				DEVELOPMENT_TEAM = 2C6KT7L4EZ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
 				);
 				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
@@ -2505,10 +2528,14 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LIBRARY = "libc++";
+				DEVELOPMENT_TEAM = 2C6KT7L4EZ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Nestopia_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
