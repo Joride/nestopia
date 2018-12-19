@@ -123,7 +123,7 @@ namespace Nes
         apu ( *this ),
         map ( this, &Cpu::Peek_Overflow, &Cpu::Poke_Overflow )
         {
-            NESTracerSetFileName("nestopia.txt");
+            NESTracerSetFileName("nestopia");
             Reset( false, false );
             
 //            std::string a = ListValuesByAdrres();
