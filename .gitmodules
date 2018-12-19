@@ -1,0 +1,3 @@
+[submodule "submodules/nestracer"]
+	path = submodules/nestracer
+	url = git@bitbucket.org:JorritAtHome/nestracer.git

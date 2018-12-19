@@ -27,13 +27,14 @@
 #include "NstHook.hpp"
 #include "NstState.hpp"
 #include "api/NstApiUser.hpp"
-#import "CPUTracer-Bridge.h"
+
+#import "NESTracer/NESTracer-Bridge.h"
 
 
 // use this to turn off the print statements (with them, emulation is slooooowww)
 #define printf(x, ...)
 
-#define TraceFunctionName CPUTracerCurrentOpcodeName(__FUNCTION__)
+#define TraceFunctionName NESTracerCurrentOpcodeName(__FUNCTION__)
 
 // use this to turn the printf statements to printToFile statements
 //#define printf(args...) do {\
@@ -122,6 +123,7 @@ namespace Nes
         apu ( *this ),
         map ( this, &Cpu::Peek_Overflow, &Cpu::Poke_Overflow )
         {
+            NESTracerSetFileName("nestopia.txt");
             Reset( false, false );
             
 //            std::string a = ListValuesByAdrres();
@@ -876,7 +878,7 @@ namespace Nes
 #pragma mark - Addressing
         inline uint Cpu::Imm_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImmediate);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImmediate);
             const uint data = FetchPc8();
             cycles.count += cycles.clock[1];
             
@@ -887,7 +889,7 @@ namespace Nes
         
         uint Cpu::Abs_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
             uint data = FetchPc16();
             cycles.count += cycles.clock[2];
             uint address = data;
@@ -920,7 +922,7 @@ namespace Nes
         
         uint Cpu::Abs_RW(uint& data)
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
             printf("%s\n", __FUNCTION__);
             const uint address = FetchPc16();
             cycles.count += cycles.clock[2];
@@ -936,7 +938,7 @@ namespace Nes
         
         inline uint Cpu::Abs_W()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
             const uint address = FetchPc16();
             cycles.count += cycles.clock[2];
             
@@ -947,7 +949,7 @@ namespace Nes
         
         inline uint Cpu::Zpg_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeropage);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeropage);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
             
@@ -958,7 +960,7 @@ namespace Nes
         
         inline uint Cpu::Zpg_RW(uint& data)
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeropage);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeropage);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[4];
             data = ram.mem[address];
@@ -970,7 +972,7 @@ namespace Nes
         
         inline uint Cpu::Zpg_W()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeropage);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeropage);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
             printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
@@ -979,7 +981,7 @@ namespace Nes
         
         inline uint Cpu::ZpgReg_R(uint indexed)
         {
-//            CPUTracerSetCurrentAddressingMode(<#mode#>);
+//            NESTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[3];
@@ -988,7 +990,7 @@ namespace Nes
         
         inline uint Cpu::ZpgReg_RW(uint& data,uint indexed)
         {
-//            CPUTracerSetCurrentAddressingMode(<#mode#>);
+//            NESTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[5];
@@ -998,7 +1000,7 @@ namespace Nes
         
         inline uint Cpu::ZpgReg_W(uint indexed)
         {
-//            CPUTracerSetCurrentAddressingMode(<#mode#>);
+//            NESTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[3];
@@ -1006,47 +1008,47 @@ namespace Nes
         }
         inline uint Cpu::ZpgX_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedX);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedX);
             printf("%s\n", __FUNCTION__);
             return ZpgReg_R( x );
         }
         inline uint Cpu::ZpgX_RW(uint& data)
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedX);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedX);
             printf("%s\n", __FUNCTION__);
             return ZpgReg_RW( data, x );
         }
         inline uint Cpu::ZpgX_W()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedX);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedX);
             printf("%s\n", __FUNCTION__);
             return ZpgReg_W( x );
             
         }
         inline uint Cpu::ZpgY_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedY);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedY);
             printf("%s\n", __FUNCTION__);
             return ZpgReg_R( y );
             
         }
         inline uint Cpu::ZpgY_RW(uint& data)
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedY);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedY);
             printf("%s\n", __FUNCTION__);
             return ZpgReg_RW( data, y );
             
         }
         inline uint Cpu::ZpgY_W()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeZeroPageIndexedY);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedY);
             printf("%s\n", __FUNCTION__);
             return ZpgReg_W( y );
         }
         
         uint Cpu::AbsReg_R(uint indexed)
         {
-//            CPUTracerSetCurrentAddressingMode(<#mode#>);
+//            NESTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             uint data = pc;
             indexed += map.Peek8( data );
@@ -1068,7 +1070,7 @@ namespace Nes
         
         uint Cpu::AbsReg_RW(uint& data,uint indexed)
         {
-//            CPUTracerSetCurrentAddressingMode(<#mode#>);
+//            NESTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             uint address = pc;
             indexed += map.Peek8( address );
@@ -1089,7 +1091,7 @@ namespace Nes
         
         inline uint Cpu::AbsReg_W(uint indexed)
         {
-//            CPUTracerSetCurrentAddressingMode(<#mode#>);
+//            NESTracerSetCurrentAddressingMode(<#mode#>);
             printf("%s\n", __FUNCTION__);
             uint address = pc;
             indexed += map.Peek8( address );
@@ -1104,47 +1106,47 @@ namespace Nes
         
         inline uint Cpu::AbsX_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedX);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedX);
             printf("%s\n", __FUNCTION__);
             return AbsReg_R( x );
             
         }
         inline uint Cpu::AbsY_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedY);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedY);
             printf("%s\n", __FUNCTION__);
             return AbsReg_R( y );
             
         }
         inline uint Cpu::AbsX_RW(uint& data)
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedX);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedX);
             printf("%s\n", __FUNCTION__);
             return AbsReg_RW( data, x );
         }
         inline uint Cpu::AbsY_RW(uint& data)
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedY);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedY);
             printf("%s\n", __FUNCTION__);
             return AbsReg_RW( data, y );
             
         }
         inline uint Cpu::AbsX_W()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedX);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedX);
             printf("%s\n", __FUNCTION__);
             return AbsReg_W( x );
         }
         inline uint Cpu::AbsY_W()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsoluteIndexedY);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedY);
             printf("%s\n", __FUNCTION__);
             return AbsReg_W( y );
         }
         
         uint Cpu::IndX_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndexedIndirect);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndexedIndirect);
             printf("%s\n", __FUNCTION__);
             uint data = FetchPc8() + x;
             cycles.count += cycles.clock[4];
@@ -1158,7 +1160,7 @@ namespace Nes
         
         inline uint Cpu::IndX_RW(uint& data)
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndexedIndirect);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndexedIndirect);
             printf("%s\n", __FUNCTION__);
             uint address = FetchPc8() + x;
             cycles.count += cycles.clock[4];
@@ -1175,7 +1177,7 @@ namespace Nes
         
         inline uint Cpu::IndX_W()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndexedIndirect);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndexedIndirect);
             printf("%s\n", __FUNCTION__);
             const uint address = FetchPc8() + x;
             cycles.count += cycles.clock[4];
@@ -1184,7 +1186,7 @@ namespace Nes
         
         uint Cpu::IndY_R()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndirectIndexed)
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndirectIndexed)
             printf("%s\n", __FUNCTION__);
             uint data = FetchPc8();
             cycles.count += cycles.clock[3];
@@ -1206,7 +1208,7 @@ namespace Nes
         
         inline uint Cpu::IndY_RW(uint& data)
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndirectIndexed)
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndirectIndexed)
             printf("%s\n", __FUNCTION__);
             uint address = FetchPc8();
             cycles.count += cycles.clock[4];
@@ -1226,7 +1228,7 @@ namespace Nes
         
         inline uint Cpu::IndY_W()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeIndirectIndexed);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndirectIndexed);
             uint address = FetchPc8(); // 0
             cycles.count += cycles.clock[4];
             
@@ -1740,7 +1742,7 @@ namespace Nes
         
         inline void Cpu::Sei()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             TraceFunctionName;
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
@@ -2222,7 +2224,7 @@ namespace Nes
             {
                 do
                 {
-                    CPUTracerStartUpcomingCycle
+                    NESTracerStartUpcomingCycle
                     ((int64_t)(cyclesSubtracted + cycles.count - (7 * 12)) / 12,
                      pc,
                      a,
@@ -2268,7 +2270,7 @@ namespace Nes
                     uint pc = FetchPc8(); // 800B
                     (*this.*opcodes[pc])();
                     
-                    CPUTracerEndCycle();
+                    NESTracerEndCycle();
                     
                 }
                 while (cycles.count < cycles.round);
@@ -2360,13 +2362,13 @@ namespace Nes
         void Cpu::op0x90() { printf("%s\n", __FUNCTION__); Bcc(); }
         void Cpu::op0xB0()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeRelative);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeRelative);
             printf("%s\n", __FUNCTION__);
             Bcs();
         }
         void Cpu::op0xF0()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeRelative);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeRelative);
             printf("%s\n", __FUNCTION__);
             Beq();
             
@@ -2381,14 +2383,14 @@ namespace Nes
         }
         void Cpu::op0xD0()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeRelative);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeRelative);
             printf("%s\n", __FUNCTION__);
             Bne();
             
         }
         void Cpu::op0x10()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeRelative);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeRelative);
             printf("%s\n", __FUNCTION__);
             Bpl();
         }
@@ -2396,13 +2398,13 @@ namespace Nes
         void Cpu::op0x70() { printf("%s\n", __FUNCTION__); Bvs(); }
         void Cpu::op0x18()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Clc();
         }
         void Cpu::op0xD8()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Cld();
         }
@@ -2428,15 +2430,15 @@ namespace Nes
         void Cpu::op0xDE() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Dec(data)); }
         void Cpu::op0xCA()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
-            CPUTracerNESAddressingModeImplied
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
+            NESTracerNESAddressingModeImplied
             printf("%s\n", __FUNCTION__);
             Dex();
             
         }
         void Cpu::op0x88()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Dey();
             
@@ -2461,26 +2463,26 @@ namespace Nes
         }
         void Cpu::op0xE8()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Inx();
         }
         void Cpu::op0xC8()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Iny();
         }
         void Cpu::op0x4C()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
             printf("%s\n", __FUNCTION__);
             JmpAbs();
         }
         void Cpu::op0x6C() { printf("%s\n", __FUNCTION__); JmpInd(); }
         void Cpu::op0x20()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAbsolute);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
             printf("%s\n", __FUNCTION__);
             Jsr();
             
@@ -2517,7 +2519,7 @@ namespace Nes
         void Cpu::op0xBC() { printf("%s\n", __FUNCTION__); Ldy( AbsX_R() ); }
         void Cpu::op0x4A()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeAccumulator);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAccumulator);
             printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             a = Lsr( a );
@@ -2543,14 +2545,14 @@ namespace Nes
         void Cpu::op0x11() { printf("%s\n", __FUNCTION__); Ora( IndY_R() ); }
         void Cpu::op0x48()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Pha();
         }
         void Cpu::op0x08() { printf("%s\n", __FUNCTION__); Php(); }
         void Cpu::op0x68()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Pla();
         }
@@ -2567,13 +2569,13 @@ namespace Nes
         void Cpu::op0x7E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Ror(data)); }
         void Cpu::op0x40()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Rti();
         }
         void Cpu::op0x60()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Rts();
         }
@@ -2617,26 +2619,26 @@ namespace Nes
         void Cpu::op0x8C() { printf("%s\n", __FUNCTION__); const uint dst = Abs_W(); StoreMem(dst,Sty()); }
         void Cpu::op0xAA()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Tax();
         }
         void Cpu::op0xA8()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Tay();
         }
         void Cpu::op0xBA() { printf("%s\n", __FUNCTION__); Tsx(); }
         void Cpu::op0x8A()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Txa();
         }
         void Cpu::op0x9A()
         {
-            CPUTracerSetCurrentAddressingMode(CPUTracerNESAddressingModeImplied);
+            NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             printf("%s\n", __FUNCTION__);
             Txs();
             
@@ -2686,7 +2688,13 @@ namespace Nes
         void Cpu::op0xE7() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Isb(data) ); }
         void Cpu::op0xF7() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Isb(data)); }
         void Cpu::op0xEF() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Isb(data)); }
-        void Cpu::op0xFF() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Isb(data)); }
+        void Cpu::op0xFF()
+        {
+            printf("%s\n", __FUNCTION__);
+            uint data;
+            const uint dst = AbsX_RW( data );
+            StoreMem(dst,Isb(data));
+        }
         void Cpu::op0xFB() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Isb(data)); }
         void Cpu::op0xE3() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Isb(data)); }
         void Cpu::op0xF3() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Isb(data)); }

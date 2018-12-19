@@ -343,11 +343,21 @@
 		80C3B64418397526000B68E0 /* TransparentMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64318397526000B68E0 /* TransparentMaskView.m */; };
 		80C3B64718397740000B68E0 /* PadRoundTextButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64618397740000B68E0 /* PadRoundTextButton.m */; };
 		80C3B64D18398CFB000B68E0 /* RoundTextMaskView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */; };
-		A27DBEE021C4F35300201C9F /* CPUTracer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A27DBEDF21C4F35300201C9F /* CPUTracer.mm */; };
+		A22608EE21C6A4BA00FAFE2C /* libNESTracer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A22608ED21C6A46C00FAFE2C /* libNESTracer.a */; };
 		A286FB811D245A1300B28CF4 /* NstMapper000.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7009552117FC75570038888C /* NstMapper000.cpp */; };
 		C4848C2A1A39838600A20A7B /* CGSize+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C4848C291A39838600A20A7B /* CGSize+Utilities.m */; };
 		F5EE71540FEEC3A000FDA0A6 /* controller_ls.png in Resources */ = {isa = PBXBuildFile; fileRef = F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A22608EC21C6A46C00FAFE2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A22608E821C6A46C00FAFE2C /* NESTracer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A22608CF21C6A2DB00FAFE2C;
+			remoteInfo = NESTracer;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1D3623240D0F684500981E51 /* NestopiaAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NestopiaAppDelegate.h; sourceTree = "<group>"; };
@@ -1048,10 +1058,7 @@
 		80C3B64B18398CFB000B68E0 /* RoundTextMaskView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTextMaskView.h; sourceTree = "<group>"; };
 		80C3B64C18398CFB000B68E0 /* RoundTextMaskView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundTextMaskView.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A22608C421C564D100FAFE2C /* CPUTracerNESAddressingMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CPUTracerNESAddressingMode.h; sourceTree = "<group>"; };
-		A27DBEDE21C4F35300201C9F /* CPUTracer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CPUTracer.h; sourceTree = "<group>"; };
-		A27DBEDF21C4F35300201C9F /* CPUTracer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CPUTracer.mm; sourceTree = "<group>"; };
-		A27DBEE121C4F47000201C9F /* CPUTracer-Bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CPUTracer-Bridge.h"; sourceTree = "<group>"; };
+		A22608E821C6A46C00FAFE2C /* NESTracer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NESTracer.xcodeproj; path = submodules/NESTracer/NESTracer.xcodeproj; sourceTree = "<group>"; };
 		C4848C281A39835500A20A7B /* CGSize+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CGSize+Utilities.h"; path = "Extensions/CGGeometry/CGSize+Utilities.h"; sourceTree = "<group>"; };
 		C4848C291A39838600A20A7B /* CGSize+Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CGSize+Utilities.m"; path = "Extensions/CGGeometry/CGSize+Utilities.m"; sourceTree = "<group>"; };
 		F5EE71530FEEC3A000FDA0A6 /* controller_ls.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = controller_ls.png; sourceTree = "<group>"; };
@@ -1062,6 +1069,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A22608EE21C6A4BA00FAFE2C /* libNESTracer.a in Frameworks */,
 				66C1BD54186528AF00E5A833 /* GameController.framework in Frameworks */,
 				7044127F0ED9CF6100E54091 /* AudioToolbox.framework in Frameworks */,
 				704412800ED9CF6100E54091 /* QuartzCore.framework in Frameworks */,
@@ -1112,10 +1120,6 @@
 				80C3B6311836EF25000B68E0 /* NSString+TableViewAlphabeticIndexes.h */,
 				80C3B6321836EF25000B68E0 /* NSString+TableViewAlphabeticIndexes.m */,
 				7052028917FA15F5001FFF8F /* Nestopia */,
-				A27DBEE121C4F47000201C9F /* CPUTracer-Bridge.h */,
-				A22608C421C564D100FAFE2C /* CPUTracerNESAddressingMode.h */,
-				A27DBEDE21C4F35300201C9F /* CPUTracer.h */,
-				A27DBEDF21C4F35300201C9F /* CPUTracer.mm */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1137,6 +1141,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				A22608E821C6A46C00FAFE2C /* NESTracer.xcodeproj */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -1933,6 +1938,14 @@
 			name = Tabs;
 			sourceTree = "<group>";
 		};
+		A22608E921C6A46C00FAFE2C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A22608ED21C6A46C00FAFE2C /* libNESTracer.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C4848C2B1A39846F00A20A7B /* CGGeometry */ = {
 			isa = PBXGroup;
 			children = (
@@ -2009,12 +2022,28 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A22608E921C6A46C00FAFE2C /* Products */;
+					ProjectRef = A22608E821C6A46C00FAFE2C /* NESTracer.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* Nestopia */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A22608ED21C6A46C00FAFE2C /* libNESTracer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNESTracer.a;
+			remoteRef = A22608EC21C6A46C00FAFE2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1D60588D0D05DD3D006BFB54 /* Resources */ = {
@@ -2165,7 +2194,6 @@
 				700957EB17FC75590038888C /* NstLog.cpp in Sources */,
 				7009577017FC75590038888C /* NstMapper063.cpp in Sources */,
 				700956FB17FC75590038888C /* NstApiEmulator.cpp in Sources */,
-				A27DBEE021C4F35300201C9F /* CPUTracer.mm in Sources */,
 				7009572117FC75590038888C /* NstBrdN106.cpp in Sources */,
 				7009571F17FC75590038888C /* NstBrdMmc3Waixing.cpp in Sources */,
 				7009576817FC75590038888C /* NstMapper053.cpp in Sources */,
@@ -2424,6 +2452,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PREPROCESSOR_DEFINITIONS = "NESTOPIA=1";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -2431,6 +2460,7 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/submodules/**";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s arm64";
 			};
@@ -2469,6 +2499,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "NESTOPIA=1";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -2477,6 +2508,7 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/submodules/**";
 				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Debug;
@@ -2490,6 +2522,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PREPROCESSOR_DEFINITIONS = "NESTOPIA=1";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -2497,6 +2530,7 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/submodules/**";
 				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
@@ -2511,6 +2545,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PREPROCESSOR_DEFINITIONS = "NESTOPIA=1";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
@@ -2519,6 +2554,7 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/submodules/**";
 				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = "Debug Optimized";
