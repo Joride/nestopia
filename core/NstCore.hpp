@@ -150,11 +150,11 @@
 #define NST_NOP() ((void)0)
 
 #ifndef NST_SINGLE_CALL
-#define NST_SINGLE_CALL inline
+#define NST_SINGLE_CALL
 #endif
 
 #ifndef NST_FORCE_INLINE
-#define NST_FORCE_INLINE inline
+#define NST_FORCE_INLINE 
 #endif
 
 #ifndef NST_NO_INLINE

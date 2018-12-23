@@ -98,8 +98,19 @@ namespace Nes
 				template<typename A,typename B,typename C>
 				Map(A a,B b,C c)
 				{
-					for (dword i=SIZE; i < FULL_SIZE; ++i)
+                    // a (CPU *)    =  Nes::Core::Cpu *
+                    // b (peek())   =  unsigned int (*)(void *, unsigned int)
+                    //      (Nestopia`Nes::Core::Cpu::Peek_Overflow(void*, unsigned int) at NstCpu.cpp:840
+                    // c (poke()    =  void (*)(void *, unsigned int, unsigned int)
+                    //      (Nestopia`Nes::Core::Cpu::Poke_Overflow(void*, unsigned int, unsigned int) at NstCpu.cpp:846)
+                    
+                    int size = SIZE; // = 0x10000 (65536)
+                    int full_size = FULL_SIZE; // = 0x10100 (65792)
+					
+                    for (dword i=SIZE; i < FULL_SIZE; ++i)
+                    {
 						ports[i].Set( a, b, c );
+                    }
 				}
 
 				const Port& operator [] (Address address) const

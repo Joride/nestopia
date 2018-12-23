@@ -139,48 +139,72 @@ namespace Nes
 
 			class Port
 			{
+                
 				typedef void* Component;
-				typedef Data (*Reader)(Component,Address);
+                
+                // typedef uint (*ReaderFunctionPointer)(void*,uint); // function pointer named 'Reader', taking arguemnts void* and uint
+                typedef uint (*ReaderFunctionPointer)(void*,uint);
+                
+                
 				typedef void (*Writer)(Component,Address,Data);
 
-				Component component;
-				Reader reader;
+				
+				ReaderFunctionPointer reader;
 				Writer writer;
 
 			public:
+                Component component;
+                
+                // this function added by joride: to bypass the reader-function
+                // pointers and not have values change upon read
+                uint8_t valueAtIndex(uint16_t index)
+                {
+                    uint8_t * values = (uint8_t *) component;
+                    return values[index];
+                }
+                
+				Port()
+                {
+                    
+//                    printf("Port()\n");
+                    
+                }
 
-				Port(){}
-
-				Port(Component c,Reader r,Writer w)
+				Port(Component c,ReaderFunctionPointer r,Writer w)
 				:
 				component ( c ),
 				reader    ( r ),
 				writer    ( w )
 				{
-                    printf("Port()");
+                    printf("Port(c,r,w)\n");
                 }
 
-				void Set(Component c,Reader r,Writer w)
+                void Set(void* c,ReaderFunctionPointer r,Writer w)
 				{
-					component = c;
-					reader    = r;
-					writer    = w;
+//                    printf("Port.set(c, r, w)\n");
+                    component = c;
+                    reader    = r;
+                    writer    = w;
 				}
 
-				void Set(Reader r)
+				void Set(ReaderFunctionPointer r)
 				{
-					reader = r;
+                    printf("Port.set(r)\n");
+                    reader = r;
 				}
 
 				void Set(Writer w)
 				{
-					writer = w;
+                    printf("Port.set(w)\n");
+                    writer = w;
 				}
 
-				void Set(Reader r,Writer w)
+				void Set(ReaderFunctionPointer r,Writer w)
 				{
+                    printf("Port.set(r,w)\n");
 					reader = r;
 					writer = w;
+                    
 				}
 
 				Data Peek(Address address) const

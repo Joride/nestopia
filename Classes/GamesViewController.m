@@ -71,10 +71,14 @@
 //    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 2
 //                                                 inSection: 4];
     
-//  nestest: (row 0, section 14)
-    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 0
-                                                 inSection: 14];
-
+////  nestest: (row 0, section 14)
+//    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 0
+//                                                 inSection: 14];
+//
+//    Super Mario Bros. (E) (REVA) [!]: (row 4, section 19)
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow: 4
+                                                 inSection: 19];
+    
     [self tableView: self.tableView
 didSelectRowAtIndexPath: indexPath];
 
@@ -201,7 +205,7 @@ didSelectRowAtIndexPath: indexPath];
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     Game *game = [self gameAtIndexPath:indexPath];
     
-    NSLog(@"%@", game.title);
+    NSLog(@"LOADING ROM: %@", game.title);
     
     GamePlayViewController *gamePlayViewController = [[GamePlayViewController alloc] initWithGame:game loadState:self.saved];
     gamePlayViewController.delegate = self;

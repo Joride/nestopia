@@ -858,7 +858,14 @@ namespace Nes
         Data Nsf::Peek_Prg_B(void* p_,Address i_) { return static_cast<Nsf*>(p_)->Peek_M_Prg_B(i_); } inline Data Nsf::Peek_M_Prg_B(Address address) { return prg[3][address - 0xB000]; }
         Data Nsf::Peek_Prg_C(void* p_,Address i_) { return static_cast<Nsf*>(p_)->Peek_M_Prg_C(i_); } inline Data Nsf::Peek_M_Prg_C(Address address) { return prg[4][address - 0xC000]; }
         Data Nsf::Peek_Prg_D(void* p_,Address i_) { return static_cast<Nsf*>(p_)->Peek_M_Prg_D(i_); } inline Data Nsf::Peek_M_Prg_D(Address address) { return prg[5][address - 0xD000]; }
-        Data Nsf::Peek_Prg_E(void* p_,Address i_) { return static_cast<Nsf*>(p_)->Peek_M_Prg_E(i_); } inline Data Nsf::Peek_M_Prg_E(Address address) { return prg[6][address - 0xE000]; }
+        Data Nsf::Peek_Prg_E(void* p_,Address i_)
+        {
+            return static_cast<Nsf*>(p_)->Peek_M_Prg_E(i_);
+        }
+        inline Data Nsf::Peek_M_Prg_E(Address address)
+        {
+            return prg[6][address - 0xE000];
+        }
         Data Nsf::Peek_Prg_F(void* p_,Address i_) { return static_cast<Nsf*>(p_)->Peek_M_Prg_F(i_); } inline Data Nsf::Peek_M_Prg_F(Address address) { return prg[7][address - 0xF000]; }
         
         Data Nsf::Peek_Wrk(void* p_,Address i_) { return static_cast<Nsf*>(p_)->Peek_M_Wrk(i_); } inline Data Nsf::Peek_M_Wrk(Address address) { return wrk[address - 0x6000]; }
