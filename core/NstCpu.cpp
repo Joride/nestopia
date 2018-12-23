@@ -1437,7 +1437,9 @@ namespace Nes
          void Cpu::Lda(const uint data)
         {
             TraceFunctionName;
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             printf("%s\n", __FUNCTION__);
+            
             a = data;
             flags.nz = data;
         }
