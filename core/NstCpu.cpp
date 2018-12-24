@@ -987,11 +987,12 @@ namespace Nes
         uint Cpu::Imm_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImmediate);
+            NESTracerSetOpcodeArgumentsAddress(pc);
+            
             const uint data = FetchPc8();
             cycles.count += cycles.clock[1];
             
             printf("%s value: 0x%2X\n", __FUNCTION__, data);
-            
             return data;
         }
         
@@ -2336,70 +2337,16 @@ namespace Nes
                 {
                     uint opcodeAtPC = FetchPc8();
                     
-//                    uint8_t* buffer1 = MemoryBuffer();
-//                    uint8_t* buffer2 = MemoryBuffer();
-//
-//                    uint8_t opcodeAtPCFromBuffer = buffer1[pc];
-//
-//                    #ifdef printf(x, ...)
-//                        #undef printf(x, ...)
-//                    #endif
-//                    printf("\nopcodeAtPC : %04X\n", opcodeAtPC);
-//                    printf("opcodeAtPCB: %04X\n", opcodeAtPCFromBuffer);
-//                    printf("        pc : %04X\n", pc);
-//                    #define printf(x, ...)
-//
-//                    printf("Checking whether repeated reads of adddressSpace yield identical results...\n");
-//                    bool isEqual =
-//                    NESTracerAddressSpaceEqualToAddressSpace(buffer1,
-//                                                             0xFFFF,
-//                                                             buffer2,
-//                                                             0xFFFF);
-//                    if (isEqual == 0)
-//                    {
-//                        #ifdef printf(x, ...)
-//                            #undef printf(x, ...)
-//                        #endif
-//
-//                        printf("Repeated reads of adddressSpace yield different results:\n");
-//                        uint16_t count = 0;
-//                        uint16_t* indexes =
-//                        NESTracerAddressSpaceUnequalIndexes(buffer1,
-//                                                            0xFFFF,
-//                                                            buffer2,
-//                                                            0xFFFF,
-//                                                            &count);
-//                        if (count == 0)
-//                        {
-//                            printf("memorybuffer is equal, so reaching this point should be impossible, no?\n");
-//                        }
-//                        else
-//                        {
-//                            printf("Indexes that are different:\n");
-//                            for (uint16_t index = 0; index < count; index++)
-//                            {
-//                                uint16_t indexValue = indexes[index];
-//                                printf("0x%02X\n", indexValue);
-//                            }
-//                        }
-//                        #define printf(x, ...)
-//                        assert(0);
-//                    }
-//                    else
-//                    {
-//                        printf("Repeated reads of the addressSpace are OK!\n");
-                    
-                        NESTracerStartUpcomingCycle
-                        ((int64_t)(cyclesSubtracted + cycles.count - (7 * 12)) / 12,
-                         pc,
-                         opcodeAtPC,
-                         a,
-                         x,
-                         y,
-                         flags.Pack(),
-                         sp);
-//                    }
-                    
+                    NESTracerStartUpcomingCycle
+                    ((int64_t)(cyclesSubtracted + cycles.count - (7 * 12)) / 12,
+                     pc,
+                     opcodeAtPC,
+                     a,
+                     x,
+                     y,
+                     flags.Pack(),
+                     sp);
+
                     (*this.*opcodes[opcodeAtPC])();
                     
                     NESTracerEndCycle();
@@ -2619,7 +2566,11 @@ namespace Nes
             Jsr();
             
         }
-        void Cpu::op0xA9() { printf("%s\n", __FUNCTION__); Lda( Imm_R() ); }
+        void Cpu::op0xA9()
+        {
+            printf("%s\n", __FUNCTION__);
+            Lda( Imm_R() );
+        }
         void Cpu::op0xA5() { printf("%s\n", __FUNCTION__); Lda( Zpg_R() ); }
         void Cpu::op0xB5() { printf("%s\n", __FUNCTION__); Lda( ZpgX_R() );}
         void Cpu::op0xAD()
