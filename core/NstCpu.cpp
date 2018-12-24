@@ -1002,19 +1002,20 @@ namespace Nes
             uint data = FetchPc16();
             cycles.count += cycles.clock[2];
             uint address = data;
+            
             if (address == 0x2002)
-            {
-                printf("reading 0x2002");
-            }
-                
+            { printf("reading 0x2002"); }
             
             // figuring out how to start up the PPU:
             // what data is returned here causes the CPU.NZ flag to be set
             data = map.Peek8( data );
+            
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
+            NESTracerSetOpcodeArgumentsAddress(address);
+            
             cycles.count += cycles.clock[0];
             
             printf("%s  address: 0x%04X\tvalue: 0x%02X\n", __FUNCTION__, address, data);
-            
             
             if (data == 0x90)
             {
@@ -1042,6 +1043,7 @@ namespace Nes
             map.Poke8( address, data );
             cycles.count += cycles.clock[0];
             
+            NESTracerSetOpcodeArgumentsAddress(address);
             return address;
         }
         
@@ -1051,6 +1053,7 @@ namespace Nes
             const uint address = FetchPc16();
             cycles.count += cycles.clock[2];
             
+            NESTracerSetOpcodeArgumentsAddress(address);
             printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
             
             return address;
@@ -1064,7 +1067,9 @@ namespace Nes
             
             printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
             
-            return ram.mem[address];
+            uint16_t addressFromRam = ram.mem[address];
+            NESTracerSetOpcodeArgumentsAddress(addressFromRam);
+            return addressFromRam;
         }
         
          uint Cpu::Zpg_RW(uint& data)
@@ -1076,6 +1081,7 @@ namespace Nes
             
             printf("%s: 0x%04X\tvalue: 0x%02X\n", __FUNCTION__, address, map.Peek8(address));
             
+            NESTracerSetOpcodeArgumentsAddress(address);
             return address;
         }
         
@@ -1085,6 +1091,8 @@ namespace Nes
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
             printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
+            
+            NESTracerSetOpcodeArgumentsAddress(address);
             return address;
         }
         
@@ -1431,11 +1439,7 @@ namespace Nes
             return returnValue; // 61666
         }
         
-        
-        
-        
-        
-         void Cpu::Lda(const uint data)
+        void Cpu::Lda(const uint data)
         {
             TraceFunctionName;
             NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
@@ -1447,6 +1451,7 @@ namespace Nes
          void Cpu::Ldx(const uint data)
         {
             TraceFunctionName;
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             printf("%s (0x%02X)\n", __FUNCTION__, data);
             x = data;
             flags.nz = data;
@@ -1455,6 +1460,7 @@ namespace Nes
          void Cpu::Ldy(const uint data)
         {
             TraceFunctionName;
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             printf("%s\n", __FUNCTION__);
             y = data;
             flags.nz = data;
