@@ -39,9 +39,22 @@ namespace Nes
             
             void In::Read(byte* data,dword size)
             {
-                (__builtin_expect(!(!!(data && size)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstStream.cpp", 42, "!!(data && size)") : (void)0);
-                
+//                (__builtin_expect(!(!!(data && size)), 0) ? __assert_rtn(__func__, "/Users/Jorrit/iOS/nestopia/core/NstStream.cpp", 42, "!!(data && size)") : (void)0);
+//
                 SafeRead( data, size );
+                
+                if (size == 32768) // 32768 is the size of Super Mario Bros' prgrom
+                {
+                    FILE *out = fopen("/Users/Jorrit/iOS/EmuOutputCompare/output/nestopia-prgrom.txt", "a");
+                    for (uint16_t index = 0; index < size; index++)
+                    {
+#define printf printf
+//                        printf("[%05i]\t%02X\n", index ,data[index]);
+                        fprintf(out, "[%04X]\t%02X\n", index ,data[index]);
+#define printf(x, ...)
+                    }
+                    fclose(out);
+                }
                 
                 if (!*static_cast<std::istream*>(stream))
                     throw RESULT_ERR_CORRUPT_FILE;

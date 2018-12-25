@@ -147,6 +147,7 @@ namespace Nes
                 setup.chrRom |= uint(header[9]) << 4 & 0xF00;
             }
             
+            
             setup.prgRom *= SIZE_16K;
             setup.chrRom *= SIZE_8K;
             

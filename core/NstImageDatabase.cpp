@@ -80,7 +80,6 @@ namespace Nes
                 Stream::In stream( input );
                 
                 numEntries = stream.Read32();
-                ((void)0);
                 
                 if (!numEntries)
                     throw RESULT_ERR_CORRUPT_FILE;

@@ -115,7 +115,7 @@ namespace Nes
 
 				System system;
 				Region region;
-				ulong prgRom;
+				ulong prgRom; // the size of the prgRom (search for 'setup.prgRom *= SIZE_16K;' in cpp file)
 				ulong wrkRam;
 				ulong wrkRamBacked;
 				ulong chrRom;

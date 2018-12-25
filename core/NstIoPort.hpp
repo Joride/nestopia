@@ -149,7 +149,7 @@ namespace Nes
 				typedef void (*Writer)(Component,Address,Data);
 
 				
-				ReaderFunctionPointer reader;
+				ReaderFunctionPointer readerFP;
 				Writer writer;
 
 			public:
@@ -173,7 +173,7 @@ namespace Nes
 				Port(Component c,ReaderFunctionPointer r,Writer w)
 				:
 				component ( c ),
-				reader    ( r ),
+				readerFP    ( r ),
 				writer    ( w )
 				{
                     printf("Port(c,r,w)\n");
@@ -183,14 +183,14 @@ namespace Nes
 				{
 //                    printf("Port.set(c, r, w)\n");
                     component = c;
-                    reader    = r;
+                    readerFP    = r;
                     writer    = w;
 				}
 
 				void Set(ReaderFunctionPointer r)
 				{
                     printf("Port.set(r)\n");
-                    reader = r;
+                    readerFP = r;
 				}
 
 				void Set(Writer w)
@@ -202,14 +202,14 @@ namespace Nes
 				void Set(ReaderFunctionPointer r,Writer w)
 				{
                     printf("Port.set(r,w)\n");
-					reader = r;
+					readerFP = r;
 					writer = w;
                     
 				}
 
 				Data Peek(Address address) const
 				{
-                    Data value = reader( component, address );
+                    Data value = readerFP( component, address );
                     return value;
 				}
 
@@ -220,7 +220,7 @@ namespace Nes
 
 				bool operator == (const Port& p) const
 				{
-					return component == p.component && reader == p.reader && writer == p.writer;
+					return component == p.component && readerFP == p.readerFP && writer == p.writer;
 				}
 			};
 

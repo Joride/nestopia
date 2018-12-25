@@ -181,24 +181,35 @@ namespace Nes
             if (on)
             {
                 
+                // zeropage, stack and ram
                 map( 0x0000, 0x07FF ).Set(&ram,
                                           &Cpu::Ram::Peek_Ram_0,
                                           &Cpu::Ram::Poke_Ram_0 );
+                
+                // mirros 0x0000 - 0x07FF
                 map( 0x0800, 0x0FFF ).Set(&ram,
                                           &Cpu::Ram::Peek_Ram_1,
                                           &Cpu::Ram::Poke_Ram_1 );
+                // mirros 0x0000 - 0x07FF
                 map( 0x1000, 0x17FF ).Set(&ram,
                                           &Cpu::Ram::Peek_Ram_2,
                                           &Cpu::Ram::Poke_Ram_2 );
+                // mirros 0x0000 - 0x07FF,
                 map( 0x1800, 0x1FFF ).Set(&ram,
                                           &Cpu::Ram::Peek_Ram_3,
                                           &Cpu::Ram::Poke_Ram_3 );
+                
+                // io-registers, mirrors of io-registers, io registers,
+                // expansion ROM, SRAM, PRG-ROM (lower bank), PRG-ROM (upper bank)
                 map( 0x2000, 0xFFFF ).Set(this,
                                           &Cpu::Peek_Nop,
                                           &Cpu::Poke_Nop );
+                
+                // reset-vector
                 map( 0xFFFC ).Set(this,
                                   &Cpu::Peek_Jam_1,
                                   &Cpu::Poke_Nop );
+                
                 map( 0xFFFD ).Set(this,
                                   &Cpu::Peek_Jam_2,
                                   &Cpu::Poke_Nop );
@@ -993,6 +1004,7 @@ namespace Nes
             cycles.count += cycles.clock[1];
             
             printf("%s value: 0x%2X\n", __FUNCTION__, data);
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             return data;
         }
         
@@ -1442,7 +1454,6 @@ namespace Nes
         void Cpu::Lda(const uint data)
         {
             TraceFunctionName;
-            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             printf("%s\n", __FUNCTION__);
             
             a = data;
@@ -1451,7 +1462,6 @@ namespace Nes
          void Cpu::Ldx(const uint data)
         {
             TraceFunctionName;
-            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             printf("%s (0x%02X)\n", __FUNCTION__, data);
             x = data;
             flags.nz = data;
@@ -1460,7 +1470,6 @@ namespace Nes
          void Cpu::Ldy(const uint data)
         {
             TraceFunctionName;
-            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             printf("%s\n", __FUNCTION__);
             y = data;
             flags.nz = data;
