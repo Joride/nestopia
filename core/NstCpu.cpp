@@ -32,7 +32,7 @@
 
 
 // use this to turn off the print statements (with them, emulation is slooooowww)
-#define printf(x, ...)
+//#define printf(x, ...)
 
 #define TraceFunctionName NESTracerCurrentOpcodeName(__FUNCTION__)
 
@@ -225,8 +225,8 @@ namespace Nes
             }
             
             cyclesSubtracted = 0; // added by joride for debugging purposes
-            printf("AFTER RESET:");
-            printCPU();
+//            printf("AFTER RESET:");
+//            printCPU();
             
 //            std::string a = ListValuesByAdrres();
 //            printf("%s", a.c_str());
@@ -835,40 +835,48 @@ namespace Nes
         
         Data Cpu::Ram::Peek_Ram_0(void* p_,Address i_)
         {
+            
             return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_0(i_);
         }
         
         Data Cpu::Ram::Peek_M_Ram_0(Address address)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return mem[address - 0x0000];
         }
         
         Data Cpu::Ram::Peek_Ram_1(void* p_,Address i_)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_1(i_);
         }
         
         Data Cpu::Ram::Peek_M_Ram_1(Address address)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return mem[address - 0x0800];
         }
         
         Data Cpu::Ram::Peek_Ram_2(void* p_,Address i_)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_2(i_);
         }
         Data Cpu::Ram::Peek_M_Ram_2(Address address)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return mem[address - 0x1000];
         }
         
         Data Cpu::Ram::Peek_Ram_3(void* p_,Address i_)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_3(i_);
         }
         
         Data Cpu::Ram::Peek_M_Ram_3(Address address)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return mem[address - 0x1800];
         }
         
@@ -914,31 +922,36 @@ namespace Nes
         
         Data Cpu::Peek_Nop(void* p_,Address i_)
         {
-//            printf("%s\n", __FUNCTION__);
+            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu*>(p_)->Peek_M_Nop(i_);
         }
         
         Data Cpu::Peek_M_Nop(Address address)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return address >> 8;
         }
         
         void Cpu::Poke_Nop(void* p_,Address i_,Data j_)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             static_cast<Cpu*>(p_)->Poke_M_Nop(i_,j_);
         }
         
         void Cpu::Poke_M_Nop(Address,Data)
         {
+            printf("YAY:%s\n", __FUNCTION__);
         }
         
         Data Cpu::Peek_Overflow(void* p_,Address i_)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu*>(p_)->Peek_M_Overflow(i_);
         }
         
         Data Cpu::Peek_M_Overflow(Address address)
         {
+            printf("YAY:%s\n", __FUNCTION__);
             pc &= 0xFFFF;
             return ram.mem[address & 0x7FF];
         }
@@ -1003,7 +1016,6 @@ namespace Nes
             const uint data = FetchPc8();
             cycles.count += cycles.clock[1];
             
-            printf("%s value: 0x%2X\n", __FUNCTION__, data);
             NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             return data;
         }
@@ -1015,8 +1027,8 @@ namespace Nes
             cycles.count += cycles.clock[2];
             uint address = data;
             
-            if (address == 0x2002)
-            { printf("reading 0x2002"); }
+//            if (address == 0x2002)
+//            { printf("reading 0x2002"); }
             
             // figuring out how to start up the PPU:
             // what data is returned here causes the CPU.NZ flag to be set
@@ -1027,7 +1039,7 @@ namespace Nes
             
             cycles.count += cycles.clock[0];
             
-            printf("%s  address: 0x%04X\tvalue: 0x%02X\n", __FUNCTION__, address, data);
+//            printf("%s  address: 0x%04X\tvalue: 0x%02X\n", __FUNCTION__, address, data);
             
             if (data == 0x90)
             {
@@ -1045,7 +1057,6 @@ namespace Nes
         uint Cpu::Abs_RW(uint& data)
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
-            printf("%s\n", __FUNCTION__);
             const uint address = FetchPc16();
             cycles.count += cycles.clock[2];
             
@@ -1066,7 +1077,6 @@ namespace Nes
             cycles.count += cycles.clock[2];
             
             NESTracerSetOpcodeArgumentsAddress(address);
-            printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
             
             return address;
         }
@@ -1076,8 +1086,6 @@ namespace Nes
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeropage);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
-            
-            printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
             
             uint16_t addressFromRam = ram.mem[address];
             NESTracerSetOpcodeArgumentsAddress(addressFromRam);
@@ -1091,8 +1099,6 @@ namespace Nes
             cycles.count += cycles.clock[4];
             data = ram.mem[address];
             
-            printf("%s: 0x%04X\tvalue: 0x%02X\n", __FUNCTION__, address, map.Peek8(address));
-            
             NESTracerSetOpcodeArgumentsAddress(address);
             return address;
         }
@@ -1102,7 +1108,7 @@ namespace Nes
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeropage);
             const uint address = FetchPc8();
             cycles.count += cycles.clock[2];
-            printf("%s: 0x%4X\tvalue: 0x%2X\n", __FUNCTION__, address, map.Peek8(address));
+
             
             NESTracerSetOpcodeArgumentsAddress(address);
             return address;
@@ -1111,7 +1117,6 @@ namespace Nes
          uint Cpu::ZpgReg_R(uint indexed)
         {
 //            NESTracerSetCurrentAddressingMode(<#mode#>);
-            printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[3];
             return ram.mem[indexed];
@@ -1120,7 +1125,6 @@ namespace Nes
          uint Cpu::ZpgReg_RW(uint& data,uint indexed)
         {
 //            NESTracerSetCurrentAddressingMode(<#mode#>);
-            printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[5];
             data = ram.mem[indexed];
@@ -1130,7 +1134,6 @@ namespace Nes
          uint Cpu::ZpgReg_W(uint indexed)
         {
 //            NESTracerSetCurrentAddressingMode(<#mode#>);
-            printf("%s\n", __FUNCTION__);
             indexed = (indexed + FetchPc8()) & 0xFF;
             cycles.count += cycles.clock[3];
             return indexed;
@@ -1138,47 +1141,45 @@ namespace Nes
          uint Cpu::ZpgX_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedX);
-            printf("%s\n", __FUNCTION__);
             return ZpgReg_R( x );
         }
          uint Cpu::ZpgX_RW(uint& data)
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedX);
-            printf("%s\n", __FUNCTION__);
             return ZpgReg_RW( data, x );
         }
          uint Cpu::ZpgX_W()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedX);
-            printf("%s\n", __FUNCTION__);
+
             return ZpgReg_W( x );
             
         }
          uint Cpu::ZpgY_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedY);
-            printf("%s\n", __FUNCTION__);
+            
             return ZpgReg_R( y );
             
         }
          uint Cpu::ZpgY_RW(uint& data)
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedY);
-            printf("%s\n", __FUNCTION__);
+
             return ZpgReg_RW( data, y );
             
         }
          uint Cpu::ZpgY_W()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeZeroPageIndexedY);
-            printf("%s\n", __FUNCTION__);
+
             return ZpgReg_W( y );
         }
         
         uint Cpu::AbsReg_R(uint indexed)
         {
 //            NESTracerSetCurrentAddressingMode(<#mode#>);
-            printf("%s\n", __FUNCTION__);
+
             uint data = pc;
             indexed += map.Peek8( data );
             data = (map.Peek8( data + 1 ) << 8) + indexed;
@@ -1200,7 +1201,6 @@ namespace Nes
         uint Cpu::AbsReg_RW(uint& data,uint indexed)
         {
 //            NESTracerSetCurrentAddressingMode(<#mode#>);
-            printf("%s\n", __FUNCTION__);
             uint address = pc;
             indexed += map.Peek8( address );
             address = (map.Peek8( address + 1 ) << 8) + indexed;
@@ -1221,7 +1221,7 @@ namespace Nes
          uint Cpu::AbsReg_W(uint indexed)
         {
 //            NESTracerSetCurrentAddressingMode(<#mode#>);
-            printf("%s\n", __FUNCTION__);
+
             uint address = pc;
             indexed += map.Peek8( address );
             address = (map.Peek8( address + 1 ) << 8) + indexed;
@@ -1236,47 +1236,47 @@ namespace Nes
          uint Cpu::AbsX_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedX);
-            printf("%s\n", __FUNCTION__);
+
             return AbsReg_R( x );
             
         }
          uint Cpu::AbsY_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedY);
-            printf("%s\n", __FUNCTION__);
+
             return AbsReg_R( y );
             
         }
          uint Cpu::AbsX_RW(uint& data)
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedX);
-            printf("%s\n", __FUNCTION__);
+
             return AbsReg_RW( data, x );
         }
          uint Cpu::AbsY_RW(uint& data)
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedY);
-            printf("%s\n", __FUNCTION__);
+
             return AbsReg_RW( data, y );
             
         }
          uint Cpu::AbsX_W()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedX);
-            printf("%s\n", __FUNCTION__);
+
             return AbsReg_W( x );
         }
          uint Cpu::AbsY_W()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedY);
-            printf("%s\n", __FUNCTION__);
+
             return AbsReg_W( y );
         }
         
         uint Cpu::IndX_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndexedIndirect);
-            printf("%s\n", __FUNCTION__);
+
             uint data = FetchPc8() + x;
             cycles.count += cycles.clock[4];
             data = FetchZpg16( data );
@@ -1290,7 +1290,7 @@ namespace Nes
          uint Cpu::IndX_RW(uint& data)
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndexedIndirect);
-            printf("%s\n", __FUNCTION__);
+
             uint address = FetchPc8() + x;
             cycles.count += cycles.clock[4];
             address = FetchZpg16( address );
@@ -1307,7 +1307,7 @@ namespace Nes
          uint Cpu::IndX_W()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndexedIndirect);
-            printf("%s\n", __FUNCTION__);
+
             const uint address = FetchPc8() + x;
             cycles.count += cycles.clock[4];
             return FetchZpg16( address );
@@ -1316,7 +1316,7 @@ namespace Nes
         uint Cpu::IndY_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndirectIndexed);
-            printf("%s\n", __FUNCTION__);
+
             uint data = FetchPc8();
             cycles.count += cycles.clock[3];
             
@@ -1338,7 +1338,7 @@ namespace Nes
          uint Cpu::IndY_RW(uint& data)
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeIndirectIndexed);
-            printf("%s\n", __FUNCTION__);
+
             uint address = FetchPc8();
             cycles.count += cycles.clock[4];
             
@@ -1370,7 +1370,6 @@ namespace Nes
             
             map.Peek8( address - (indexed & 0x100) );
             
-            printf("%s: 0x%4X\tvalue: 0x%04X\n", __FUNCTION__, address, map.Peek8(address));
             return address;
         }
         
@@ -1385,13 +1384,12 @@ namespace Nes
             {
                 pc = ((tmp=pc+1) + sign_extend_8(uint(map.Peek8( pc )))) & 0xFFFF;
                 cycles.count += cycles.clock[2 + ((tmp^pc) >> 8 & 1)];
-                printf("%s PC: 0x%2X\n", __FUNCTION__, pc);
             }
             else
             {
                 ++pc;
                 cycles.count += cycles.clock[1];
-                printf("%s PC: %i\n", __FUNCTION__, pc);
+
             }
         }
         
@@ -1454,7 +1452,7 @@ namespace Nes
         void Cpu::Lda(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             
             a = data;
             flags.nz = data;
@@ -1462,7 +1460,6 @@ namespace Nes
          void Cpu::Ldx(const uint data)
         {
             TraceFunctionName;
-            printf("%s (0x%02X)\n", __FUNCTION__, data);
             x = data;
             flags.nz = data;
             
@@ -1470,7 +1467,7 @@ namespace Nes
          void Cpu::Ldy(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             y = data;
             flags.nz = data;
         }
@@ -1482,14 +1479,14 @@ namespace Nes
          uint Cpu::Sta() const
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             return a;
         }
-         uint Cpu::Stx() const { TraceFunctionName; printf("%s\n", __FUNCTION__); return x; }
+         uint Cpu::Stx() const { TraceFunctionName; return x; }
          uint Cpu::Sty() const
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             return y;
         }
         
@@ -1500,7 +1497,7 @@ namespace Nes
          void Cpu::Tax()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             cycles.count += cycles.clock[1];
             x = a;
             flags.nz = a;
@@ -1509,7 +1506,7 @@ namespace Nes
          void Cpu::Tay()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             cycles.count += cycles.clock[1];
             y = a;
             flags.nz = a;
@@ -1518,7 +1515,7 @@ namespace Nes
          void Cpu::Txa()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             cycles.count += cycles.clock[1];
             a = x;
             flags.nz = x;
@@ -1527,7 +1524,7 @@ namespace Nes
          void Cpu::Tya()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             cycles.count += cycles.clock[1];
             a = y;
             flags.nz = y;
@@ -1540,7 +1537,7 @@ namespace Nes
          void Cpu::JmpAbs()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             pc = map.Peek16( pc );
             cycles.count += cycles.clock[JMP_ABS_CYCLES-1];
         }
@@ -1548,7 +1545,7 @@ namespace Nes
          void Cpu::JmpInd()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             const uint pos = map.Peek16( pc );
             pc = map.Peek8( pos ) | (map.Peek8( (pos & 0xFF00) | ((pos + 1) & 0x00FF) ) << 8);
             
@@ -1562,15 +1559,11 @@ namespace Nes
             Push16( pc + 1 ); // c7c3 + 1
             pc = map.Peek16( pc ); // pc = 51139 -> 51175
             cycles.count += cycles.clock[JSR_CYCLES-1];
-            
-            printf("absoluteMemoryAddress(): %04X\tvalue: %02X\n", pc, map.Peek8(pc));
-            printf("%s\n", __FUNCTION__);
         }
         
          void Cpu::Rts()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             
             /*
              const uint p0 = (sp + 1) & 0xFF;
@@ -1588,7 +1581,6 @@ namespace Nes
          void Cpu::Rti()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[RTI_CYCLES-1];
             
             {
@@ -1611,36 +1603,35 @@ namespace Nes
          void Cpu::Bne()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             Branch< true >( flags.nz & 0xFF );
         }
          void Cpu::Beq()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             Branch< false >( flags.nz & 0xFF );
         }
          void Cpu::Bmi()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             Branch< true >( flags.nz & 0x180 );
         }
          void Cpu::Bpl()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             Branch< false >( flags.nz & 0x180 );
         }
-         void Cpu::Bcs() { TraceFunctionName; printf("%s\n", __FUNCTION__); Branch< true >( flags.c ); }
-         void Cpu::Bcc() { TraceFunctionName; printf("%s\n", __FUNCTION__); Branch< false >( flags.c ); }
+         void Cpu::Bcs() { TraceFunctionName;  Branch< true >( flags.c ); }
+         void Cpu::Bcc() { TraceFunctionName;  Branch< false >( flags.c ); }
          void Cpu::Bvs()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             Branch< true >( flags.v );
         }
-         void Cpu::Bvc() { TraceFunctionName; printf("%s\n", __FUNCTION__); Branch< false >( flags.v ); }
+         void Cpu::Bvc() { TraceFunctionName; Branch< false >( flags.v ); }
         
         
         
@@ -1649,7 +1640,6 @@ namespace Nes
          void Cpu::Adc(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             
             const uint tmp = a + data + flags.c;
             flags.v = ~(a ^ data) & (a ^ tmp) & 0x80;
@@ -1661,7 +1651,7 @@ namespace Nes
          void Cpu::Sbc(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             Adc( data ^ 0xFF );
         }
         
@@ -1672,7 +1662,7 @@ namespace Nes
          void Cpu::And(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             a &= data;
             flags.nz = a;
         }
@@ -1680,7 +1670,7 @@ namespace Nes
          void Cpu::Ora(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             a |= data;
             flags.nz = a;
         }
@@ -1688,7 +1678,7 @@ namespace Nes
          void Cpu::Eor(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             a ^= data;
             flags.nz = a;
         }
@@ -1696,7 +1686,7 @@ namespace Nes
          void Cpu::Bit(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             flags.nz = ((data & a) != 0) | ((data & Flags::N) << 1);
             flags.v = data & Flags::V;
         }
@@ -1704,7 +1694,7 @@ namespace Nes
          void Cpu::Cmp(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             data = a - data;
             flags.nz = data & 0xFF;
             flags.c = ~data >> 8 & 0x1;
@@ -1713,7 +1703,6 @@ namespace Nes
          void Cpu::Cpx(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             data = x - data;
             flags.nz = data & 0xFF;
             flags.c = ~data >> 8 & 0x1;
@@ -1722,7 +1711,7 @@ namespace Nes
          void Cpu::Cpy(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             data = y - data;
             flags.nz = data & 0xFF;
             flags.c = ~data >> 8 & 0x1;
@@ -1732,7 +1721,7 @@ namespace Nes
          uint Cpu::Asl(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             flags.c = data >> 7;
             flags.nz = data << 1 & 0xFF;
             return flags.nz;
@@ -1741,7 +1730,6 @@ namespace Nes
          uint Cpu::Lsr(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             flags.c = data & 0x01;
             flags.nz = data >> 1;
             return flags.nz;
@@ -1750,7 +1738,7 @@ namespace Nes
          uint Cpu::Rol(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             flags.nz = (data << 1 & 0xFF) | flags.c;
             flags.c = data >> 7;
             
@@ -1760,7 +1748,7 @@ namespace Nes
          uint Cpu::Ror(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             
             flags.nz = (data >> 1) | (flags.c << 7);
             flags.c = data & 0x01;
@@ -1772,7 +1760,6 @@ namespace Nes
          uint Cpu::Dec(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             flags.nz = (data - 1) & 0xFF;
             return flags.nz;
         }
@@ -1780,7 +1767,7 @@ namespace Nes
          uint Cpu::Inc(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             flags.nz = (data + 1) & 0xFF;
             return flags.nz;
         }
@@ -1788,7 +1775,7 @@ namespace Nes
          void Cpu::Dex()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             cycles.count += cycles.clock[1];
             x = (x - 1) & 0xFF;
             flags.nz = x;
@@ -1797,7 +1784,6 @@ namespace Nes
          void Cpu::Dey()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             y = (y - 1) & 0xFF;
             flags.nz = y;
@@ -1806,7 +1792,6 @@ namespace Nes
          void Cpu::Inx()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             x = (x + 1) & 0xFF;
             flags.nz = x;
@@ -1815,7 +1800,6 @@ namespace Nes
          void Cpu::Iny()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             y = (y + 1) & 0xFF;
             flags.nz = y;
@@ -1829,7 +1813,6 @@ namespace Nes
          void Cpu::Clc()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.c = 0;
         }
@@ -1837,7 +1820,7 @@ namespace Nes
          void Cpu::Sec()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+
             cycles.count += cycles.clock[1];
             flags.c = Flags::C;
         }
@@ -1845,7 +1828,6 @@ namespace Nes
          void Cpu::Cld()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.d = 0;
         }
@@ -1853,7 +1835,6 @@ namespace Nes
          void Cpu::Sed()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.d = Flags::D;
         }
@@ -1861,7 +1842,6 @@ namespace Nes
          void Cpu::Clv()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             flags.v = 0;
         }
@@ -1870,7 +1850,6 @@ namespace Nes
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
             cycles.count += cycles.clock[1];
             
             if (!flags.i)
@@ -1886,7 +1865,7 @@ namespace Nes
          void Cpu::Cli()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count += cycles.clock[1];
             
             if (flags.i)
@@ -1912,7 +1891,7 @@ namespace Nes
          void Cpu::Pha()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count += cycles.clock[PHA_CYCLES-1];
             Push8( a );
         }
@@ -1920,7 +1899,7 @@ namespace Nes
          void Cpu::Php()
         {
            TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count += cycles.clock[PHP_CYCLES-1];
             Push8( flags.Pack() | Flags::B );
         }
@@ -1929,7 +1908,7 @@ namespace Nes
         {
             
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count += cycles.clock[PLA_CYCLES-1];
             a = Pull8();
             flags.nz = a;
@@ -1938,7 +1917,7 @@ namespace Nes
          void Cpu::Plp()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count += cycles.clock[PLP_CYCLES-1];
             
             const uint i = flags.i;
@@ -1964,7 +1943,7 @@ namespace Nes
          void Cpu::Tsx()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count += cycles.clock[1];
             x = sp;
             flags.nz = sp;
@@ -1973,7 +1952,7 @@ namespace Nes
          void Cpu::Txs()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count += cycles.clock[1];
             sp = x;
         }
@@ -1981,7 +1960,7 @@ namespace Nes
         __attribute__((no)) void Cpu::Anc(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             a &= data;
             flags.nz = a;
             flags.c = flags.nz >> 7;
@@ -1991,7 +1970,7 @@ namespace Nes
          void Cpu::Ane(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             a = (a | 0xEE) & x & data;
             flags.nz = a;
             NotifyOp("ANE",1UL << 1);
@@ -2000,7 +1979,7 @@ namespace Nes
          void Cpu::Arr(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             a = ((data & a) >> 1) | (flags.c << 7);
             flags.nz = a;
             flags.c = a >> 6 & 0x1;
@@ -2011,7 +1990,7 @@ namespace Nes
          void Cpu::Asr(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             flags.c = data & a & 0x1;
             a = (data & a) >> 1;
             flags.nz = a;
@@ -2021,7 +2000,7 @@ namespace Nes
         __attribute__((no)) uint Cpu::Dcp(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             data = (data - 1) & 0xFF;
             Cmp( data );
             NotifyOp("DCP",1UL << 4);
@@ -2031,7 +2010,7 @@ namespace Nes
         __attribute__((no)) uint Cpu::Isb(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             data = (data + 1) & 0xFF;
             Sbc( data );
             NotifyOp("ISB",1UL << 5);
@@ -2041,7 +2020,7 @@ namespace Nes
          void Cpu::Las(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             sp &= data;
             x = sp;
             a = sp;
@@ -2052,7 +2031,7 @@ namespace Nes
         __attribute__((no)) void Cpu::Lax(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             a = data;
             x = data;
             flags.nz = data;
@@ -2062,7 +2041,7 @@ namespace Nes
          void Cpu::Lxa(const uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             a &= data;
             x = a;
             flags.nz = a;
@@ -2072,7 +2051,7 @@ namespace Nes
         __attribute__((no)) uint Cpu::Rla(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             const uint carry = flags.c;
             flags.c = data >> 7;
             data = (data << 1 & 0xFF) | carry;
@@ -2085,7 +2064,7 @@ namespace Nes
         __attribute__((no)) uint Cpu::Rra(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             const uint carry = flags.c << 7;
             flags.c = data & 0x01;
             data = (data >> 1) | carry;
@@ -2097,7 +2076,7 @@ namespace Nes
         __attribute__((no)) uint Cpu::Sax()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             const uint data = a & x;
             NotifyOp("SAX",1UL << 11);
             return data;
@@ -2106,7 +2085,7 @@ namespace Nes
          void Cpu::Sbx(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             data = (a & x) - data;
             flags.c = (data <= 0xFF);
             x = data & 0xFF;
@@ -2117,7 +2096,7 @@ namespace Nes
         __attribute__((no)) uint Cpu::Sha(uint address)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             address = a & x & ((address >> 8) + 1);
             NotifyOp("SHA",1UL << 13);
             return address;
@@ -2126,7 +2105,7 @@ namespace Nes
          uint Cpu::Shs(uint address)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             sp = a & x;
             address = sp & ((address >> 8) + 1);
             NotifyOp("SHS",1UL << 14);
@@ -2136,7 +2115,7 @@ namespace Nes
          uint Cpu::Shx(uint address)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             address = x & ((address >> 8) + 1);
             NotifyOp("SHX",1UL << 15);
             return address;
@@ -2145,7 +2124,7 @@ namespace Nes
          uint Cpu::Shy(uint address)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             address = y & ((address >> 8) + 1);
             NotifyOp("SHY",1UL << 16);
             return address;
@@ -2154,7 +2133,7 @@ namespace Nes
         __attribute__((no)) uint Cpu::Slo(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             flags.c = data >> 7;
             data = data << 1 & 0xFF;
             a |= data;
@@ -2166,7 +2145,7 @@ namespace Nes
         __attribute__((no)) uint Cpu::Sre(uint data)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             flags.c = data & 0x01;
             data >>= 1;
             a ^= data;
@@ -2178,14 +2157,14 @@ namespace Nes
         void Cpu::Dop()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             NotifyOp("DOP",1UL << 19);
         }
         
         void Cpu::Top(uint=0)
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             NotifyOp("TOP",1UL << 20);
         }
         
@@ -2196,7 +2175,7 @@ namespace Nes
          void Cpu::Brk()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             Push16( pc + 1 );
             Push8( flags.Pack() | Flags::B );
             flags.i = Flags::I;
@@ -2210,7 +2189,7 @@ namespace Nes
         __attribute__((no)) void Cpu::Jam()
         {
             TraceFunctionName;
-            printf("%s\n", __FUNCTION__);
+            
             
             pc = (pc - 1) & 0xFFFF;
             cycles.count += cycles.clock[1];
@@ -2230,7 +2209,7 @@ namespace Nes
         
         void Cpu::DoISR(const uint vector)
         {
-            printf("%s\n", __FUNCTION__);
+            
             if (!jammed)
             {
                 Push16( pc );
@@ -2243,7 +2222,7 @@ namespace Nes
         
         void Cpu::DoIRQ(const IrqLine line,const Cycle cycle)
         {
-            printf("%s\n", __FUNCTION__);
+            
             interrupt.low |= line;
             
             if (!flags.i && interrupt.irqClock == CYCLE_MAX)
@@ -2255,7 +2234,7 @@ namespace Nes
         
         void Cpu::DoNMI(const Cycle cycle)
         {
-            printf("%s\n", __FUNCTION__);
+            
             if (interrupt.nmiClock == CYCLE_MAX)
             {
                 interrupt.nmiClock = cycle + cycles.NmiEdge();
@@ -2269,7 +2248,7 @@ namespace Nes
         
         void Cpu::Boot()
         {
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count = cycles.clock[RESET_CYCLES-1];
             cycles.round = 0;
             
@@ -2280,7 +2259,7 @@ namespace Nes
         
         void Cpu::ExecuteFrame(Sound::Output* sound)
         {
-            printf("%s\n", __FUNCTION__);
+            
             
             apu.BeginFrame( sound );
             
@@ -2293,17 +2272,17 @@ namespace Nes
                 default: Run2(); break;
             }
             uint value = map.Peek8(0x2000);
-            printf("\n>>0x2000:\t0x%02X\n", value);
+//            printf("\n>>0x2000:\t0x%02X\n", value);
             if (value == 0x90)
             {
                 
-                printf("--SET--");
+                printf("--SET--\n");
             }
         }
         
         void Cpu::EndFrame()
         {
-            printf("%s\n", __FUNCTION__);
+            
             apu.EndFrame();
                         
             ticks += cycles.frame;
@@ -2432,124 +2411,124 @@ namespace Nes
             return map.Poke8( address, data );
         }
         
-        void Cpu::op0x69() { printf("%s\n", __FUNCTION__); Adc( Imm_R() ); }
-        void Cpu::op0x65() { printf("%s\n", __FUNCTION__); Adc( Zpg_R() ); }
-        void Cpu::op0x75() { printf("%s\n", __FUNCTION__); Adc( ZpgX_R() ); }
-        void Cpu::op0x6D() { printf("%s\n", __FUNCTION__); Adc( Abs_R() ); }
-        void Cpu::op0x7D() { printf("%s\n", __FUNCTION__); Adc( AbsX_R() ); }
-        void Cpu::op0x79() { printf("%s\n", __FUNCTION__); Adc( AbsY_R() ); }
-        void Cpu::op0x61() { printf("%s\n", __FUNCTION__); Adc( IndX_R() ); }
-        void Cpu::op0x71() { printf("%s\n", __FUNCTION__); Adc( IndY_R() ); }
-        void Cpu::op0x29() { printf("%s\n", __FUNCTION__); And( Imm_R() ); }
-        void Cpu::op0x25() { printf("%s\n", __FUNCTION__); And( Zpg_R() ); }
-        void Cpu::op0x35() { printf("%s\n", __FUNCTION__); And( ZpgX_R() ); }
-        void Cpu::op0x2D() { printf("%s\n", __FUNCTION__); And( Abs_R() ); }
-        void Cpu::op0x3D() { printf("%s\n", __FUNCTION__); And( AbsX_R() ); }
-        void Cpu::op0x39() { printf("%s\n", __FUNCTION__); And( AbsY_R() ); }
-        void Cpu::op0x21() { printf("%s\n", __FUNCTION__); And( IndX_R() ); }
-        void Cpu::op0x31() { printf("%s\n", __FUNCTION__); And( IndY_R() ); }
-        void Cpu::op0x0A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[1]; a = Asl( a ); }
-        void Cpu::op0x06() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Asl(data) ); }
-        void Cpu::op0x16() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Asl(data)); }
-        void Cpu::op0x0E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Asl(data)); }
-        void Cpu::op0x1E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Asl(data)); }
-        void Cpu::op0x90() { printf("%s\n", __FUNCTION__); Bcc(); }
+        void Cpu::op0x69() {  Adc( Imm_R() ); }
+        void Cpu::op0x65() {  Adc( Zpg_R() ); }
+        void Cpu::op0x75() {  Adc( ZpgX_R() ); }
+        void Cpu::op0x6D() {  Adc( Abs_R() ); }
+        void Cpu::op0x7D() {  Adc( AbsX_R() ); }
+        void Cpu::op0x79() {  Adc( AbsY_R() ); }
+        void Cpu::op0x61() {  Adc( IndX_R() ); }
+        void Cpu::op0x71() {  Adc( IndY_R() ); }
+        void Cpu::op0x29() {  And( Imm_R() ); }
+        void Cpu::op0x25() {  And( Zpg_R() ); }
+        void Cpu::op0x35() {  And( ZpgX_R() ); }
+        void Cpu::op0x2D() {  And( Abs_R() ); }
+        void Cpu::op0x3D() {  And( AbsX_R() ); }
+        void Cpu::op0x39() {  And( AbsY_R() ); }
+        void Cpu::op0x21() {  And( IndX_R() ); }
+        void Cpu::op0x31() {  And( IndY_R() ); }
+        void Cpu::op0x0A() {  cycles.count += cycles.clock[1]; a = Asl( a ); }
+        void Cpu::op0x06() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Asl(data) ); }
+        void Cpu::op0x16() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Asl(data)); }
+        void Cpu::op0x0E() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Asl(data)); }
+        void Cpu::op0x1E() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Asl(data)); }
+        void Cpu::op0x90() {  Bcc(); }
         void Cpu::op0xB0()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeRelative);
-            printf("%s\n", __FUNCTION__);
+            
             Bcs();
         }
         void Cpu::op0xF0()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeRelative);
-            printf("%s\n", __FUNCTION__);
+            
             Beq();
             
         }
-        void Cpu::op0x24() { printf("%s\n", __FUNCTION__); Bit( Zpg_R() ); }
-        void Cpu::op0x2C() { printf("%s\n", __FUNCTION__); Bit( Abs_R() ); }
+        void Cpu::op0x24() {  Bit( Zpg_R() ); }
+        void Cpu::op0x2C() {  Bit( Abs_R() ); }
         void Cpu::op0x30()
         {
-            printf("%s\n", __FUNCTION__);
+            
             Bmi();
             
         }
         void Cpu::op0xD0()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeRelative);
-            printf("%s\n", __FUNCTION__);
+            
             Bne();
             
         }
         void Cpu::op0x10()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeRelative);
-            printf("%s\n", __FUNCTION__);
+            
             Bpl();
         }
-        void Cpu::op0x50() { printf("%s\n", __FUNCTION__); Bvc(); }
-        void Cpu::op0x70() { printf("%s\n", __FUNCTION__); Bvs(); }
+        void Cpu::op0x50() {  Bvc(); }
+        void Cpu::op0x70() {  Bvs(); }
         void Cpu::op0x18()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Clc();
         }
         void Cpu::op0xD8()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Cld();
         }
-        void Cpu::op0x58() { printf("%s\n", __FUNCTION__); Cli(); }
-        void Cpu::op0xB8() { printf("%s\n", __FUNCTION__); Clv(); }
-        void Cpu::op0xC9() { printf("%s\n", __FUNCTION__); Cmp( Imm_R() ); }
-        void Cpu::op0xC5() { printf("%s\n", __FUNCTION__); Cmp( Zpg_R() ); }
-        void Cpu::op0xD5() { printf("%s\n", __FUNCTION__); Cmp( ZpgX_R() ); }
-        void Cpu::op0xCD() { printf("%s\n", __FUNCTION__); Cmp( Abs_R() ); }
-        void Cpu::op0xDD() { printf("%s\n", __FUNCTION__); Cmp( AbsX_R() ); }
-        void Cpu::op0xD9() { printf("%s\n", __FUNCTION__); Cmp( AbsY_R() ); }
-        void Cpu::op0xC1() { printf("%s\n", __FUNCTION__); Cmp( IndX_R() ); }
-        void Cpu::op0xD1() { printf("%s\n", __FUNCTION__); Cmp( IndY_R() ); }
-        void Cpu::op0xE0() { printf("%s\n", __FUNCTION__); Cpx( Imm_R() ); }
-        void Cpu::op0xE4() { printf("%s\n", __FUNCTION__); Cpx( Zpg_R() ); }
-        void Cpu::op0xEC() { printf("%s\n", __FUNCTION__); Cpx( Abs_R() ); }
-        void Cpu::op0xC0() { printf("%s\n", __FUNCTION__); Cpy( Imm_R() ); }
-        void Cpu::op0xC4() { printf("%s\n", __FUNCTION__); Cpy( Zpg_R() ); }
-        void Cpu::op0xCC() { printf("%s\n", __FUNCTION__); Cpy( Abs_R() ); }
-        void Cpu::op0xC6() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Dec(data) ); }
-        void Cpu::op0xD6() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Dec(data)); }
-        void Cpu::op0xCE() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Dec(data)); }
-        void Cpu::op0xDE() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Dec(data)); }
+        void Cpu::op0x58() {  Cli(); }
+        void Cpu::op0xB8() {  Clv(); }
+        void Cpu::op0xC9() {  Cmp( Imm_R() ); }
+        void Cpu::op0xC5() {  Cmp( Zpg_R() ); }
+        void Cpu::op0xD5() {  Cmp( ZpgX_R() ); }
+        void Cpu::op0xCD() {  Cmp( Abs_R() ); }
+        void Cpu::op0xDD() {  Cmp( AbsX_R() ); }
+        void Cpu::op0xD9() {  Cmp( AbsY_R() ); }
+        void Cpu::op0xC1() {  Cmp( IndX_R() ); }
+        void Cpu::op0xD1() {  Cmp( IndY_R() ); }
+        void Cpu::op0xE0() {  Cpx( Imm_R() ); }
+        void Cpu::op0xE4() {  Cpx( Zpg_R() ); }
+        void Cpu::op0xEC() {  Cpx( Abs_R() ); }
+        void Cpu::op0xC0() {  Cpy( Imm_R() ); }
+        void Cpu::op0xC4() {  Cpy( Zpg_R() ); }
+        void Cpu::op0xCC() {  Cpy( Abs_R() ); }
+        void Cpu::op0xC6() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Dec(data) ); }
+        void Cpu::op0xD6() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Dec(data)); }
+        void Cpu::op0xCE() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Dec(data)); }
+        void Cpu::op0xDE() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Dec(data)); }
         void Cpu::op0xCA()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
             NESTracerNESAddressingModeImplied;
-            printf("%s\n", __FUNCTION__);
+            
             Dex();
             
         }
         void Cpu::op0x88()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Dey();
             
         }
-        void Cpu::op0x49() { printf("%s\n", __FUNCTION__); Eor( Imm_R() ); }
-        void Cpu::op0x45() { printf("%s\n", __FUNCTION__); Eor( Zpg_R() ); }
-        void Cpu::op0x55() { printf("%s\n", __FUNCTION__); Eor( ZpgX_R() ); }
-        void Cpu::op0x4D() { printf("%s\n", __FUNCTION__); Eor( Abs_R() ); }
-        void Cpu::op0x5D() { printf("%s\n", __FUNCTION__); Eor( AbsX_R() ); }
-        void Cpu::op0x59() { printf("%s\n", __FUNCTION__); Eor( AbsY_R() ); }
-        void Cpu::op0x41() { printf("%s\n", __FUNCTION__); Eor( IndX_R() ); }
-        void Cpu::op0x51() { printf("%s\n", __FUNCTION__); Eor( IndY_R() ); }
-        void Cpu::op0xE6() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Inc(data) ); }
-        void Cpu::op0xF6() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Inc(data)); }
-        void Cpu::op0xEE() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Inc(data)); }
+        void Cpu::op0x49() {  Eor( Imm_R() ); }
+        void Cpu::op0x45() {  Eor( Zpg_R() ); }
+        void Cpu::op0x55() {  Eor( ZpgX_R() ); }
+        void Cpu::op0x4D() {  Eor( Abs_R() ); }
+        void Cpu::op0x5D() {  Eor( AbsX_R() ); }
+        void Cpu::op0x59() {  Eor( AbsY_R() ); }
+        void Cpu::op0x41() {  Eor( IndX_R() ); }
+        void Cpu::op0x51() {  Eor( IndY_R() ); }
+        void Cpu::op0xE6() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Inc(data) ); }
+        void Cpu::op0xF6() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Inc(data)); }
+        void Cpu::op0xEE() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Inc(data)); }
         void Cpu::op0xFE() {
-            printf("%s\n", __FUNCTION__);
+            
             
             uint data;
             const uint dst = AbsX_RW( data );
@@ -2558,296 +2537,295 @@ namespace Nes
         void Cpu::op0xE8()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Inx();
         }
         void Cpu::op0xC8()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Iny();
         }
         void Cpu::op0x4C()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
-            printf("%s\n", __FUNCTION__);
+            
             JmpAbs();
         }
-        void Cpu::op0x6C() { printf("%s\n", __FUNCTION__); JmpInd(); }
+        void Cpu::op0x6C() {  JmpInd(); }
         void Cpu::op0x20()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
-            printf("%s\n", __FUNCTION__);
+            
             Jsr();
             
         }
         void Cpu::op0xA9()
         {
-            printf("%s\n", __FUNCTION__);
             Lda( Imm_R() );
         }
-        void Cpu::op0xA5() { printf("%s\n", __FUNCTION__); Lda( Zpg_R() ); }
-        void Cpu::op0xB5() { printf("%s\n", __FUNCTION__); Lda( ZpgX_R() );}
+        void Cpu::op0xA5() {  Lda( Zpg_R() ); }
+        void Cpu::op0xB5() {  Lda( ZpgX_R() );}
         void Cpu::op0xAD()
         {
-            printf("%s\n", __FUNCTION__);
+            
             Lda( Abs_R() );
         }
-        void Cpu::op0xBD() { printf("%s\n", __FUNCTION__); Lda( AbsX_R() ); }
-        void Cpu::op0xB9() { printf("%s\n", __FUNCTION__); Lda( AbsY_R() ); }
-        void Cpu::op0xA1() { printf("%s\n", __FUNCTION__); Lda( IndX_R() ); }
+        void Cpu::op0xBD() {  Lda( AbsX_R() ); }
+        void Cpu::op0xB9() {  Lda( AbsY_R() ); }
+        void Cpu::op0xA1() {  Lda( IndX_R() ); }
         void Cpu::op0xB1()
         {
-            printf("%s\n", __FUNCTION__);
+            
             Lda( IndY_R() );
         }
         void Cpu::op0xA2()
         {
-            printf("%s\n", __FUNCTION__);
+            
             Ldx( Imm_R() );
         }
-        void Cpu::op0xA6() { printf("%s\n", __FUNCTION__); Ldx( Zpg_R() ); }
-        void Cpu::op0xB6() { printf("%s\n", __FUNCTION__); Ldx( ZpgY_R() ); }
-        void Cpu::op0xAE() { printf("%s\n", __FUNCTION__); Ldx( Abs_R() ); }
-        void Cpu::op0xBE() { printf("%s\n", __FUNCTION__); Ldx( AbsY_R() ); }
-        void Cpu::op0xA0() { printf("%s\n", __FUNCTION__); Ldy( Imm_R() ); }
-        void Cpu::op0xA4() { printf("%s\n", __FUNCTION__); Ldy( Zpg_R() ); }
-        void Cpu::op0xB4() { printf("%s\n", __FUNCTION__); Ldy( ZpgX_R() ); }
-        void Cpu::op0xAC() { printf("%s\n", __FUNCTION__); Ldy( Abs_R() ); }
-        void Cpu::op0xBC() { printf("%s\n", __FUNCTION__); Ldy( AbsX_R() ); }
+        void Cpu::op0xA6() {  Ldx( Zpg_R() ); }
+        void Cpu::op0xB6() {  Ldx( ZpgY_R() ); }
+        void Cpu::op0xAE() {  Ldx( Abs_R() ); }
+        void Cpu::op0xBE() {  Ldx( AbsY_R() ); }
+        void Cpu::op0xA0() {  Ldy( Imm_R() ); }
+        void Cpu::op0xA4() {  Ldy( Zpg_R() ); }
+        void Cpu::op0xB4() {  Ldy( ZpgX_R() ); }
+        void Cpu::op0xAC() {  Ldy( Abs_R() ); }
+        void Cpu::op0xBC() {  Ldy( AbsX_R() ); }
         void Cpu::op0x4A()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAccumulator);
-            printf("%s\n", __FUNCTION__);
+            
             cycles.count += cycles.clock[1];
             a = Lsr( a );
         }
-        void Cpu::op0x46() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Lsr(data) ); }
-        void Cpu::op0x56() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Lsr(data)); }
-        void Cpu::op0x4E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Lsr(data)); }
-        void Cpu::op0x5E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Lsr(data)); }
-        void Cpu::op0x1A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[2 - 1]; }
-        void Cpu::op0x3A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[2 - 1]; }
-        void Cpu::op0x5A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[2 - 1]; }
-        void Cpu::op0x7A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[2 - 1]; }
-        void Cpu::op0xDA() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[2 - 1]; }
-        void Cpu::op0xEA() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[2 - 1]; }
-        void Cpu::op0xFA() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[2 - 1]; }
-        void Cpu::op0x09() { printf("%s\n", __FUNCTION__); Ora( Imm_R() ); }
-        void Cpu::op0x05() { printf("%s\n", __FUNCTION__); Ora( Zpg_R() ); }
-        void Cpu::op0x15() { printf("%s\n", __FUNCTION__); Ora( ZpgX_R() ); }
-        void Cpu::op0x0D() { printf("%s\n", __FUNCTION__); Ora( Abs_R() ); }
-        void Cpu::op0x1D() { printf("%s\n", __FUNCTION__); Ora( AbsX_R() ); }
-        void Cpu::op0x19() { printf("%s\n", __FUNCTION__); Ora( AbsY_R() ); }
-        void Cpu::op0x01() { printf("%s\n", __FUNCTION__); Ora( IndX_R() ); }
-        void Cpu::op0x11() { printf("%s\n", __FUNCTION__); Ora( IndY_R() ); }
+        void Cpu::op0x46() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Lsr(data) ); }
+        void Cpu::op0x56() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Lsr(data)); }
+        void Cpu::op0x4E() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Lsr(data)); }
+        void Cpu::op0x5E() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Lsr(data)); }
+        void Cpu::op0x1A() {  cycles.count += cycles.clock[2 - 1]; }
+        void Cpu::op0x3A() {  cycles.count += cycles.clock[2 - 1]; }
+        void Cpu::op0x5A() {  cycles.count += cycles.clock[2 - 1]; }
+        void Cpu::op0x7A() {  cycles.count += cycles.clock[2 - 1]; }
+        void Cpu::op0xDA() {  cycles.count += cycles.clock[2 - 1]; }
+        void Cpu::op0xEA() {  cycles.count += cycles.clock[2 - 1]; }
+        void Cpu::op0xFA() {  cycles.count += cycles.clock[2 - 1]; }
+        void Cpu::op0x09() {  Ora( Imm_R() ); }
+        void Cpu::op0x05() {  Ora( Zpg_R() ); }
+        void Cpu::op0x15() {  Ora( ZpgX_R() ); }
+        void Cpu::op0x0D() {  Ora( Abs_R() ); }
+        void Cpu::op0x1D() {  Ora( AbsX_R() ); }
+        void Cpu::op0x19() {  Ora( AbsY_R() ); }
+        void Cpu::op0x01() {  Ora( IndX_R() ); }
+        void Cpu::op0x11() {  Ora( IndY_R() ); }
         void Cpu::op0x48()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Pha();
         }
-        void Cpu::op0x08() { printf("%s\n", __FUNCTION__); Php(); }
+        void Cpu::op0x08() {  Php(); }
         void Cpu::op0x68()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Pla();
         }
-        void Cpu::op0x28() { printf("%s\n", __FUNCTION__); Plp(); }
-        void Cpu::op0x2A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[1]; a = Rol( a ); }
-        void Cpu::op0x26() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Rol(data) ); }
-        void Cpu::op0x36() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Rol(data)); }
-        void Cpu::op0x2E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Rol(data)); }
-        void Cpu::op0x3E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Rol(data)); }
-        void Cpu::op0x6A() { printf("%s\n", __FUNCTION__); cycles.count += cycles.clock[1]; a = Ror( a ); }
-        void Cpu::op0x66() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Ror(data) ); }
-        void Cpu::op0x76() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Ror(data)); }
-        void Cpu::op0x6E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Ror(data)); }
-        void Cpu::op0x7E() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Ror(data)); }
+        void Cpu::op0x28() {  Plp(); }
+        void Cpu::op0x2A() {  cycles.count += cycles.clock[1]; a = Rol( a ); }
+        void Cpu::op0x26() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Rol(data) ); }
+        void Cpu::op0x36() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Rol(data)); }
+        void Cpu::op0x2E() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Rol(data)); }
+        void Cpu::op0x3E() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Rol(data)); }
+        void Cpu::op0x6A() {  cycles.count += cycles.clock[1]; a = Ror( a ); }
+        void Cpu::op0x66() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Ror(data) ); }
+        void Cpu::op0x76() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Ror(data)); }
+        void Cpu::op0x6E() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Ror(data)); }
+        void Cpu::op0x7E() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Ror(data)); }
         void Cpu::op0x40()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Rti();
         }
         void Cpu::op0x60()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Rts();
         }
-        void Cpu::op0xE9() { printf("%s\n", __FUNCTION__); Sbc( Imm_R() ); }
-        void Cpu::op0xEB() { printf("%s\n", __FUNCTION__); Sbc( Imm_R() ); }
-        void Cpu::op0xE5() { printf("%s\n", __FUNCTION__); Sbc( Zpg_R() ); }
-        void Cpu::op0xF5() { printf("%s\n", __FUNCTION__); Sbc( ZpgX_R() ); }
-        void Cpu::op0xED() { printf("%s\n", __FUNCTION__); Sbc( Abs_R() ); }
-        void Cpu::op0xFD() { printf("%s\n", __FUNCTION__); Sbc( AbsX_R() ); }
-        void Cpu::op0xF9() { printf("%s\n", __FUNCTION__); Sbc( AbsY_R() ); }
-        void Cpu::op0xE1() { printf("%s\n", __FUNCTION__); Sbc( IndX_R() ); }
-        void Cpu::op0xF1() { printf("%s\n", __FUNCTION__); Sbc( IndY_R() ); }
-        void Cpu::op0x38() { printf("%s\n", __FUNCTION__); Sec(); }
-        void Cpu::op0xF8() { printf("%s\n", __FUNCTION__); Sed(); }
+        void Cpu::op0xE9() {  Sbc( Imm_R() ); }
+        void Cpu::op0xEB() {  Sbc( Imm_R() ); }
+        void Cpu::op0xE5() {  Sbc( Zpg_R() ); }
+        void Cpu::op0xF5() {  Sbc( ZpgX_R() ); }
+        void Cpu::op0xED() {  Sbc( Abs_R() ); }
+        void Cpu::op0xFD() {  Sbc( AbsX_R() ); }
+        void Cpu::op0xF9() {  Sbc( AbsY_R() ); }
+        void Cpu::op0xE1() {  Sbc( IndX_R() ); }
+        void Cpu::op0xF1() {  Sbc( IndY_R() ); }
+        void Cpu::op0x38() {  Sec(); }
+        void Cpu::op0xF8() {  Sed(); }
         void Cpu::op0x78()
         {
-            printf("%s\n", __FUNCTION__);
+            
             Sei();
         }
-        void Cpu::op0x85() { printf("%s\n", __FUNCTION__); const uint dst = Zpg_W(); StoreZpg( dst, Sta() ); }
-        void Cpu::op0x95() { printf("%s\n", __FUNCTION__); const uint dst = ZpgX_W(); StoreZpg(dst,Sta()); }
+        void Cpu::op0x85() {  const uint dst = Zpg_W(); StoreZpg( dst, Sta() ); }
+        void Cpu::op0x95() {  const uint dst = ZpgX_W(); StoreZpg(dst,Sta()); }
         void Cpu::op0x8D() {
-            printf("%s\n", __FUNCTION__);
+            
             const uint dst = Abs_W();
             StoreMem(dst,Sta());
         }
-        void Cpu::op0x9D() { printf("%s\n", __FUNCTION__); const uint dst = AbsX_W(); StoreMem(dst,Sta()); }
-        void Cpu::op0x99() { printf("%s\n", __FUNCTION__); const uint dst = AbsY_W(); StoreMem(dst,Sta()); }
-        void Cpu::op0x81() { printf("%s\n", __FUNCTION__); const uint dst = IndX_W(); StoreMem(dst,Sta()); }
-        void Cpu::op0x91() { printf("%s\n", __FUNCTION__); const uint dst = IndY_W(); StoreMem(dst,Sta()); }
-        void Cpu::op0x86() { printf("%s\n", __FUNCTION__); const uint dst = Zpg_W(); StoreZpg( dst, Stx() ); }
-        void Cpu::op0x96() { printf("%s\n", __FUNCTION__); const uint dst = ZpgY_W(); StoreZpg(dst,Stx()); }
-        void Cpu::op0x8E() { printf("%s\n", __FUNCTION__); const uint dst = Abs_W(); StoreMem(dst,Stx()); }
+        void Cpu::op0x9D() {  const uint dst = AbsX_W(); StoreMem(dst,Sta()); }
+        void Cpu::op0x99() {  const uint dst = AbsY_W(); StoreMem(dst,Sta()); }
+        void Cpu::op0x81() {  const uint dst = IndX_W(); StoreMem(dst,Sta()); }
+        void Cpu::op0x91() {  const uint dst = IndY_W(); StoreMem(dst,Sta()); }
+        void Cpu::op0x86() {  const uint dst = Zpg_W(); StoreZpg( dst, Stx() ); }
+        void Cpu::op0x96() {  const uint dst = ZpgY_W(); StoreZpg(dst,Stx()); }
+        void Cpu::op0x8E() {  const uint dst = Abs_W(); StoreMem(dst,Stx()); }
         void Cpu::op0x84()
         {
-            printf("%s\n", __FUNCTION__);
+            
             const uint dst = Zpg_W(); // 1
             StoreZpg( dst, Sty() );
         }
-        void Cpu::op0x94() { printf("%s\n", __FUNCTION__); const uint dst = ZpgX_W(); StoreZpg(dst,Sty()); }
-        void Cpu::op0x8C() { printf("%s\n", __FUNCTION__); const uint dst = Abs_W(); StoreMem(dst,Sty()); }
+        void Cpu::op0x94() {  const uint dst = ZpgX_W(); StoreZpg(dst,Sty()); }
+        void Cpu::op0x8C() {  const uint dst = Abs_W(); StoreMem(dst,Sty()); }
         void Cpu::op0xAA()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Tax();
         }
         void Cpu::op0xA8()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Tay();
         }
-        void Cpu::op0xBA() { printf("%s\n", __FUNCTION__); Tsx(); }
+        void Cpu::op0xBA() {  Tsx(); }
         void Cpu::op0x8A()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Txa();
         }
         void Cpu::op0x9A()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeImplied);
-            printf("%s\n", __FUNCTION__);
+            
             Txs();
             
         }
-        void Cpu::op0x98() { printf("%s\n", __FUNCTION__); Tya(); }
+        void Cpu::op0x98() {  Tya(); }
         
-        void Cpu::op0x00() { printf("%s\n", __FUNCTION__); Brk(); }
-        void Cpu::op0x02() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0x12() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0x22() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0x32() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0x42() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0x52() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0x62() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0x72() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0x92() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0xB2() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0xD2() { printf("%s\n", __FUNCTION__); Jam(); }
-        void Cpu::op0xF2() { printf("%s\n", __FUNCTION__); Jam(); }
+        void Cpu::op0x00() {  Brk(); }
+        void Cpu::op0x02() {  Jam(); }
+        void Cpu::op0x12() {  Jam(); }
+        void Cpu::op0x22() {  Jam(); }
+        void Cpu::op0x32() {  Jam(); }
+        void Cpu::op0x42() {  Jam(); }
+        void Cpu::op0x52() {  Jam(); }
+        void Cpu::op0x62() {  Jam(); }
+        void Cpu::op0x72() {  Jam(); }
+        void Cpu::op0x92() {  Jam(); }
+        void Cpu::op0xB2() {  Jam(); }
+        void Cpu::op0xD2() {  Jam(); }
+        void Cpu::op0xF2() {  Jam(); }
         
-        void Cpu::op0x0B() { printf("%s\n", __FUNCTION__); Anc( Imm_R() ); }
-        void Cpu::op0x2B() { printf("%s\n", __FUNCTION__); Anc( Imm_R() ); }
-        void Cpu::op0x8B() { printf("%s\n", __FUNCTION__); Ane( Imm_R() ); }
-        void Cpu::op0x6B() { printf("%s\n", __FUNCTION__); Arr( Imm_R() ); }
-        void Cpu::op0x4B() { printf("%s\n", __FUNCTION__); Asr( Imm_R() ); }
-        void Cpu::op0xC7() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Dcp(data) ); }
-        void Cpu::op0xD7() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Dcp(data)); }
-        void Cpu::op0xC3() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Dcp(data)); }
-        void Cpu::op0xD3() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Dcp(data)); }
-        void Cpu::op0xCF() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Dcp(data)); }
-        void Cpu::op0xDF() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Dcp(data)); }
-        void Cpu::op0xDB() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Dcp(data)); }
-        void Cpu::op0x80() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
-        void Cpu::op0x82() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
-        void Cpu::op0x89() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
-        void Cpu::op0xC2() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
-        void Cpu::op0xE2() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
-        void Cpu::op0x04() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[3 - 1]; Dop(); }
-        void Cpu::op0x44() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[3 - 1]; Dop(); }
-        void Cpu::op0x64() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[3 - 1]; Dop(); }
-        void Cpu::op0x14() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
-        void Cpu::op0x34() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
-        void Cpu::op0x54() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
-        void Cpu::op0x74() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
-        void Cpu::op0xD4() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
-        void Cpu::op0xF4() { printf("%s\n", __FUNCTION__); pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
-        void Cpu::op0xE7() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Isb(data) ); }
-        void Cpu::op0xF7() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Isb(data)); }
-        void Cpu::op0xEF() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Isb(data)); }
+        void Cpu::op0x0B() {  Anc( Imm_R() ); }
+        void Cpu::op0x2B() {  Anc( Imm_R() ); }
+        void Cpu::op0x8B() {  Ane( Imm_R() ); }
+        void Cpu::op0x6B() {  Arr( Imm_R() ); }
+        void Cpu::op0x4B() {  Asr( Imm_R() ); }
+        void Cpu::op0xC7() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Dcp(data) ); }
+        void Cpu::op0xD7() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Dcp(data)); }
+        void Cpu::op0xC3() {  uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Dcp(data)); }
+        void Cpu::op0xD3() {  uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Dcp(data)); }
+        void Cpu::op0xCF() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Dcp(data)); }
+        void Cpu::op0xDF() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Dcp(data)); }
+        void Cpu::op0xDB() {  uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Dcp(data)); }
+        void Cpu::op0x80() {  pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
+        void Cpu::op0x82() {  pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
+        void Cpu::op0x89() {  pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
+        void Cpu::op0xC2() {  pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
+        void Cpu::op0xE2() {  pc += 1; cycles.count += cycles.clock[2 - 1]; Dop(); }
+        void Cpu::op0x04() {  pc += 1; cycles.count += cycles.clock[3 - 1]; Dop(); }
+        void Cpu::op0x44() {  pc += 1; cycles.count += cycles.clock[3 - 1]; Dop(); }
+        void Cpu::op0x64() {  pc += 1; cycles.count += cycles.clock[3 - 1]; Dop(); }
+        void Cpu::op0x14() {  pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
+        void Cpu::op0x34() {  pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
+        void Cpu::op0x54() {  pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
+        void Cpu::op0x74() {  pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
+        void Cpu::op0xD4() {  pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
+        void Cpu::op0xF4() {  pc += 1; cycles.count += cycles.clock[4 - 1]; Dop(); }
+        void Cpu::op0xE7() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Isb(data) ); }
+        void Cpu::op0xF7() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Isb(data)); }
+        void Cpu::op0xEF() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Isb(data)); }
         void Cpu::op0xFF()
         {
-            printf("%s\n", __FUNCTION__);
+            
             uint data;
             const uint dst = AbsX_RW( data );
             StoreMem(dst,Isb(data));
         }
-        void Cpu::op0xFB() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Isb(data)); }
-        void Cpu::op0xE3() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Isb(data)); }
-        void Cpu::op0xF3() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Isb(data)); }
-        void Cpu::op0xBB() { printf("%s\n", __FUNCTION__); Las( AbsY_R() ); }
-        void Cpu::op0xA7() { printf("%s\n", __FUNCTION__); Lax( Zpg_R() ); }
-        void Cpu::op0xB7() { printf("%s\n", __FUNCTION__); Lax( ZpgY_R() ); }
-        void Cpu::op0xAF() { printf("%s\n", __FUNCTION__); Lax( Abs_R() ); }
-        void Cpu::op0xBF() { printf("%s\n", __FUNCTION__); Lax( AbsY_R() ); }
-        void Cpu::op0xA3() { printf("%s\n", __FUNCTION__); Lax( IndX_R() ); }
-        void Cpu::op0xB3() { printf("%s\n", __FUNCTION__); Lax( IndY_R() ); }
-        void Cpu::op0xAB() { printf("%s\n", __FUNCTION__); Lxa( Imm_R() ); }
-        void Cpu::op0x27() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Rla(data) ); }
-        void Cpu::op0x37() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Rla(data)); }
-        void Cpu::op0x2F() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Rla(data)); }
-        void Cpu::op0x3F() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Rla(data)); }
-        void Cpu::op0x3B() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Rla(data)); }
-        void Cpu::op0x23() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Rla(data)); }
-        void Cpu::op0x33() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Rla(data)); }
-        void Cpu::op0x67() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Rra(data) ); }
-        void Cpu::op0x77() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Rra(data)); }
-        void Cpu::op0x6F() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Rra(data)); }
-        void Cpu::op0x7F() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Rra(data)); }
-        void Cpu::op0x7B() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Rra(data)); }
-        void Cpu::op0x63() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Rra(data)); }
-        void Cpu::op0x73() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Rra(data)); }
-        void Cpu::op0x87() { printf("%s\n", __FUNCTION__); const uint dst = Zpg_W(); StoreZpg( dst, Sax() ); }
-        void Cpu::op0x97() { printf("%s\n", __FUNCTION__); const uint dst = ZpgY_W(); StoreZpg(dst,Sax()); }
-        void Cpu::op0x8F() { printf("%s\n", __FUNCTION__); const uint dst = Abs_W(); StoreMem(dst,Sax()); }
-        void Cpu::op0x83() { printf("%s\n", __FUNCTION__); const uint dst = IndX_W(); StoreMem(dst,Sax()); }
-        void Cpu::op0xCB() { printf("%s\n", __FUNCTION__); Sbx( Imm_R() ); }
-        void Cpu::op0x9F() { printf("%s\n", __FUNCTION__); const uint dst = AbsY_W(); StoreMem(dst,Sha(dst)); }
-        void Cpu::op0x93() { printf("%s\n", __FUNCTION__); const uint dst = IndY_W(); StoreMem(dst,Sha(dst)); }
-        void Cpu::op0x9B() { printf("%s\n", __FUNCTION__); const uint dst = AbsY_W(); StoreMem(dst,Shs(dst)); }
-        void Cpu::op0x9E() { printf("%s\n", __FUNCTION__); const uint dst = AbsY_W(); StoreMem(dst,Shx(dst)); }
-        void Cpu::op0x9C() { printf("%s\n", __FUNCTION__); const uint dst = AbsX_W(); StoreMem(dst,Shy(dst)); }
-        void Cpu::op0x07() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Slo(data) ); }
-        void Cpu::op0x17() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Slo(data)); }
-        void Cpu::op0x0F() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Slo(data)); }
-        void Cpu::op0x1F() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Slo(data)); }
-        void Cpu::op0x1B() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Slo(data)); }
-        void Cpu::op0x03() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Slo(data)); }
-        void Cpu::op0x13() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Slo(data)); }
-        void Cpu::op0x47() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Sre(data) ); }
-        void Cpu::op0x57() { printf("%s\n", __FUNCTION__); uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Sre(data)); }
-        void Cpu::op0x4F() { printf("%s\n", __FUNCTION__); uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Sre(data)); }
-        void Cpu::op0x5F() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Sre(data)); }
-        void Cpu::op0x5B() { printf("%s\n", __FUNCTION__); uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Sre(data)); }
-        void Cpu::op0x43() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Sre(data)); }
-        void Cpu::op0x53() { printf("%s\n", __FUNCTION__); uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Sre(data)); }
-        void Cpu::op0x0C() { printf("%s\n", __FUNCTION__); pc += 2; cycles.count += cycles.clock[4 - 1]; Top(); }
-        void Cpu::op0x1C() { printf("%s\n", __FUNCTION__); Top( AbsX_R() ); }
-        void Cpu::op0x3C() { printf("%s\n", __FUNCTION__); Top( AbsX_R() ); }
-        void Cpu::op0x5C() { printf("%s\n", __FUNCTION__); Top( AbsX_R() ); }
-        void Cpu::op0x7C() { printf("%s\n", __FUNCTION__); Top( AbsX_R() ); }
-        void Cpu::op0xDC() { printf("%s\n", __FUNCTION__); Top( AbsX_R() ); }
-        void Cpu::op0xFC() { printf("%s\n", __FUNCTION__); Top( AbsX_R() ); }
+        void Cpu::op0xFB() {  uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Isb(data)); }
+        void Cpu::op0xE3() {  uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Isb(data)); }
+        void Cpu::op0xF3() {  uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Isb(data)); }
+        void Cpu::op0xBB() {  Las( AbsY_R() ); }
+        void Cpu::op0xA7() {  Lax( Zpg_R() ); }
+        void Cpu::op0xB7() {  Lax( ZpgY_R() ); }
+        void Cpu::op0xAF() {  Lax( Abs_R() ); }
+        void Cpu::op0xBF() {  Lax( AbsY_R() ); }
+        void Cpu::op0xA3() {  Lax( IndX_R() ); }
+        void Cpu::op0xB3() {  Lax( IndY_R() ); }
+        void Cpu::op0xAB() {  Lxa( Imm_R() ); }
+        void Cpu::op0x27() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Rla(data) ); }
+        void Cpu::op0x37() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Rla(data)); }
+        void Cpu::op0x2F() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Rla(data)); }
+        void Cpu::op0x3F() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Rla(data)); }
+        void Cpu::op0x3B() {  uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Rla(data)); }
+        void Cpu::op0x23() {  uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Rla(data)); }
+        void Cpu::op0x33() {  uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Rla(data)); }
+        void Cpu::op0x67() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Rra(data) ); }
+        void Cpu::op0x77() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Rra(data)); }
+        void Cpu::op0x6F() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Rra(data)); }
+        void Cpu::op0x7F() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Rra(data)); }
+        void Cpu::op0x7B() {  uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Rra(data)); }
+        void Cpu::op0x63() {  uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Rra(data)); }
+        void Cpu::op0x73() {  uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Rra(data)); }
+        void Cpu::op0x87() {  const uint dst = Zpg_W(); StoreZpg( dst, Sax() ); }
+        void Cpu::op0x97() {  const uint dst = ZpgY_W(); StoreZpg(dst,Sax()); }
+        void Cpu::op0x8F() {  const uint dst = Abs_W(); StoreMem(dst,Sax()); }
+        void Cpu::op0x83() {  const uint dst = IndX_W(); StoreMem(dst,Sax()); }
+        void Cpu::op0xCB() {  Sbx( Imm_R() ); }
+        void Cpu::op0x9F() {  const uint dst = AbsY_W(); StoreMem(dst,Sha(dst)); }
+        void Cpu::op0x93() {  const uint dst = IndY_W(); StoreMem(dst,Sha(dst)); }
+        void Cpu::op0x9B() {  const uint dst = AbsY_W(); StoreMem(dst,Shs(dst)); }
+        void Cpu::op0x9E() {  const uint dst = AbsY_W(); StoreMem(dst,Shx(dst)); }
+        void Cpu::op0x9C() {  const uint dst = AbsX_W(); StoreMem(dst,Shy(dst)); }
+        void Cpu::op0x07() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Slo(data) ); }
+        void Cpu::op0x17() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Slo(data)); }
+        void Cpu::op0x0F() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Slo(data)); }
+        void Cpu::op0x1F() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Slo(data)); }
+        void Cpu::op0x1B() {  uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Slo(data)); }
+        void Cpu::op0x03() {  uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Slo(data)); }
+        void Cpu::op0x13() {  uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Slo(data)); }
+        void Cpu::op0x47() {  uint data; const uint dst = Zpg_RW( data ); StoreZpg( dst, Sre(data) ); }
+        void Cpu::op0x57() {  uint data; const uint dst = ZpgX_RW( data ); StoreZpg(dst,Sre(data)); }
+        void Cpu::op0x4F() {  uint data; const uint dst = Abs_RW( data ); StoreMem(dst,Sre(data)); }
+        void Cpu::op0x5F() {  uint data; const uint dst = AbsX_RW( data ); StoreMem(dst,Sre(data)); }
+        void Cpu::op0x5B() {  uint data; const uint dst = AbsY_RW( data ); StoreMem(dst,Sre(data)); }
+        void Cpu::op0x43() {  uint data; const uint dst = IndX_RW( data ); StoreMem(dst,Sre(data)); }
+        void Cpu::op0x53() {  uint data; const uint dst = IndY_RW( data ); StoreMem(dst,Sre(data)); }
+        void Cpu::op0x0C() {  pc += 2; cycles.count += cycles.clock[4 - 1]; Top(); }
+        void Cpu::op0x1C() {  Top( AbsX_R() ); }
+        void Cpu::op0x3C() {  Top( AbsX_R() ); }
+        void Cpu::op0x5C() {  Top( AbsX_R() ); }
+        void Cpu::op0x7C() {  Top( AbsX_R() ); }
+        void Cpu::op0xDC() {  Top( AbsX_R() ); }
+        void Cpu::op0xFC() {  Top( AbsX_R() ); }
     }
 }

@@ -209,7 +209,10 @@ namespace Nes
 
 				Data Peek(Address address) const
 				{
+//                    printf("START: readerFP( component, address )\n");
+                    // Nes::Core::Mapper::Peek_M_Prg_E(component, address);
                     Data value = readerFP( component, address );
+//                    printf("END: readerFP( component, address )\n");
                     return value;
 				}
 

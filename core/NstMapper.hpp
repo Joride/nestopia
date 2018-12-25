@@ -44,8 +44,7 @@ namespace Nes
 
 		class NST_NO_VTABLE Mapper
 		{
-		public:
-
+		public:            
 			struct Context
 			{
 				const uint id;
@@ -297,49 +296,56 @@ namespace Nes
 			virtual void BaseSave(State::Saver&) const {}
 			virtual void BaseLoad(State::Loader&,dword) {}
 
-			NES_DECL_PEEK( Prg_8 );
-			NES_DECL_PEEK( Prg_A );
-			NES_DECL_PEEK( Prg_C );
-			NES_DECL_PEEK( Prg_E );
-
-			NES_DECL_POKE( Prg_8k_0  );
-			NES_DECL_POKE( Prg_8k_1  );
-			NES_DECL_POKE( Prg_8k_2  );
-			NES_DECL_POKE( Prg_8k_3  );
-			NES_DECL_POKE( Prg_16k_0 );
-			NES_DECL_POKE( Prg_16k_1 );
-			NES_DECL_POKE( Prg_32k   );
-
-			NES_DECL_POKE( Chr_1k_0 );
-			NES_DECL_POKE( Chr_1k_1 );
-			NES_DECL_POKE( Chr_1k_2 );
-			NES_DECL_POKE( Chr_1k_3 );
-			NES_DECL_POKE( Chr_1k_4 );
-			NES_DECL_POKE( Chr_1k_5 );
-			NES_DECL_POKE( Chr_1k_6 );
-			NES_DECL_POKE( Chr_1k_7 );
-			NES_DECL_POKE( Chr_2k_0 );
-			NES_DECL_POKE( Chr_2k_1 );
-			NES_DECL_POKE( Chr_2k_2 );
-			NES_DECL_POKE( Chr_2k_3 );
-			NES_DECL_POKE( Chr_4k_0 );
-			NES_DECL_POKE( Chr_4k_1 );
-			NES_DECL_POKE( Chr_8k   );
-
-			NES_DECL_PEEK( Wrk_6 );
-			NES_DECL_POKE( Wrk_6 );
-			NES_DECL_PEEK( Wrk_Safe_6 );
-			NES_DECL_POKE( Wrk_Safe_6 );
-
-			NES_DECL_POKE( Nmt_Hv );
-			NES_DECL_POKE( Nmt_Vh );
-			NES_DECL_POKE( Nmt_Vh01 );
-			NES_DECL_POKE( Nmt_Hv01 );
-
-			NES_DECL_PEEK( Nop );
-			NES_DECL_POKE( Nop );
-
-			static cstring const boards[256+NUM_EXT_MAPPERS];
+        public: // made public by Joride, so it can be used inside a block
+            // in NstMapper.cpp (PeekBlock)
+            Data Peek_M_Prg_8(Address);
+            static Data Peek_Prg_8(void*,Address);
+            Data Peek_M_Prg_A(Address);
+            static Data Peek_Prg_A(void*,Address);
+            Data Peek_M_Prg_C(Address);
+            static Data Peek_Prg_C(void*,Address);
+            Data Peek_M_Prg_E(Address);
+            static Data Peek_Prg_E(void*,Address);
+            
+        private:
+            void Poke_M_Prg_8k_0(Address,Data); static void Poke_Prg_8k_0(void*,Address,Data);
+            void Poke_M_Prg_8k_1(Address,Data); static void Poke_Prg_8k_1(void*,Address,Data);
+            void Poke_M_Prg_8k_2(Address,Data); static void Poke_Prg_8k_2(void*,Address,Data);
+            void Poke_M_Prg_8k_3(Address,Data); static void Poke_Prg_8k_3(void*,Address,Data);
+            void Poke_M_Prg_16k_0(Address,Data); static void Poke_Prg_16k_0(void*,Address,Data);
+            void Poke_M_Prg_16k_1(Address,Data); static void Poke_Prg_16k_1(void*,Address,Data);
+            void Poke_M_Prg_32k(Address,Data); static void Poke_Prg_32k(void*,Address,Data);
+            
+            void Poke_M_Chr_1k_0(Address,Data); static void Poke_Chr_1k_0(void*,Address,Data);
+            void Poke_M_Chr_1k_1(Address,Data); static void Poke_Chr_1k_1(void*,Address,Data);
+            void Poke_M_Chr_1k_2(Address,Data); static void Poke_Chr_1k_2(void*,Address,Data);
+            void Poke_M_Chr_1k_3(Address,Data); static void Poke_Chr_1k_3(void*,Address,Data);
+            void Poke_M_Chr_1k_4(Address,Data); static void Poke_Chr_1k_4(void*,Address,Data);
+            void Poke_M_Chr_1k_5(Address,Data); static void Poke_Chr_1k_5(void*,Address,Data);
+            void Poke_M_Chr_1k_6(Address,Data); static void Poke_Chr_1k_6(void*,Address,Data);
+            void Poke_M_Chr_1k_7(Address,Data); static void Poke_Chr_1k_7(void*,Address,Data);
+            void Poke_M_Chr_2k_0(Address,Data); static void Poke_Chr_2k_0(void*,Address,Data);
+            void Poke_M_Chr_2k_1(Address,Data); static void Poke_Chr_2k_1(void*,Address,Data);
+            void Poke_M_Chr_2k_2(Address,Data); static void Poke_Chr_2k_2(void*,Address,Data);
+            void Poke_M_Chr_2k_3(Address,Data); static void Poke_Chr_2k_3(void*,Address,Data);
+            void Poke_M_Chr_4k_0(Address,Data); static void Poke_Chr_4k_0(void*,Address,Data);
+            void Poke_M_Chr_4k_1(Address,Data); static void Poke_Chr_4k_1(void*,Address,Data);
+            void Poke_M_Chr_8k(Address,Data); static void Poke_Chr_8k(void*,Address,Data);
+            
+            Data Peek_M_Wrk_6(Address); static Data Peek_Wrk_6(void*,Address);
+            void Poke_M_Wrk_6(Address,Data); static void Poke_Wrk_6(void*,Address,Data);
+            Data Peek_M_Wrk_Safe_6(Address); static Data Peek_Wrk_Safe_6(void*,Address);
+            void Poke_M_Wrk_Safe_6(Address,Data); static void Poke_Wrk_Safe_6(void*,Address,Data);
+            
+            void Poke_M_Nmt_Hv(Address,Data); static void Poke_Nmt_Hv(void*,Address,Data);
+            void Poke_M_Nmt_Vh(Address,Data); static void Poke_Nmt_Vh(void*,Address,Data);
+            void Poke_M_Nmt_Vh01(Address,Data); static void Poke_Nmt_Vh01(void*,Address,Data);
+            void Poke_M_Nmt_Hv01(Address,Data); static void Poke_Nmt_Hv01(void*,Address,Data);
+            
+            Data Peek_M_Nop(Address); static Data Peek_Nop(void*,Address);
+            void Poke_M_Nop(Address,Data); static void Poke_Nop(void*,Address,Data);
+            
+            static cstring const boards[256+NUM_EXT_MAPPERS];
 
 		protected:
 

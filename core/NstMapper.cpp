@@ -1130,110 +1130,406 @@ namespace Nes
         }
         
         
-        
-        
-        
-        Data Mapper::Peek_Prg_8(void* p_,Address i_) { return static_cast<Mapper*>(p_)->Peek_M_Prg_8(i_); } inline Data Mapper::Peek_M_Prg_8(Address address) { return prg[0][address - 0x8000]; }
-        Data Mapper::Peek_Prg_A(void* p_,Address i_) { return static_cast<Mapper*>(p_)->Peek_M_Prg_A(i_); } inline Data Mapper::Peek_M_Prg_A(Address address) { return prg[1][address - 0xA000]; }
-        Data Mapper::Peek_Prg_C(void* p_,Address i_) { return static_cast<Mapper*>(p_)->Peek_M_Prg_C(i_); } inline Data Mapper::Peek_M_Prg_C(Address address) { return prg[2][address - 0xC000]; }
-        Data Mapper::Peek_Prg_E(void* p_,Address i_)
+        Data Mapper::Peek_Prg_8(void* p_,Address i_)
         {
-            return static_cast<Mapper*>(p_)->Peek_M_Prg_E(i_);
+//            printf("NstMapper.cpp:\t:%s\t%04X\n", __FUNCTION__, i_);
+            return static_cast<Mapper*>(p_)->Peek_M_Prg_8(i_);
         }
-        inline Data Mapper::Peek_M_Prg_E(Address address)
+        Data Mapper::Peek_M_Prg_8(Address address)
         {
+//            printf("NstMapper.cpp:\t:%s\t%04X:\t%02X\n",
+//                   __FUNCTION__,
+//                   address - 0x8000,
+//                   prg[0][address - 0x8000]);
+
+//            FILE *out = fopen("/Users/Jorrit/iOS/EmuOutputCompare/output/nestopia-prgrom[0].txt", "a");
+//            for (uint16_t index = 0; index < (0x2000); index++)
+//            {
+//                fprintf(out,"[%04X]\t%02X\n",
+//                        index,
+//                        prg[0][index]);
+//            }
+//            fclose(out);
+//
+//            out = fopen("/Users/Jorrit/iOS/EmuOutputCompare/output/nestopia-prgrom[1].txt", "a");
+//            for (uint16_t index = 0; index < (0x2000); index++)
+//            {
+//                fprintf(out,"[%04X]\t%02X\n",
+//                        index,
+//                        prg[1][index]);
+//            }
+//            fclose(out);
+//
+//            out = fopen("/Users/Jorrit/iOS/EmuOutputCompare/output/nestopia-prgrom[2].txt", "a");
+//            for (uint16_t index = 0; index < (0x2000); index++)
+//            {
+//                fprintf(out,"[%04X]\t%02X\n",
+//                        index,
+//                        prg[2][index]);
+//            }
+//            fclose(out);
+//
+//            out = fopen("/Users/Jorrit/iOS/EmuOutputCompare/output/nestopia-prgrom[3].txt", "a");
+//            for (uint16_t index = 0; index < (0x2000); index++)
+//            {
+//                fprintf(out,"[%04X]\t%02X\n",
+//                        index,
+//                        prg[3][index]);
+//            }
+//            fclose(out);
+//            abort();
+            
+            return prg[0][address - 0x8000];
+        }
+        
+        Data Mapper::Peek_Prg_A(void* p_,Address i_)
+        {
+//            printf("NstMapper.cpp:\t:%s\t%04X\n", __FUNCTION__, i_);
+            return static_cast<Mapper*>(p_)->Peek_M_Prg_A(i_);
+        }
+        Data Mapper::Peek_M_Prg_A(Address address)
+        {
+//            printf("NstMapper.cpp:\t:%s\t%04X:\t%02X\n",
+//                   __FUNCTION__,
+//                   address - 0x8000,
+//                   prg[1][address - 0xA000]);
+            return prg[1][address - 0xA000];
+        }
+        
+        Data Mapper::Peek_Prg_C(void* p_,Address i_)
+        {
+//            printf("NstMapper.cpp:\t:%s\t%04X\n", __FUNCTION__, i_);
+            return static_cast<Mapper*>(p_)->Peek_M_Prg_C(i_);
+        }
+        Data Mapper::Peek_M_Prg_C(Address address)
+        {
+//            printf("NstMapper.cpp:\t:%s\t%04X:\t%02X\n",
+//                   __FUNCTION__,
+//                   address - 0xC000,
+//                   prg[2][address - 0xC000]);
+            return prg[2][address - 0xC000];
+        }
+        
+        Data Mapper::Peek_M_Prg_E(Address address)
+        {
+//            printf("NstMapper.cpp:\t:%s\t%04X:\t%02X\n",
+//                   __FUNCTION__,
+//                   address - 0x8000,
+//                   prg[3][address - 0xE000]);
             return prg[3][address - 0xE000];
         }
+        Data Mapper::Peek_Prg_E(void* p_, Address i_)
+        {
+//            printf("NstMapper.cpp:\t:%s\t%04X\n", __FUNCTION__, i_);
+            return static_cast<Mapper*>(p_)->Peek_M_Prg_E(i_);
+        }
         
-        void Mapper::Poke_Prg_8k_0(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Prg_8k_0(i_,j_); } inline void Mapper::Poke_M_Prg_8k_0(Address,Data data) { prg.SwapBank<SIZE_8K,0x0000>( data ); }
-        void Mapper::Poke_Prg_8k_1(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Prg_8k_1(i_,j_); } inline void Mapper::Poke_M_Prg_8k_1(Address,Data data) { prg.SwapBank<SIZE_8K,0x2000>( data ); }
-        void Mapper::Poke_Prg_8k_2(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Prg_8k_2(i_,j_); } inline void Mapper::Poke_M_Prg_8k_2(Address,Data data) { prg.SwapBank<SIZE_8K,0x4000>( data ); }
-        void Mapper::Poke_Prg_8k_3(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Prg_8k_3(i_,j_); } inline void Mapper::Poke_M_Prg_8k_3(Address,Data data) { prg.SwapBank<SIZE_8K,0x6000>( data ); }
-        void Mapper::Poke_Prg_16k_0(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Prg_16k_0(i_,j_); } inline void Mapper::Poke_M_Prg_16k_0(Address,Data data) { prg.SwapBank<SIZE_16K,0x0000>( data ); }
-        void Mapper::Poke_Prg_16k_1(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Prg_16k_1(i_,j_); } inline void Mapper::Poke_M_Prg_16k_1(Address,Data data) { prg.SwapBank<SIZE_16K,0x4000>( data ); }
-        void Mapper::Poke_Prg_32k(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Prg_32k(i_,j_); } inline void Mapper::Poke_M_Prg_32k(Address,Data data) { prg.SwapBank<SIZE_32K,0x0000>( data ); }
+        // breakpoints for some reason are not hit when using function pointers
+        typedef Data (^PeekBlock)(void*, Address);
+        PeekBlock Peek_Prg_E_Block(int start, int increment)
+        {
+            // returnType (^blockName)(parameterTypes) = ^returnType(parameters) {...};
+            PeekBlock peekBlock = ^ Data (void* p_, Address i_)
+            {
+                return static_cast<Mapper*>(p_)->Peek_M_Prg_E(i_);
+            };
+            return peekBlock;
+        }
         
-        void Mapper::Poke_Chr_1k_0(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_1k_0(i_,j_); } inline void Mapper::Poke_M_Chr_1k_0(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_1K,0x0000>( data ); }
-        void Mapper::Poke_Chr_1k_1(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_1k_1(i_,j_); } inline void Mapper::Poke_M_Chr_1k_1(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_1K,0x0400>( data ); }
-        void Mapper::Poke_Chr_1k_2(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_1k_2(i_,j_); } inline void Mapper::Poke_M_Chr_1k_2(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_1K,0x0800>( data ); }
-        void Mapper::Poke_Chr_1k_3(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_1k_3(i_,j_); } inline void Mapper::Poke_M_Chr_1k_3(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_1K,0x0C00>( data ); }
-        void Mapper::Poke_Chr_1k_4(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_1k_4(i_,j_); } inline void Mapper::Poke_M_Chr_1k_4(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_1K,0x1000>( data ); }
+        void Mapper::Poke_Prg_8k_0(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Prg_8k_0(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Prg_8k_0(Address,Data data)
+        {
+            prg.SwapBank<SIZE_8K,0x0000>( data );
+        }
+        
+        void Mapper::Poke_Prg_8k_1(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Prg_8k_1(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Prg_8k_1(Address,Data data)
+        {
+            prg.SwapBank<SIZE_8K,0x2000>( data );
+        }
+        
+        void Mapper::Poke_Prg_8k_2(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Prg_8k_2(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Prg_8k_2(Address,Data data)
+        {
+            prg.SwapBank<SIZE_8K,0x4000>( data );
+        }
+        void Mapper::Poke_Prg_8k_3(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Prg_8k_3(i_,j_);
+            
+        }
+        
+        void Mapper::Poke_M_Prg_8k_3(Address,Data data)
+        {
+            prg.SwapBank<SIZE_8K,0x6000>( data );
+        }
+        void Mapper::Poke_Prg_16k_0(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Prg_16k_0(i_,j_);
+        }
+        void Mapper::Poke_M_Prg_16k_0(Address,Data data)
+        {
+            prg.SwapBank<SIZE_16K,0x0000>( data );
+        }
+        void Mapper::Poke_Prg_16k_1(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Prg_16k_1(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Prg_16k_1(Address,Data data)
+        {
+            prg.SwapBank<SIZE_16K,0x4000>( data );
+        }
+        void Mapper::Poke_Prg_32k(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Prg_32k(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Prg_32k(Address,Data data)
+        {
+            prg.SwapBank<SIZE_32K,0x0000>( data );
+        }
+        
+        void Mapper::Poke_Chr_1k_0(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_1k_0(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_1k_0(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_1K,0x0000>( data );
+        }
+        
+        void Mapper::Poke_Chr_1k_1(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_1k_1(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_1k_1(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_1K,0x0400>( data );
+        }
+        
+        void Mapper::Poke_Chr_1k_2(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_1k_2(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_1k_2(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_1K,0x0800>( data );
+        }
+        
+        void Mapper::Poke_Chr_1k_3(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_1k_3(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_1k_3(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_1K,0x0C00>( data );
+        }
+        
+        void Mapper::Poke_Chr_1k_4(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_1k_4(i_,j_);
+            
+        }
+        
+        void Mapper::Poke_M_Chr_1k_4(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_1K,0x1000>( data );
+        }
+        
         void Mapper::Poke_Chr_1k_5(void* p_,Address i_,Data j_)
         {
             static_cast<Mapper*>(p_)->Poke_M_Chr_1k_5(i_,j_);
         }
-        inline void Mapper::Poke_M_Chr_1k_5(Address,Data data)
+        
+        void Mapper::Poke_M_Chr_1k_5(Address,Data data)
         {
             ppu.Update();
             chr.SwapBank<SIZE_1K,0x1400>( data );
         }
-        void Mapper::Poke_Chr_1k_6(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_1k_6(i_,j_); } inline void Mapper::Poke_M_Chr_1k_6(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_1K,0x1800>( data ); }
-        void Mapper::Poke_Chr_1k_7(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_1k_7(i_,j_); } inline void Mapper::Poke_M_Chr_1k_7(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_1K,0x1C00>( data ); }
-        void Mapper::Poke_Chr_2k_0(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_2k_0(i_,j_); } inline void Mapper::Poke_M_Chr_2k_0(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_2K,0x0000>( data ); }
+        
+        void Mapper::Poke_Chr_1k_6(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_1k_6(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_1k_6(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_1K,0x1800>( data );
+        }
+        
+        void Mapper::Poke_Chr_1k_7(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_1k_7(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_1k_7(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_1K,0x1C00>( data );
+        }
+        
+        void Mapper::Poke_Chr_2k_0(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_2k_0(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_2k_0(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_2K,0x0000>( data );
+        }
+        
         void Mapper::Poke_Chr_2k_1(void* p_,Address i_,Data j_)
         {
             static_cast<Mapper*>(p_)->Poke_M_Chr_2k_1(i_,j_);
         }
-        inline void Mapper::Poke_M_Chr_2k_1(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_2K,0x0800>( data ); }
-        void Mapper::Poke_Chr_2k_2(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_2k_2(i_,j_); } inline void Mapper::Poke_M_Chr_2k_2(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_2K,0x1000>( data ); }
-        void Mapper::Poke_Chr_2k_3(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_2k_3(i_,j_); } inline void Mapper::Poke_M_Chr_2k_3(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_2K,0x1800>( data ); }
-        void Mapper::Poke_Chr_4k_0(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_4k_0(i_,j_); } inline void Mapper::Poke_M_Chr_4k_0(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_4K,0x0000>( data ); }
+        
+        void Mapper::Poke_M_Chr_2k_1(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_2K,0x0800>( data );
+        }
+        
+        void Mapper::Poke_Chr_2k_2(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_2k_2(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_2k_2(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_2K,0x1000>( data );
+        }
+        
+        void Mapper::Poke_Chr_2k_3(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_2k_3(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_2k_3(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_2K,0x1800>( data );
+        }
+        
+        void Mapper::Poke_Chr_4k_0(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_4k_0(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_4k_0(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_4K,0x0000>( data );
+        }
+        
         void Mapper::Poke_Chr_4k_1(void* p_,Address i_,Data j_)
         {
             static_cast<Mapper*>(p_)->Poke_M_Chr_4k_1(i_,j_);
         }
-        inline void Mapper::Poke_M_Chr_4k_1(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_4K,0x1000>( data ); }
-        void Mapper::Poke_Chr_8k(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Chr_8k(i_,j_); } inline void Mapper::Poke_M_Chr_8k(Address,Data data) { ppu.Update(); chr.SwapBank<SIZE_8K,0x0000>( data ); }
+        
+        void Mapper::Poke_M_Chr_4k_1(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_4K,0x1000>( data );
+        }
+        
+        void Mapper::Poke_Chr_8k(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Chr_8k(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Chr_8k(Address,Data data)
+        {
+            ppu.Update(); chr.SwapBank<SIZE_8K,0x0000>( data );
+        }
         
         void Mapper::Poke_Wrk_6(void* p_,Address i_,Data j_)
         {
-            printf("%s", __FUNCTION__);
             static_cast<Mapper*>(p_)->Poke_M_Wrk_6(i_,j_);
         }
         
         inline void Mapper::Poke_M_Wrk_6(Address address,Data data)
         {
-            printf("%s", __FUNCTION__);
             wrk[0][address - 0x6000] = data;
         }
         
-        Data Mapper::Peek_Wrk_6(void* p_,Address i_) { return static_cast<Mapper*>(p_)->Peek_M_Wrk_6(i_); } inline Data Mapper::Peek_M_Wrk_6(Address address)
+        Data Mapper::Peek_Wrk_6(void* p_,Address i_)
         {
-            ((void)0);
+            
+            printf("NstMapper.cpp:\t:%s\n", __FUNCTION__);
+            return static_cast<Mapper*>(p_)->Peek_M_Wrk_6(i_);
+        }
+        
+        Data Mapper::Peek_M_Wrk_6(Address address)
+        {
+            printf("NstMapper.cpp:\t:%s\n", __FUNCTION__);
             return wrk[0][address - 0x6000];
         }
         
-        void Mapper::Poke_Wrk_Safe_6(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Wrk_Safe_6(i_,j_); } inline void Mapper::Poke_M_Wrk_Safe_6(Address address,Data data)
+        void Mapper::Poke_Wrk_Safe_6(void* p_,Address i_,Data j_)
         {
-            ((void)0);
-            
+            static_cast<Mapper*>(p_)->Poke_M_Wrk_Safe_6(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Wrk_Safe_6(Address address,Data data)
+        {
             if (wrk.Writable(0))
                 wrk[0][address - 0x6000] = data;
         }
         
-        Data Mapper::Peek_Wrk_Safe_6(void* p_,Address i_) { return static_cast<Mapper*>(p_)->Peek_M_Wrk_Safe_6(i_); } inline Data Mapper::Peek_M_Wrk_Safe_6(Address address)
+        Data Mapper::Peek_Wrk_Safe_6(void* p_,Address i_)
         {
-            ((void)0);
+            printf("NstMapper.cpp:\t:%s\n", __FUNCTION__);
+            return static_cast<Mapper*>(p_)->Peek_M_Wrk_Safe_6(i_);
+        }
+        
+        Data Mapper::Peek_M_Wrk_Safe_6(Address address)
+        {
+            printf("NstMapper.cpp:\t:%s\n", __FUNCTION__);
             return wrk.Readable(0) ? wrk[0][address - 0x6000] : (address >> 8);
         }
         
-        void Mapper::Poke_Nmt_Hv(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Nmt_Hv(i_,j_); } inline void Mapper::Poke_M_Nmt_Hv(Address,Data data)
+        void Mapper::Poke_Nmt_Hv(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Nmt_Hv(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Nmt_Hv(Address,Data data)
         {
             typedef char Nestopia_assertion_at_line_1218[(Ppu::NMT_HORIZONTAL == 0 && Ppu::NMT_VERTICAL == 1) ? 1 : -1];
-            ((void)0);
             
             ppu.SetMirroring( static_cast<Ppu::Mirroring>(~data & 0x1) );
         }
         
-        void Mapper::Poke_Nmt_Vh(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Nmt_Vh(i_,j_); } inline void Mapper::Poke_M_Nmt_Vh(Address,Data data)
+        void Mapper::Poke_Nmt_Vh(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Nmt_Vh(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Nmt_Vh(Address,Data data)
         {
             typedef char Nestopia_assertion_at_line_1226[(Ppu::NMT_HORIZONTAL == 0 && Ppu::NMT_VERTICAL == 1) ? 1 : -1];
-            ((void)0);
             
             ppu.SetMirroring( static_cast<Ppu::Mirroring>(data & 0x1) );
         }
         
-        void Mapper::Poke_Nmt_Vh01(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Nmt_Vh01(i_,j_); } inline void Mapper::Poke_M_Nmt_Vh01(Address,Data data)
+        void Mapper::Poke_Nmt_Vh01(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Nmt_Vh01(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Nmt_Vh01(Address,Data data)
         {
             static const byte lut[4][4] =
             {
@@ -1246,7 +1542,12 @@ namespace Nes
             ppu.SetMirroring( lut[data & 0x3] );
         }
         
-        void Mapper::Poke_Nmt_Hv01(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Nmt_Hv01(i_,j_); } inline void Mapper::Poke_M_Nmt_Hv01(Address,Data data)
+        void Mapper::Poke_Nmt_Hv01(void* p_,Address i_,Data j_)
+        {
+            static_cast<Mapper*>(p_)->Poke_M_Nmt_Hv01(i_,j_);
+        }
+        
+        void Mapper::Poke_M_Nmt_Hv01(Address,Data data)
         {
             static const byte lut[4][4] =
             {
@@ -1259,14 +1560,24 @@ namespace Nes
             ppu.SetMirroring( lut[data & 0x3] );
         }
         
-        void Mapper::Poke_Nop(void* p_,Address i_,Data j_) { static_cast<Mapper*>(p_)->Poke_M_Nop(i_,j_); } inline void Mapper::Poke_M_Nop(Address,Data)
+        void Mapper::Poke_Nop(void* p_,Address i_,Data j_)
         {
-            ((void)0);
+            static_cast<Mapper*>(p_)->Poke_M_Nop(i_,j_);
         }
         
-        Data Mapper::Peek_Nop(void* p_,Address i_) { return static_cast<Mapper*>(p_)->Peek_M_Nop(i_); } inline Data Mapper::Peek_M_Nop(Address address)
+        void Mapper::Poke_M_Nop(Address,Data)
         {
-            ((void)0);
+        }
+        
+        Data Mapper::Peek_Nop(void* p_,Address i_)
+        {
+            printf("NstMapper.cpp:\t:%s\n", __FUNCTION__);
+            return static_cast<Mapper*>(p_)->Peek_M_Nop(i_);
+        }
+        
+        Data Mapper::Peek_M_Nop(Address address)
+        {
+            printf("NstMapper.cpp:\t:%s\n", __FUNCTION__);
             return address >> 8;
         }
     }
