@@ -29,7 +29,9 @@
 #include "NstState.hpp"
 
 #define NstPpuprintf printf
-#define NstPpuprintf(x, ...) // uncomment this line to disable debug printing
+#define NstPpuprintf(x, ...) // comment out this line to enable debug printing
+
+#import "NESTracer/NESTracer-Bridge.h"
 
 static bool Observing = false;
 
@@ -1553,12 +1555,15 @@ namespace Nes
         void Ppu::VBlankIn()
         {
             cycles.count += cycles.one;
-            regs.status |= Regs::STATUS_VBLANKING;
+            regs.status |= Regs::STATUS_VBLANKING; // STATUS_VBLANKING = 0x100 = 0b1 0000 0000
             phase = &Ppu::VBlank;
         }
         
         void Ppu::VBlank()
         {
+            NESTracerLogCurrentState();
+            
+            
             regs.status = (regs.status & 0xFF) | (regs.status >> 1 & Regs::STATUS_VBLANK);
             if ((regs.status & 0x80) == 0x80)
             {

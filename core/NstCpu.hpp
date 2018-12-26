@@ -127,7 +127,9 @@ namespace Nes
 			void DoISR(uint);
 			void Clock();
 
-            int64_t cyclesSubtracted;
+            int64_t cycleCount;
+            
+            uint64_t cyclesSubtracted;
             void printCPU();
             std::string ListValuesByAdrres();
             uint8_t* MemoryBuffer();

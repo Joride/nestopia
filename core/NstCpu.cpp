@@ -123,6 +123,7 @@ namespace Nes
         apu ( *this ),
         map ( this, &Cpu::Peek_Overflow, &Cpu::Poke_Overflow )
         {
+            cycleCount = 0;
             NESTracerSetFileName("nestopia");
             Reset( false, false );
             
@@ -768,12 +769,13 @@ namespace Nes
         {
             if (nmiClock != CYCLE_MAX)
             {
-                ((void)0);
                 nmiClock -= frameCycles;
             }
             
             if (irqClock != CYCLE_MAX)
+            {
                 irqClock = irqClock > frameCycles ? irqClock - frameCycles : 0;
+            }
         }
         
         
@@ -841,42 +843,35 @@ namespace Nes
         
         Data Cpu::Ram::Peek_M_Ram_0(Address address)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return mem[address - 0x0000];
         }
         
         Data Cpu::Ram::Peek_Ram_1(void* p_,Address i_)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_1(i_);
         }
         
         Data Cpu::Ram::Peek_M_Ram_1(Address address)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return mem[address - 0x0800];
         }
         
         Data Cpu::Ram::Peek_Ram_2(void* p_,Address i_)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_2(i_);
         }
         Data Cpu::Ram::Peek_M_Ram_2(Address address)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return mem[address - 0x1000];
         }
         
         Data Cpu::Ram::Peek_Ram_3(void* p_,Address i_)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu::Ram*>(p_)->Peek_M_Ram_3(i_);
         }
         
         Data Cpu::Ram::Peek_M_Ram_3(Address address)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return mem[address - 0x1800];
         }
         
@@ -922,36 +917,30 @@ namespace Nes
         
         Data Cpu::Peek_Nop(void* p_,Address i_)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu*>(p_)->Peek_M_Nop(i_);
         }
         
         Data Cpu::Peek_M_Nop(Address address)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return address >> 8;
         }
         
         void Cpu::Poke_Nop(void* p_,Address i_,Data j_)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             static_cast<Cpu*>(p_)->Poke_M_Nop(i_,j_);
         }
         
         void Cpu::Poke_M_Nop(Address,Data)
         {
-            printf("YAY:%s\n", __FUNCTION__);
         }
         
         Data Cpu::Peek_Overflow(void* p_,Address i_)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             return static_cast<Cpu*>(p_)->Peek_M_Overflow(i_);
         }
         
         Data Cpu::Peek_M_Overflow(Address address)
         {
-            printf("YAY:%s\n", __FUNCTION__);
             pc &= 0xFFFF;
             return ram.mem[address & 0x7FF];
         }
@@ -1039,17 +1028,6 @@ namespace Nes
             
             cycles.count += cycles.clock[0];
             
-//            printf("%s  address: 0x%04X\tvalue: 0x%02X\n", __FUNCTION__, address, data);
-            
-            if (data == 0x90)
-            {
-                // to reset the printed count in printCPU() to zero, to sync
-                // up with Nestament
-                // (cyclesSubtracted + cycles.count - (7 * 12)) / 12
-                cyclesSubtracted = -((int64_t)cycles.count) + 84;
-                
-                printf("going out of the loop\n");
-            }
             
             return data;
         }
@@ -1236,15 +1214,18 @@ namespace Nes
          uint Cpu::AbsX_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedX);
-
-            return AbsReg_R( x );
+            uint data = AbsReg_R( x );
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
+            return data;
             
         }
          uint Cpu::AbsY_R()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsoluteIndexedY);
 
-            return AbsReg_R( y );
+            uint data = AbsReg_R( y );
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
+            return data;
             
         }
          uint Cpu::AbsX_RW(uint& data)
@@ -1283,6 +1264,8 @@ namespace Nes
             
             data = map.Peek8( data );
             cycles.count += cycles.clock[0];
+            
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             
             return data;
         }
@@ -1331,6 +1314,8 @@ namespace Nes
             
             data = map.Peek8( data );
             cycles.count += cycles.clock[0];
+            
+            NESTracerSetOpcodeArguments( (uint8_t[]) {data}, 1, 0);
             
             return data;
         }
@@ -2331,8 +2316,19 @@ namespace Nes
                 {
                     uint opcodeAtPC = FetchPc8();
                     
+                    
+                    // cycles.count: every CPU-cycle, this count increments by 12
+                    // (asuming this is related to the ratio of cycles between
+                    // CPU, PPU and APU).
+                    //
+
+                    // void Cpu::EndFrame() resets the cycles.count
+                    // to not lose track of the real count, cyclesSubtracted was added
+                    // this contains the cumulative number that has been subtracted from cycles.count
+                    uint64_t customCycles = ((cycles.count + cyclesSubtracted) / 12) - 7;
                     NESTracerStartUpcomingCycle
-                    ((int64_t)(cyclesSubtracted + cycles.count - (7 * 12)) / 12,
+                    /*((int64_t)(cyclesSubtracted + cycles.count - (7 * 12)) / 12,*/
+                    (customCycles, // unsure why the cpu does not start at 0
                      pc,
                      opcodeAtPC,
                      a,
@@ -2343,8 +2339,8 @@ namespace Nes
 
                     (*this.*opcodes[opcodeAtPC])();
                     
+                    cycleCount += 1;
                     NESTracerEndCycle();
-                    
                 }
                 while (cycles.count < cycles.round);
                 
@@ -2556,7 +2552,6 @@ namespace Nes
         void Cpu::op0x20()
         {
             NESTracerSetCurrentAddressingMode(NESTracerNESAddressingModeAbsolute);
-            
             Jsr();
             
         }
@@ -2571,7 +2566,10 @@ namespace Nes
             
             Lda( Abs_R() );
         }
-        void Cpu::op0xBD() {  Lda( AbsX_R() ); }
+        void Cpu::op0xBD()
+        {
+            Lda( AbsX_R() );
+        }
         void Cpu::op0xB9() {  Lda( AbsY_R() ); }
         void Cpu::op0xA1() {  Lda( IndX_R() ); }
         void Cpu::op0xB1()
