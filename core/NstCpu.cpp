@@ -468,7 +468,9 @@ namespace Nes
                 }
                 
                 if (cycles.count >= cycles.frame)
+                {
                     cycles.count = 0;
+                }
                 
                 ticks -= (ticks + cycles.count) % cycles.clock[0];
             }
@@ -2256,13 +2258,12 @@ namespace Nes
                 case 1: Run1(); break;
                 default: Run2(); break;
             }
-            uint value = map.Peek8(0x2000);
-//            printf("\n>>0x2000:\t0x%02X\n", value);
-            if (value == 0x90)
-            {
-                
-                printf("--SET--\n");
-            }
+
+//            uint value = map.Peek8(0x2000);
+//            if (value == 0x90)
+//            {
+//                printf("--SET--frame\n");
+//            }
         }
         
         void Cpu::EndFrame()
@@ -2325,10 +2326,16 @@ namespace Nes
                     // void Cpu::EndFrame() resets the cycles.count
                     // to not lose track of the real count, cyclesSubtracted was added
                     // this contains the cumulative number that has been subtracted from cycles.count
-                    uint64_t customCycles = ((cycles.count + cyclesSubtracted) / 12) - 7;
+                    uint64_t customCycles = ((cycles.count /*+ cyclesSubtracted*/) / 12) - 7;
+                    if (customCycles > 27500 )
+                    {
+                        
+                        printf("huh?\n");
+                        
+                    }
                     NESTracerStartUpcomingCycle
                     /*((int64_t)(cyclesSubtracted + cycles.count - (7 * 12)) / 12,*/
-                    (customCycles, // unsure why the cpu does not start at 0
+                    (cycles.count / 12, // unsure why the cpu does not start at 0
                      pc,
                      opcodeAtPC,
                      a,
